@@ -46,6 +46,8 @@
 | `app/lancamento/CopyInfoBtn.tsx` | Componente | `'use client'` — Copiar informações do evento |
 | `src/lib/shareLaunch.ts` | Helper | URL de lançamento, URL WhatsApp, signup com ref, clipboard safe |
 | `src/components/launch/LaunchShareCard.tsx` | Componente | `'use client'` — Card vertical para print/story + modal fullscreen |
+| `src/components/launch/LaunchActionStrip.tsx` | Componente | Faixa de CTA repetida para reforço de conversão |
+| `public/og-lancamento.svg` | Asset | Imagem OG leve para compartilhamento |
 | `reports/estado-da-nacao-lancamento.md` | Relatório | Este arquivo |
 
 ---
@@ -270,3 +272,58 @@ Linguagem usada: **"pré-campanha"**, **"movimento"**, **"organização popular"
 - [x] Link de WhatsApp com UTMs + `ref`
 - [x] CTA para `/auth?mode=signup&next=/voluntario` (com e sem `ref`)
 - [x] `npm run verify` final
+
+---
+
+## 13. Polimento v5 (conversão, ritmo visual e viralização)
+
+### Arquivos alterados no v5
+- `app/lancamento/page.tsx`
+- `app/lancamento/ShareButtons.tsx`
+- `src/components/launch/LaunchShareCard.tsx`
+- `src/components/launch/LaunchActionStrip.tsx`
+- `public/og-lancamento.svg`
+- `reports/estado-da-nacao-lancamento.md`
+
+### Mudanças visuais
+1. Hero com faixa compacta de `Data`, `Horário` e `Local` + microtexto de aviso.
+2. Ritmo entre seções ajustado com menor respiro vertical no desktop (menos vazio contemplativo).
+3. Nova seção `Você pode chegar de vários jeitos.` com 4 cards de entrada.
+4. Card `EU VOU` refinado no terço inferior com:
+	- bloco `DATA • LOCAL`
+	- frase `Chame mais 3 pessoas.`
+	- link visual curto `landingmissao.vercel.app/lancamento`
+5. Open Graph visual configurado com `public/og-lancamento.svg`.
+
+### Mudanças de conversão
+1. Hero ganhou terceiro CTA visível: `Chamar mais 3 pessoas`.
+2. Mensagem central atualizada para:
+	- `Não é evento de palco. É ferramenta de organização.`
+3. Componente `LaunchActionStrip` aplicado em 2 pontos:
+	- após `Como o app funciona`
+	- antes do FAQ
+4. Reforço de trilha curta de ação com botões:
+	- `Quero participar`
+	- `Entrar no app`
+	- `Compartilhar`
+
+### Riscos eleitorais evitados
+- Sem `vote`, `eleja`, pedido explícito de voto ou número.
+- Sem promessa de benefício individual.
+- Sem ataque à honra de adversários.
+- Sem simular propaganda oficial de campanha.
+- Linguagem mantida como organização de `pré-campanha`.
+
+### Testes executados no v5
+1. `/lancamento`
+2. `/lancamento?ref=TESTE123`
+3. CTA `/auth` com e sem `ref`
+4. Botão WhatsApp (URL com UTMs + `ref`)
+5. Botões `Copiar mensagem` e `Copiar link`
+6. Card em tela cheia (modal abre/fecha)
+7. `npm run verify` (typecheck + lint + build)
+
+### Pendências restantes
+1. Substituir placeholders de data/horário/local no `content/launchEvent.ts`.
+2. Confirmar domínio final em `NEXT_PUBLIC_SITE_URL` para canonical/OG em produção.
+3. Opcional: gerar versão PNG da OG para plataformas com parsing SVG inconsistente.

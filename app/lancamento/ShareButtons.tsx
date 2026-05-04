@@ -24,6 +24,14 @@ export function ShareButtons({ signupUrl, whatsappNumber }: HeroCTAsProps) {
         Conhecer o app
       </a>
 
+      <a
+        href="#sec-viral"
+        className="btn btn-ghost btn-lg"
+        aria-label="Ir para a seção de compartilhamento e chamar mais 3 pessoas"
+      >
+        Chamar mais 3 pessoas
+      </a>
+
       {waUrl && (
         <a
           href={waUrl}

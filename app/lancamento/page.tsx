@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { launchEvent as e } from "@/content/launchEvent";
 import { buildLaunchUrl, buildSignupUrl } from "@/src/lib/shareLaunch";
+import { LaunchActionStrip } from "@/src/components/launch/LaunchActionStrip";
 import { ShareButtons } from "./ShareButtons";
 import { ViralBlock } from "./ViralBlock";
 import { CopyInfoBtn } from "./CopyInfoBtn";
@@ -19,12 +20,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: "/lancamento",
+    images: [
+      {
+        url: "/og-lancamento.svg",
+        width: 1200,
+        height: 630,
+        alt: "A organização popular agora cabe no bolso · Missão ÉLuta",
+      },
+    ],
   },
   twitter: {
     card: "summary",
     title: "Lançamento Missão ÉLuta | Pré-campanha Alexandre VR Abandonada",
     description:
       "Evento de lançamento da pré-campanha e do app Missão ÉLuta — Escutar, Cuidar e Organizar.",
+    images: ["/og-lancamento.svg"],
   },
 };
 
@@ -33,6 +43,12 @@ const timePending = e.timeLabel === "HORARIO_A_CONFIRMAR";
 const localPending = e.locationLabel === "LOCAL_A_CONFIRMAR";
 const addrPending = e.addressLabel === "ENDERECO_A_CONFIRMAR";
 const hasAddress = !addrPending;
+const praQuemCards = [
+  "Nunca participei, mas quero entender",
+  "Quero ajudar pelo celular",
+  "Quero organizar meu bairro",
+  "Quero chamar amigos, família e trabalho",
+] as const;
 
 type PageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -94,6 +110,15 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           <h1 className="lp-hero__title">{e.title}</h1>
           <p className="lp-hero__subtitle">{e.subtitle}</p>
 
+          <div className="lp-hero__event-inline" role="status" aria-label="Resumo rápido de data, horário e local">
+            <span><strong>Data:</strong> {dataPending ? "A confirmar" : e.dateLabel}</span>
+            <span><strong>Horário:</strong> {timePending ? "A confirmar" : e.timeLabel}</span>
+            <span><strong>Local:</strong> {localPending ? "A confirmar" : e.locationLabel}</span>
+          </div>
+          <p className="lp-hero__event-note">
+            Entre para receber o aviso assim que a data e o local forem confirmados.
+          </p>
+
           <p className="lp-hero__sig">
             <span className="lp-hero__sig-line" aria-hidden="true" />
             {e.signature}
@@ -136,7 +161,31 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          3. BLOCO DO EVENTO
+          3. PRA QUEM E
+      ═══════════════════════════════════════════════════════ */}
+      <section className="lp-section" aria-labelledby="sec-pra-quem">
+        <div className="container">
+          <header className="lp-sec-header lp-sec-header--tight">
+            <h2 className="lp-sec-title" id="sec-pra-quem">
+              Você pode chegar de vários jeitos.
+            </h2>
+            <p className="lp-sec-lead">
+              Não precisa chegar pronto. A ideia é entrar, entender e receber um próximo passo possível.
+            </p>
+          </header>
+
+          <ul className="lp-cards-grid lp-cards-grid--compact" role="list" aria-label="Perfis de chegada">
+            {praQuemCards.map((title) => (
+              <li key={title} className="lp-card lp-card--soft">
+                <h3 className="lp-card__title lp-card__title--light">{title}</h3>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          4. BLOCO DO EVENTO
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section" aria-labelledby="sec-evento" id="evento">
         <div className="container lp-event-wrap">
@@ -193,14 +242,14 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          4. POR QUE ISSO É DIFERENTE
+          5. POR QUE ISSO E DIFERENTE
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--accent" aria-labelledby="sec-diferente">
         <div className="container lp-why-wrap">
           <p className="lp-eyebrow">por que isso é diferente</p>
           <h2 className="lp-why__title" id="sec-diferente">
-            Não é comício.<br />
-            <span className="lp-why__hl">É ferramenta.</span>
+            Não é evento de palco.<br />
+            <span className="lp-why__hl">É ferramenta de organização.</span>
           </h2>
           <blockquote className="lp-why__quote">
             <p>{e.whyDifferent}</p>
@@ -212,7 +261,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          5. COMO O APP FUNCIONA
+          6. COMO O APP FUNCIONA
       ═══════════════════════════════════════════════════════ */}
       <section
         className="lp-section lp-section--dark"
@@ -252,11 +301,15 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
               Entrar no app
             </a>
           </div>
+
+          <div className="lp-action-strip-wrap">
+            <LaunchActionStrip signupUrl={signupUrl} shareHref="#sec-viral" />
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          6. BLOCO VIRAL
+          7. BLOCO VIRAL
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--viral" aria-labelledby="sec-viral">
         <div className="container lp-viral-container">
@@ -281,8 +334,15 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
         </div>
       </section>
 
+      <section className="lp-section lp-section--tight" aria-labelledby="sec-acao-final">
+        <div className="container">
+          <h2 className="lp-sec-title sr-only" id="sec-acao-final">Ação rápida</h2>
+          <LaunchActionStrip signupUrl={signupUrl} shareHref="#sec-viral" />
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════
-          7. FAQ
+          8. FAQ
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section" aria-labelledby="sec-faq">
         <div className="container lp-faq-wrap">
@@ -306,7 +366,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          8. RODAPÉ
+          9. RODAPE
       ═══════════════════════════════════════════════════════ */}
       <footer className="lp-footer" role="contentinfo">
         <div className="container lp-footer__inner">
@@ -388,10 +448,10 @@ const css = `
 .lp-hero {
   position: relative;
   overflow: hidden;
-  min-height: 92svh;
+  min-height: 88svh;
   display: flex;
   align-items: center;
-  padding-block: 5.5rem 4rem;
+  padding-block: 4.6rem 3.2rem;
   border-bottom: 1px solid var(--border);
 }
 .lp-hero__glow {
@@ -457,12 +517,42 @@ const css = `
 }
 .lp-hero__subtitle {
   font-size: clamp(1rem, 2.2vw, 1.2rem); color: var(--muted);
-  max-width: 58ch; line-height: 1.68; margin: 0 0 1.6rem;
+  max-width: 58ch; line-height: 1.65; margin: 0 0 1rem;
+}
+.lp-hero__event-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0 0 0.65rem;
+}
+.lp-hero__event-inline span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.58rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.lp-hero__event-inline strong {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--yellow);
+}
+.lp-hero__event-note {
+  margin: 0 0 1.4rem;
+  max-width: 62ch;
+  font-size: 0.86rem;
+  color: var(--muted);
 }
 .lp-hero__sig {
   display: flex; align-items: center; gap: 0.65rem;
   font-family: var(--font-head); font-size: 1rem; letter-spacing: 0.12em;
-  color: var(--yellow); margin: 0 0 2.75rem; text-transform: uppercase;
+  color: var(--yellow); margin: 0 0 1.8rem; text-transform: uppercase;
 }
 .lp-hero__sig-line {
   display: inline-block; width: 30px; height: 2px;
@@ -485,9 +575,10 @@ const css = `
 
 /* ── SEÇÕES GERAIS ──────────────────────────────────────── */
 .lp-section {
-  padding-block: 5rem; position: relative; z-index: 1;
+  padding-block: 4.2rem; position: relative; z-index: 1;
   border-bottom: 1px solid var(--border);
 }
+.lp-section--tight { padding-block: 2.6rem; }
 .lp-section--dark  { background: var(--bg-elevated); }
 .lp-section--accent {
   background:
@@ -500,7 +591,8 @@ const css = `
     radial-gradient(ellipse 60% 50% at 80% 60%, rgba(255,209,0,0.06), transparent 55%),
     var(--bg-elevated);
 }
-.lp-sec-header { margin-bottom: 3rem; max-width: 640px; }
+.lp-sec-header { margin-bottom: 2.2rem; max-width: 640px; }
+.lp-sec-header--tight { margin-bottom: 1.5rem; }
 .lp-sec-title {
   font-family: var(--font-head);
   font-size: clamp(1.7rem, 4vw, 2.7rem);
@@ -531,6 +623,16 @@ const css = `
   color: var(--yellow); margin: 0; line-height: 1.25;
 }
 .lp-card__desc { color: var(--muted); font-size: 0.92rem; margin: 0; line-height: 1.6; }
+.lp-cards-grid--compact { gap: 0.9rem; }
+.lp-card--soft {
+  padding: 1.2rem 1.1rem;
+  background: linear-gradient(160deg, rgba(255,209,0,0.08), rgba(255,255,255,0.02));
+}
+.lp-card__title--light {
+  color: var(--text);
+  font-size: 1.03rem;
+  line-height: 1.35;
+}
 
 /* ── TICKET ─────────────────────────────────────────────── */
 .lp-event-wrap { max-width: 620px; }
@@ -649,6 +751,31 @@ const css = `
 }
 .lp-step__desc { font-size: 0.87rem; color: var(--muted); margin: 0; line-height: 1.55; }
 .lp-steps__cta { text-align: center; }
+.lp-action-strip-wrap { margin-top: 1.8rem; }
+
+.launch-action-strip {
+  border: 1px solid var(--border-accent);
+  background: linear-gradient(135deg, rgba(255,209,0,0.08), rgba(255,255,255,0.02));
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.launch-action-strip__text {
+  margin: 0;
+  font-family: var(--font-head);
+  letter-spacing: 0.04em;
+  color: var(--yellow);
+  font-size: 1rem;
+}
+.launch-action-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
 
 /* ── VIRAL ──────────────────────────────────────────────── */
 .lp-viral-container { max-width: 760px; overflow-x: clip; }
@@ -740,27 +867,34 @@ const css = `
   letter-spacing: 0.02em;
 }
 .launch-share-card__subtitle {
-  margin: 1rem 0 0;
+  margin: 0.85rem 0 0;
   max-width: 28ch;
   font-size: clamp(0.8rem, 2.3vw, 1rem);
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.45;
 }
 .launch-share-card__name {
-  margin: 1rem 0 0;
+  margin: 0.65rem 0 0;
   font-family: var(--font-head);
   font-size: clamp(1.1rem, 4vw, 1.7rem);
   color: var(--yellow);
   letter-spacing: 0.04em;
 }
 .launch-share-card__event {
-  margin-top: auto;
+  margin-top: 0.7rem;
   border-top: 1px dashed rgba(255, 209, 0, 0.36);
   border-bottom: 1px dashed rgba(255, 209, 0, 0.18);
   background: rgba(0, 0, 0, 0.27);
-  padding: 0.8rem 0.92rem;
+  padding: 0.65rem 0.88rem;
 }
-.launch-share-card__event p {
+.launch-share-card__event-label {
+  margin: 0 0 0.3rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.launch-share-card__event p:not(.launch-share-card__event-label) {
   margin: 0;
   font-size: 0.79rem;
   text-transform: uppercase;
@@ -768,8 +902,26 @@ const css = `
   color: rgba(255, 255, 255, 0.92);
   line-height: 1.45;
 }
+.launch-share-card__invite {
+  margin: 0.7rem 0 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.launch-share-card__short-link {
+  margin: 0.45rem 0 0;
+  padding: 0.24rem 0.5rem;
+  border: 1px solid rgba(255, 209, 0, 0.22);
+  border-radius: 6px;
+  width: fit-content;
+  max-width: 100%;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.78);
+  overflow-wrap: anywhere;
+}
 .launch-share-card__footer {
-  margin: 0.84rem 0 0;
+  margin: auto 0 0;
   font-family: var(--font-head);
   font-size: 0.87rem;
   letter-spacing: 0.11em;
@@ -834,6 +986,17 @@ const css = `
   white-space: normal;
   text-wrap: balance;
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* ── FAQ ────────────────────────────────────────────────── */
 .lp-faq-wrap { max-width: 720px; }
@@ -881,6 +1044,9 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 860px) {
   .lp-cards-grid { grid-template-columns: 1fr; }
+  .launch-action-strip { flex-direction: column; align-items: flex-start; }
+  .launch-action-strip__actions { width: 100%; }
+  .launch-action-strip__actions .btn { flex: 1 1 48%; justify-content: center; }
   .lp-steps { grid-template-columns: 1fr; gap: 0; }
   .lp-steps::before { display: none; }
   .lp-step {
@@ -896,11 +1062,15 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 }
 
 @media (max-width: 600px) {
-  .lp-hero { min-height: auto; padding-block: 4rem 3rem; }
+  .lp-hero { min-height: auto; padding-block: 3.7rem 2.6rem; }
+  .lp-hero__event-inline { gap: 0.45rem; }
+  .lp-hero__event-inline span { width: 100%; justify-content: space-between; }
   .hero-ctas { flex-direction: column; align-items: stretch; }
   .hero-ctas .btn { justify-content: center; }
-  .lp-section { padding-block: 3.5rem; }
+  .lp-section { padding-block: 3.15rem; }
   .lp-ticket__actions { flex-direction: column; }
+  .launch-action-strip__actions { flex-direction: column; }
+  .launch-action-strip__actions .btn { width: 100%; }
   .launch-share-card__actions { grid-template-columns: 1fr; }
   .launch-share-card__story-btn { display: inline-flex; }
   .launch-share-card,

@@ -64,9 +64,15 @@ export function LaunchShareCard({
             <p className="launch-share-card__name">Alexandre VR Abandonada</p>
 
             <div className="launch-share-card__event">
+              <p className="launch-share-card__event-label">DATA • LOCAL</p>
               <p>{displayDate}</p>
               <p>{displayLocation}</p>
             </div>
+
+            <p className="launch-share-card__invite">Chame mais 3 pessoas.</p>
+            <p className="launch-share-card__short-link" aria-label="Link curto visual da página">
+              landingmissao.vercel.app/lancamento
+            </p>
 
             <p className="launch-share-card__footer">{signature}</p>
           </div>
@@ -141,9 +147,14 @@ export function LaunchShareCard({
                 </p>
                 <p className="launch-share-card__name">Alexandre VR Abandonada</p>
                 <div className="launch-share-card__event">
+                  <p className="launch-share-card__event-label">DATA • LOCAL</p>
                   <p>{displayDate}</p>
                   <p>{displayLocation}</p>
                 </div>
+                <p className="launch-share-card__invite">Chame mais 3 pessoas.</p>
+                <p className="launch-share-card__short-link" aria-label="Link curto visual da página">
+                  landingmissao.vercel.app/lancamento
+                </p>
                 <p className="launch-share-card__footer">{signature}</p>
               </div>
             </article>
