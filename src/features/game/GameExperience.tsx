@@ -26,21 +26,21 @@ const EARLY_GRACE_DISTANCE = 840;
 
 const ASSET_PATHS = {
   finishCity: "/game/finish-city.svg",
-  playerIdle: "/game/player-idle.svg",
-  playerRun: "/game/player-run.svg",
-  playerJump: "/game/player-jump.svg",
+  playerIdle: "/game/player-idle.png",
+  playerRun: "/game/player-run.png",
+  playerJump: "/game/player-jump.png",
   sky: "/game/layer-sky.svg",
   serras: "/game/layer-serras.svg",
   industrial: "/game/layer-industrial.svg",
   river: "/game/layer-rio.svg",
   concrete: "/game/layer-concreto.svg",
-  relato: "/game/collect-relato.svg",
-  prova: "/game/collect-prova.svg",
-  memoria: "/game/collect-memoria.svg",
-  apoio: "/game/collect-apoio.svg",
-  processinho: "/game/obstacle-processinho.svg",
-  carimbo: "/game/obstacle-carimbo.svg",
-  muralha: "/game/obstacle-muralha.svg",
+  relato: "/game/collect-relato.png",
+  prova: "/game/collect-prova.png",
+  memoria: "/game/collect-memoria.png",
+  apoio: "/game/collect-apoio.png",
+  processinho: "/game/obstacle-processinho.png",
+  carimbo: "/game/obstacle-carimbo.png",
+  muralha: "/game/obstacle-muralha.png",
 } as const;
 
 const EASTER_EGGS = [
@@ -536,11 +536,6 @@ export default function GameExperience({
       ctx.rotate(player.facing * tilt);
       ctx.drawImage(currentSprite, -player.w / 2, -player.h / 2, player.w, player.h);
       ctx.restore();
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
-      ctx.beginPath();
-      ctx.ellipse(player.x + player.w / 2, GROUND_Y + 8, 34, 10, 0, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     function drawObstacle(obstacle: ObstacleState) {

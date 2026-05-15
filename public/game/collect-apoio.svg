@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
   <title>Apoio popular</title>
-  <rect width="96" height="96" rx="20" fill="#111216"/>
   <circle cx="30" cy="38" r="11" fill="#ffd100"/>
   <circle cx="49" cy="31" r="10" fill="#f1eee5"/>
   <circle cx="67" cy="38" r="11" fill="#c0392b"/>
