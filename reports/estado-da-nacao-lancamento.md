@@ -56,7 +56,7 @@
 
 | Rota | Tipo | Componente |
 |------|------|------------|
-| `/lancamento` | Pública, estática | `LancamentoPage` |
+| `/lancamento` | Pública, dinâmica (SSR) | `LancamentoPage` |
 | `/` | Redirect | → `/lancamento` |
 
 A rota é **registrada automaticamente** pelo Next.js App Router pela pasta `app/lancamento/page.tsx`. Nenhum arquivo de rotas foi editado.
@@ -243,7 +243,7 @@ Linguagem usada: **"pré-campanha"**, **"movimento"**, **"organização popular"
 - [x] `og:description` configurado
 - [x] `og:type=website`
 - [x] `twitter:card` configurado (`summary`)
-- [ ] `og:image` não configurado (não há pasta `public/` com asset OG no projeto)
+- [x] `og:image` configurado com `public/og-lancamento.svg`
 
 ### Conteúdo seguro de pré-campanha
 - [x] Sem uso de `vote`
@@ -327,3 +327,40 @@ Linguagem usada: **"pré-campanha"**, **"movimento"**, **"organização popular"
 1. Substituir placeholders de data/horário/local no `content/launchEvent.ts`.
 2. Confirmar domínio final em `NEXT_PUBLIC_SITE_URL` para canonical/OG em produção.
 3. Opcional: gerar versão PNG da OG para plataformas com parsing SVG inconsistente.
+
+---
+
+## 14. Hardening v6 de publicação
+
+### Ajustes aplicados
+1. Relatório corrigido para remover contradição de `og:image`.
+2. `public/og-lancamento.svg` mantido como asset OG ativo.
+3. Novo campo central no conteúdo:
+	- `content/launchEvent.ts` → `publicUrlLabel`
+4. Card `EU VOU` usa `publicUrlLabel` (sem domínio hardcoded no componente).
+5. Quando `NEXT_PUBLIC_SITE_URL` existe:
+	- canonical/OG usam domínio final
+	- links de share no client passam a usar esse domínio como base
+6. Interface pública ajustada para reduzir percepção de incompletude:
+	- `Em breve`
+	- `Receba o aviso`
+	- `Volta Redonda`
+
+### Checklist final (v6)
+- [x] rota `/lancamento` testada
+- [x] rota `/lancamento?ref=TESTE123` testada
+- [x] domínio para canonical/OG conectado ao `NEXT_PUBLIC_SITE_URL` quando disponível
+- [x] OG configurado (`public/og-lancamento.svg`)
+- [x] WhatsApp testado
+- [x] `ref` preservado nos CTAs e share
+- [x] `npm run verify` executado
+
+Domínio usado no estado atual:
+1. Canonical/OG: `https://missaoeluta.com.br` via `metadataBase` (fallback atual).
+2. Share em ambiente local de teste: `http://localhost:3000` (sem `NEXT_PUBLIC_SITE_URL` definido no runtime local).
+
+### Pendências reais de publicação
+1. Definir data e horário oficiais.
+2. Confirmar local final (hoje UI pública usa referência de Volta Redonda enquanto pendente).
+3. Definir domínio próprio em `NEXT_PUBLIC_SITE_URL` para produção.
+4. Gerar `public/og-lancamento.png` (fallback 1200x630) manualmente a partir do SVG.

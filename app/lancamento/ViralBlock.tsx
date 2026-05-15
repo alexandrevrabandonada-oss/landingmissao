@@ -3,50 +3,40 @@
 import { useState } from "react";
 import {
   buildLaunchWhatsAppUrl,
+  buildWhatsAppShareMessage,
   copyToClipboardSafe,
 } from "@/src/lib/shareLaunch";
 import { LaunchShareCard } from "@/src/components/launch/LaunchShareCard";
 
 interface ViralBlockProps {
-  signature: string;
   dateLabel: string;
   locationLabel: string;
+  publicUrlLabel: string;
+  siteOrigin?: string;
   sharePath: string;
   whatsAppSharePath: string;
 }
 
 export function ViralBlock({
-  signature,
   dateLabel,
   locationLabel,
+  publicUrlLabel,
+  siteOrigin,
   sharePath,
   whatsAppSharePath,
 }: ViralBlockProps) {
   const [feedback, setFeedback] = useState<"link" | null>(null);
 
   function toAbsoluteUrl(path: string) {
+    if (siteOrigin) {
+      return new URL(path, siteOrigin).toString();
+    }
+
     if (typeof window === "undefined") {
       return path;
     }
 
     return new URL(path, window.location.origin).toString();
-  }
-
-  function buildMessage(link: string, includeLink: boolean) {
-    const displayDate =
-      dateLabel === "DATA_A_CONFIRMAR" ? "a confirmar" : dateLabel;
-
-    const lines = [
-      `Dia ${displayDate}, vai acontecer o lançamento da pré-campanha do Alexandre VR Abandonada e do app Missão ÉLuta.`,
-      "A ideia é simples: transformar indignação em organização popular — com missão, formação, território e ação coletiva.",
-      "Pré-campanha Alexandre VR Abandonada\nEscutar • Cuidar • Organizar",
-    ];
-
-    if (includeLink) {
-      lines.push(`Vem conhecer: ${link}`);
-    }
-
-    return lines.join("\n\n");
   }
 
   async function copyText(text: string, type: "link") {
@@ -59,12 +49,12 @@ export function ViralBlock({
 
   function openWhatsApp() {
     const trackedUrl = toAbsoluteUrl(whatsAppSharePath);
-    const text = buildMessage(trackedUrl, false);
-    const target = buildLaunchWhatsAppUrl({ url: trackedUrl, text });
+    const text = buildWhatsAppShareMessage(trackedUrl);
+    const target = buildLaunchWhatsAppUrl({ text });
     window.open(target, "_blank", "noopener,noreferrer");
   }
 
-  const messageToCopy = buildMessage(toAbsoluteUrl(sharePath), true);
+  const messageToCopy = buildWhatsAppShareMessage(toAbsoluteUrl(sharePath));
 
   return (
     <div className="viral-wrap">
@@ -72,7 +62,7 @@ export function ViralBlock({
         dateLabel={dateLabel}
         locationLabel={locationLabel}
         messageToCopy={messageToCopy}
-        signature={signature}
+        publicUrlLabel={publicUrlLabel}
       />
 
       {/* Ações de compartilhamento */}
@@ -84,7 +74,7 @@ export function ViralBlock({
           aria-label="Compartilhar convite no WhatsApp"
         >
           <WhatsAppIcon />
-          Compartilhar no WhatsApp
+          Chamar mais 3 pessoas
         </button>
 
         <button

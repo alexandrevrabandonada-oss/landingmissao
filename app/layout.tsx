@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://missaoeluta.com.br";
@@ -6,35 +7,33 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://missaoeluta.com.br"
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Missão ÉLuta — Lançamento",
-    template: "%s · Missão ÉLuta",
+    default: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    template: `%s · ${SITE_IDENTITY.appName}`,
   },
   description:
-    "Pré-campanha Alexandre VR Abandonada. Escutar • Cuidar • Organizar. " +
-    "Participe do lançamento da Missão ÉLuta e do app em Volta Redonda.",
+    `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.appFullLabel}. ${SITE_IDENTITY.mainPhrase}`,
   keywords: [
-    "Missão ÉLuta",
-    "pré-campanha",
-    "Alexandre VR Abandonada",
+    SITE_IDENTITY.appName,
+    SITE_IDENTITY.contextLabel,
+    SITE_IDENTITY.publicName,
     "Volta Redonda",
     "organização popular",
-    "Escutar Cuidar Organizar",
+    SITE_IDENTITY.signature,
   ],
-  authors: [{ name: "Missão ÉLuta" }],
-  creator: "Missão ÉLuta",
+  authors: [{ name: SITE_IDENTITY.appName }],
+  creator: SITE_IDENTITY.appName,
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: "/lancamento",
-    siteName: "Missão ÉLuta",
-    title: "Lançamento Missão ÉLuta — Escutar • Cuidar • Organizar",
-    description:
-      "Pré-campanha Alexandre VR Abandonada. Venha ao lançamento do app e do movimento em Volta Redonda.",
+    siteName: SITE_IDENTITY.appName,
+    title: SITE_IDENTITY.appFullLabel,
+    description: `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.mainPhrase}`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lançamento Missão ÉLuta",
-    description: "Escutar • Cuidar • Organizar. #ELUTA #VRAbandona",
+    title: SITE_IDENTITY.appFullLabel,
+    description: `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.mainPhrase}`,
   },
   robots: { index: true, follow: true },
 };

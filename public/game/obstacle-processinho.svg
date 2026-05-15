@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 96" role="img" aria-labelledby="title">
+  <title>Processinho voador</title>
+  <rect width="128" height="96" rx="18" fill="#111216"/>
+  <path d="M21 18h56l18 16v43H21Z" fill="#eee6d7" stroke="#141418" stroke-width="4"/>
+  <path d="M77 18v16h18" fill="none" stroke="#141418" stroke-width="4"/>
+  <path d="M31 42h39M31 54h28" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
+  <path d="M101 31c15 4 18 24 4 33-5 3-10 3-15 1" fill="none" stroke="#ffd100" stroke-width="6" stroke-linecap="round"/>
+  <path d="M101 46c6-3 10-2 14 2" stroke="#ffd100" stroke-width="4" stroke-linecap="round"/>
+</svg>

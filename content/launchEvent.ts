@@ -1,3 +1,5 @@
+import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+
 /**
  * Configuração central do evento de lançamento da pré-campanha.
  *
@@ -11,13 +13,12 @@
 
 export const launchEvent = {
   // ── Hero ───────────────────────────────────────────────────────────────────
-  eyebrow: "LANÇAMENTO DA PRÉ-CAMPANHA + APP",
-  title: "A organização popular agora cabe no bolso.",
+  eyebrow: SITE_IDENTITY.contextLabel,
+  title: SITE_IDENTITY.mainPhrase,
   subtitle:
-    "No lançamento da Missão ÉLuta, a pré-campanha vira ferramenta: " +
-    "missão, formação, território, convite e ação coletiva.",
-  badge: "Alexandre VR Abandonada",
-  signature: "Escutar • Cuidar • Organizar",
+    `No App ${SITE_IDENTITY.appName}, a pré-campanha vira ferramenta: missão, formação, território, convite e ação coletiva.`,
+  badge: SITE_IDENTITY.fullLabel,
+  signature: SITE_IDENTITY.signature,
 
   // ── CTAs ───────────────────────────────────────────────────────────────────
   /** Caminho interno do app para cadastro. Troque pela URL real quando o app estiver publicado. */
@@ -48,7 +49,7 @@ export const launchEvent = {
       icon: "📱",
       title: "Demonstração do app Missão ÉLuta",
       description:
-        "Ao vivo: como o app funciona, o que você pode fazer com ele e como entrar.",
+        "Ao vivo: como o app funciona, o que você pode fazer com ele e como entrar no App Missão ÉLuta.",
     },
     {
       icon: "🤝",
@@ -75,7 +76,7 @@ export const launchEvent = {
       number: "01",
       title: "Entrar",
       description:
-        "Acesse o app, crie seu perfil e informe seu bairro.",
+        "Acesse o App Missão ÉLuta, crie seu perfil e informe seu bairro.",
     },
     {
       number: "02",
@@ -98,9 +99,14 @@ export const launchEvent = {
   ],
 
   // ── Compartilhamento ───────────────────────────────────────────────────────
+  /** Domínio curto exibido no card de compartilhamento. */
+  publicUrlLabel: "landingmissao.vercel.app/lancamento",
+
   shareText:
-    "Vou no lançamento da Missão ÉLuta — pré-campanha Alexandre VR Abandonada.\n" +
-    "Escutar • Cuidar • Organizar. #ELUTA #VRAbandona\n",
+    "Conheça a pré-campanha Alexandre VR Abandonada e o app Missão ÉLuta.\n\n" +
+    "A ideia é transformar escuta em organização popular.\n\n" +
+    "Escutar • Cuidar • Organizar.\n\n" +
+    "Vem conhecer: [LINK]",
 
   // ── Perguntas frequentes ───────────────────────────────────────────────────
   faqs: [

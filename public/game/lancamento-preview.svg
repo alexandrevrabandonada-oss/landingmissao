@@ -1,0 +1,90 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Missão ÉLuta: Corre da Burocracia, prévia visual">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="540" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2A1710"/>
+      <stop offset="0.45" stop-color="#3B2416"/>
+      <stop offset="1" stop-color="#0D0F14"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="160" y1="80" x2="820" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD100" stop-opacity="0.28"/>
+      <stop offset="0.45" stop-color="#F58B31" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#11151B" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="river" x1="0" y1="330" x2="960" y2="330" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#163C53"/>
+      <stop offset="1" stop-color="#21526F"/>
+    </linearGradient>
+    <linearGradient id="concrete" x1="0" y1="388" x2="960" y2="388" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F2228"/>
+      <stop offset="1" stop-color="#111318"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#sky)"/>
+  <rect width="960" height="540" fill="url(#glow)"/>
+
+  <path d="M0 260C110 220 188 208 256 190C316 174 375 150 433 126C497 99 560 92 620 118C683 146 741 166 820 184C875 197 919 220 960 246V540H0V260Z" fill="#7A5237" fill-opacity="0.22"/>
+  <path d="M0 276C98 240 182 230 250 210C322 188 394 160 450 133C510 103 572 92 634 116C694 139 751 163 823 184C878 200 924 220 960 244V540H0V276Z" fill="#4A3325" fill-opacity="0.9"/>
+
+  <path d="M0 318C86 300 170 288 253 292C342 296 432 312 514 324C610 338 695 340 786 330C856 322 910 314 960 316V540H0V318Z" fill="url(#river)"/>
+  <path d="M0 392H960V540H0V392Z" fill="url(#concrete)"/>
+
+  <g opacity="0.92">
+    <rect x="108" y="155" width="62" height="165" fill="#1C1D22"/>
+    <rect x="176" y="128" width="42" height="192" fill="#25262B"/>
+    <rect x="234" y="172" width="72" height="148" fill="#1B1D21"/>
+    <rect x="316" y="136" width="54" height="184" fill="#28292F"/>
+    <rect x="382" y="166" width="84" height="154" fill="#202227"/>
+    <rect x="484" y="122" width="92" height="198" fill="#2B2D33"/>
+    <rect x="590" y="150" width="58" height="170" fill="#1A1C20"/>
+    <rect x="662" y="132" width="68" height="188" fill="#24262A"/>
+    <rect x="748" y="168" width="82" height="152" fill="#202227"/>
+    <rect x="844" y="144" width="56" height="176" fill="#26292E"/>
+  </g>
+
+  <g opacity="0.34">
+    <path d="M84 162L136 98L156 126L194 84L224 136L266 72L304 126L352 84L392 150L420 126L454 172L484 128L522 158L556 110L586 154L624 90L658 140L704 86L744 150L792 108L840 164L880 122L928 164" stroke="#FFD100" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M342 404C342 370 369 343 402 343H545C578 343 605 370 605 404V426H342V404Z" fill="#101216"/>
+    <path d="M355 406C355 379 377 357 404 357H543C570 357 592 379 592 406V426H355V406Z" fill="#1B1F26"/>
+    <rect x="377" y="356" width="35" height="70" rx="8" fill="#2A2E36"/>
+    <rect x="434" y="348" width="41" height="78" rx="8" fill="#2A2E36"/>
+    <rect x="495" y="354" width="34" height="72" rx="8" fill="#2A2E36"/>
+    <rect x="553" y="362" width="22" height="64" rx="7" fill="#2A2E36"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <circle cx="478" cy="287" r="64" fill="#FFD100"/>
+    <path d="M438 307C443 274 463 256 488 256C515 256 535 273 541 303" stroke="#111318" stroke-width="16" stroke-linecap="round"/>
+    <path d="M455 270L465 246L485 264L475 282" fill="#111318"/>
+    <path d="M500 274L511 252L529 268L518 286" fill="#111318"/>
+    <circle cx="459" cy="286" r="7" fill="#111318"/>
+    <circle cx="503" cy="286" r="7" fill="#111318"/>
+    <path d="M456 317C468 323 487 327 509 320" stroke="#111318" stroke-width="10" stroke-linecap="round"/>
+    <path d="M452 343C463 335 475 329 489 329C503 329 517 335 528 343" stroke="#F58B31" stroke-width="18" stroke-linecap="round"/>
+    <path d="M421 330C408 354 398 381 397 404" stroke="#F58B31" stroke-width="14" stroke-linecap="round"/>
+    <path d="M540 330C553 355 565 381 567 404" stroke="#F58B31" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <g opacity="0.95">
+    <rect x="86" y="368" width="120" height="48" rx="24" fill="#FFD100" fill-opacity="0.18" stroke="#FFD100" stroke-opacity="0.35"/>
+    <text x="146" y="398" fill="#F2F2F2" font-size="21" font-family="Oswald, Arial, sans-serif" text-anchor="middle" letter-spacing="1.5">RELATO</text>
+    <rect x="742" y="344" width="122" height="50" rx="25" fill="#F58B31" fill-opacity="0.16" stroke="#F58B31" stroke-opacity="0.42"/>
+    <text x="803" y="375" fill="#F2F2F2" font-size="20" font-family="Oswald, Arial, sans-serif" text-anchor="middle" letter-spacing="1.5">PROVA</text>
+  </g>
+
+  <g opacity="0.9">
+    <rect x="54" y="456" width="850" height="8" rx="4" fill="#FFD100" fill-opacity="0.26"/>
+    <rect x="74" y="474" width="782" height="8" rx="4" fill="#F58B31" fill-opacity="0.18"/>
+  </g>
+
+  <text x="58" y="72" fill="#FFD100" font-size="26" font-family="Oswald, Arial, sans-serif" letter-spacing="2">MISSÃO ÉLUTA</text>
+  <text x="58" y="112" fill="#F2F2F2" font-size="52" font-family="Oswald, Arial, sans-serif" font-weight="700">Corre da Burocracia</text>
+  <text x="58" y="145" fill="#F2F2F2" opacity="0.86" font-size="20" font-family="Inter, Arial, sans-serif">Pré-campanha Alexandre VR Abandonada</text>
+  <text x="58" y="172" fill="#F2F2F2" opacity="0.72" font-size="18" font-family="Inter, Arial, sans-serif">Escutar • Cuidar • Organizar</text>
+</svg>

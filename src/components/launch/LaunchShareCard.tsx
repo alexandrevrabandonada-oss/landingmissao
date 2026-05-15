@@ -2,27 +2,28 @@
 
 import { useState } from "react";
 import { copyToClipboardSafe } from "@/src/lib/shareLaunch";
+import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 
 interface LaunchShareCardProps {
   dateLabel: string;
   locationLabel: string;
   messageToCopy: string;
-  signature: string;
+  publicUrlLabel: string;
 }
 
 function normalizeDate(dateLabel: string) {
-  return dateLabel === "DATA_A_CONFIRMAR" ? "Data a confirmar" : dateLabel;
+  return dateLabel === "DATA_A_CONFIRMAR" ? "DATA EM BREVE" : dateLabel;
 }
 
 function normalizeLocation(locationLabel: string) {
-  return locationLabel === "LOCAL_A_CONFIRMAR" ? "Local a confirmar" : locationLabel;
+  return locationLabel === "LOCAL_A_CONFIRMAR" ? "VOLTA REDONDA" : locationLabel;
 }
 
 export function LaunchShareCard({
   dateLabel,
   locationLabel,
   messageToCopy,
-  signature,
+  publicUrlLabel,
 }: LaunchShareCardProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -51,17 +52,19 @@ export function LaunchShareCard({
           <div className="launch-share-card__orb launch-share-card__orb--rust" aria-hidden="true" />
 
           <div className="launch-share-card__content">
-            <p className="launch-share-card__eyebrow">pré-campanha</p>
+            <p className="launch-share-card__eyebrow">{SITE_IDENTITY.fullLabel}</p>
             <h3 className="launch-share-card__title">
               EU VOU
               <span>NO LANÇAMENTO</span>
             </h3>
 
             <p className="launch-share-card__subtitle">
-              Lançamento da pré-campanha + app Missão ÉLuta
+              App Missão ÉLuta
             </p>
 
-            <p className="launch-share-card__name">Alexandre VR Abandonada</p>
+            <p className="launch-share-card__name">{SITE_IDENTITY.publicName}</p>
+
+            <p className="launch-share-card__signature">{SITE_IDENTITY.signature}</p>
 
             <div className="launch-share-card__event">
               <p className="launch-share-card__event-label">DATA • LOCAL</p>
@@ -71,10 +74,10 @@ export function LaunchShareCard({
 
             <p className="launch-share-card__invite">Chame mais 3 pessoas.</p>
             <p className="launch-share-card__short-link" aria-label="Link curto visual da página">
-              landingmissao.vercel.app/lancamento
+              {publicUrlLabel}
             </p>
 
-            <p className="launch-share-card__footer">{signature}</p>
+            <p className="launch-share-card__footer">{SITE_IDENTITY.appName}</p>
           </div>
         </article>
 
@@ -137,15 +140,16 @@ export function LaunchShareCard({
               <div className="launch-share-card__orb launch-share-card__orb--rust" aria-hidden="true" />
 
               <div className="launch-share-card__content">
-                <p className="launch-share-card__eyebrow">pré-campanha</p>
+                <p className="launch-share-card__eyebrow">{SITE_IDENTITY.fullLabel}</p>
                 <h3 className="launch-share-card__title">
                   EU VOU
                   <span>NO LANÇAMENTO</span>
                 </h3>
                 <p className="launch-share-card__subtitle">
-                  Lançamento da pré-campanha + app Missão ÉLuta
+                  App Missão ÉLuta
                 </p>
-                <p className="launch-share-card__name">Alexandre VR Abandonada</p>
+                <p className="launch-share-card__name">{SITE_IDENTITY.publicName}</p>
+                <p className="launch-share-card__signature">{SITE_IDENTITY.signature}</p>
                 <div className="launch-share-card__event">
                   <p className="launch-share-card__event-label">DATA • LOCAL</p>
                   <p>{displayDate}</p>
@@ -153,9 +157,9 @@ export function LaunchShareCard({
                 </div>
                 <p className="launch-share-card__invite">Chame mais 3 pessoas.</p>
                 <p className="launch-share-card__short-link" aria-label="Link curto visual da página">
-                  landingmissao.vercel.app/lancamento
+                  {publicUrlLabel}
                 </p>
-                <p className="launch-share-card__footer">{signature}</p>
+                <p className="launch-share-card__footer">{SITE_IDENTITY.appName}</p>
               </div>
             </article>
           </div>

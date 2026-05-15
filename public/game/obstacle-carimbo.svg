@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>Carimbo da burocracia</title>
+  <rect width="128" height="128" rx="22" fill="#111216"/>
+  <path d="M51 18h26v25c0 10-5 16-13 16s-13-6-13-16Z" fill="#ffd100"/>
+  <path d="M35 63c0-16 13-29 29-29s29 13 29 29v18H35Z" fill="#272b33"/>
+  <rect x="22" y="83" width="84" height="24" rx="11" fill="#c0392b"/>
+  <path d="M38 95h52" stroke="#f6efe1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M35 74h58" stroke="#ffd100" stroke-width="4" stroke-dasharray="7 5" opacity=".55"/>
+</svg>

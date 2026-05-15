@@ -1,39 +1,46 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { launchEvent as e } from "@/content/launchEvent";
-import { buildLaunchUrl, buildSignupUrl } from "@/src/lib/shareLaunch";
+import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import {
+  buildAppBaseUrl,
+  buildAppMissoesUrl,
+  buildAppSignupUrl,
+} from "@/src/content/siteLinks";
+import { buildGamePath, buildLaunchUrl } from "@/src/lib/shareLaunch";
 import { LaunchActionStrip } from "@/src/components/launch/LaunchActionStrip";
 import { ShareButtons } from "./ShareButtons";
 import { ViralBlock } from "./ViralBlock";
 import { CopyInfoBtn } from "./CopyInfoBtn";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+const canonicalUrl = siteUrl ? `${siteUrl}/lancamento` : "/lancamento";
+
 export const metadata: Metadata = {
   title: {
-    absolute: "Lançamento Missão ÉLuta | Pré-campanha Alexandre VR Abandonada",
+    absolute: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
   },
-  description:
-    "Evento de lançamento da pré-campanha e do app Missão ÉLuta — Escutar, Cuidar e Organizar.",
-  alternates: { canonical: "/lancamento" },
+  description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
+  alternates: { canonical: canonicalUrl },
   openGraph: {
-    title: "Lançamento Missão ÉLuta | Pré-campanha Alexandre VR Abandonada",
-    description:
-      "Evento de lançamento da pré-campanha e do app Missão ÉLuta — Escutar, Cuidar e Organizar.",
+    title: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
     type: "website",
     locale: "pt_BR",
-    url: "/lancamento",
+    url: canonicalUrl,
     images: [
       {
         url: "/og-lancamento.svg",
         width: 1200,
         height: 630,
-        alt: "A organização popular agora cabe no bolso · Missão ÉLuta",
+        alt: SITE_IDENTITY.appFullLabel,
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "Lançamento Missão ÉLuta | Pré-campanha Alexandre VR Abandonada",
-    description:
-      "Evento de lançamento da pré-campanha e do app Missão ÉLuta — Escutar, Cuidar e Organizar.",
+    title: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
     images: ["/og-lancamento.svg"],
   },
 };
@@ -70,7 +77,11 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
   const utmCampaign = getSearchValue(resolvedSearchParams?.utm_campaign);
   const inviteReceived = Boolean(ref);
 
-  const signupUrl = buildSignupUrl({ ref });
+  const participateUrl = buildAppSignupUrl(ref);
+  const appUrl = buildAppBaseUrl(ref);
+  const missionUrl = buildAppMissoesUrl(ref);
+  const gameUrl = buildGamePath(ref, "landing", "game_teaser");
+  const gamePreviewSrc = "/game/lancamento-preview.svg";
 
   const cleanParams = new URLSearchParams();
   if (utmSource) cleanParams.set("utm_source", utmSource);
@@ -82,7 +93,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
     : "/lancamento";
   const sharePath = buildLaunchUrl(cleanBasePath, ref);
   const whatsAppSharePath = buildLaunchUrl(
-    "/lancamento?utm_source=whatsapp&utm_medium=share&utm_campaign=lancamento_app",
+    "/lancamento?utm_source=landing&utm_medium=share&utm_campaign=pre_campanha_alexandre_vr_abandonada",
     ref,
   );
 
@@ -96,38 +107,65 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
         <div className="lp-hero__grid-lines" aria-hidden="true" />
 
         <div className="container lp-hero__inner">
-          <div className="lp-hero__badge" aria-label="Iniciativa de">
-            <span className="lp-hero__badge-dot" aria-hidden="true" />
-            {e.badge}
+          <div className="lp-hero__content">
+            <div className="lp-hero__copy">
+              <div className="lp-hero__badge" aria-label="Iniciativa de">
+                <span className="lp-hero__badge-dot" aria-hidden="true" />
+                {e.badge}
+              </div>
+              {inviteReceived && (
+                <p className="lp-hero__invite" aria-label="Chegou por convite">
+                  Convite recebido
+                </p>
+              )}
+
+              <p className="lp-eyebrow">{e.eyebrow}</p>
+              <h1 className="lp-hero__title">{e.title}</h1>
+              <p className="lp-hero__subtitle">{e.subtitle}</p>
+
+              <div className="lp-hero__event-inline" role="status" aria-label="Resumo rápido de data, horário e local">
+                <span><strong>Data:</strong> {dataPending ? "Em breve" : e.dateLabel}</span>
+                <span><strong>Horário:</strong> {timePending ? "Em breve" : e.timeLabel}</span>
+                <span><strong>Local:</strong> {localPending ? "Volta Redonda" : e.locationLabel}</span>
+              </div>
+              <p className="lp-hero__event-note">
+                Entre para receber o aviso assim que a data e o local forem confirmados.
+              </p>
+
+              <p className="lp-hero__sig">
+                <span className="lp-hero__sig-line" aria-hidden="true" />
+                {e.signature}
+              </p>
+
+              <ShareButtons
+                participateUrl={participateUrl}
+                appUrl={appUrl}
+                missionUrl={missionUrl}
+                viralHref="#sec-viral"
+                whatsappNumber={e.whatsappNumber}
+              />
+            </div>
+
+            <div className="lp-hero__visual" aria-label="Retrato do candidato">
+              <div className="lp-hero__portrait-shell">
+                <div className="lp-hero__portrait-glow" aria-hidden="true" />
+                <div className="lp-hero__portrait-frame">
+                  <Image
+                    src="/alexandre-retrato.png"
+                    alt="Retrato de Alexandre VR Abandonada em composição editorial"
+                    width={1024}
+                    height={1024}
+                    priority
+                    className="lp-hero__portrait"
+                  />
+                </div>
+                <div className="lp-hero__portrait-note">
+                  <p className="lp-hero__portrait-name">{SITE_IDENTITY.publicName}</p>
+                  <p className="lp-hero__portrait-role">Rosto público da pré-campanha no App Missão ÉLuta.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          {inviteReceived && (
-            <p className="lp-hero__invite" aria-label="Chegou por convite">
-              Convite recebido
-            </p>
-          )}
-
-          <p className="lp-eyebrow">{e.eyebrow}</p>
-          <h1 className="lp-hero__title">{e.title}</h1>
-          <p className="lp-hero__subtitle">{e.subtitle}</p>
-
-          <div className="lp-hero__event-inline" role="status" aria-label="Resumo rápido de data, horário e local">
-            <span><strong>Data:</strong> {dataPending ? "A confirmar" : e.dateLabel}</span>
-            <span><strong>Horário:</strong> {timePending ? "A confirmar" : e.timeLabel}</span>
-            <span><strong>Local:</strong> {localPending ? "A confirmar" : e.locationLabel}</span>
-          </div>
-          <p className="lp-hero__event-note">
-            Entre para receber o aviso assim que a data e o local forem confirmados.
-          </p>
-
-          <p className="lp-hero__sig">
-            <span className="lp-hero__sig-line" aria-hidden="true" />
-            {e.signature}
-          </p>
-
-          <ShareButtons
-            signupUrl={signupUrl}
-            whatsappNumber={e.whatsappNumber}
-          />
 
           <div className="lp-hero__scroll" aria-hidden="true">↓</div>
         </div>
@@ -217,7 +255,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
             </dl>
             <div className="lp-ticket__actions">
               <CopyInfoBtn
-                info={`Missão ÉLuta — Lançamento\nData: ${e.dateLabel}\nHorário: ${e.timeLabel}\nLocal: ${e.locationLabel}${!addrPending ? `\nEndereço: ${e.addressLabel}` : ""}`}
+                info={`${SITE_IDENTITY.fullLabel}\n${SITE_IDENTITY.appFullLabel}\nData: ${e.dateLabel}\nHorário: ${e.timeLabel}\nLocal: ${e.locationLabel}${!addrPending ? `\nEndereço: ${e.addressLabel}` : ""}`}
               />
               {hasAddress && (
                 <a
@@ -235,7 +273,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 
           {(dataPending || timePending || localPending) && (
             <p className="lp-pending-notice" role="status">
-              📣 Dados em definição. Cadastre-se no app para receber aviso quando confirmados.
+              📣 Data e horário em breve. Em Volta Redonda, entre para receber o aviso assim que confirmar.
             </p>
           )}
         </div>
@@ -254,8 +292,8 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           <blockquote className="lp-why__quote">
             <p>{e.whyDifferent}</p>
           </blockquote>
-          <a href={signupUrl} className="btn btn-primary btn-lg">
-            Quero fazer parte
+          <a href={participateUrl} className="btn btn-primary btn-lg">
+            Participar da pré-campanha
           </a>
         </div>
       </section>
@@ -297,13 +335,86 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           </ol>
 
           <div className="lp-steps__cta">
-            <a href={signupUrl} className="btn btn-primary btn-lg">
-              Entrar no app
+            <a href={appUrl} className="btn btn-primary btn-lg">
+              Entrar no app Missão ÉLuta
             </a>
           </div>
 
           <div className="lp-action-strip-wrap">
-            <LaunchActionStrip signupUrl={signupUrl} shareHref="#sec-viral" />
+            <LaunchActionStrip
+              participateUrl={participateUrl}
+              appUrl={appUrl}
+              missionUrl={missionUrl}
+              viralHref="#sec-viral"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="lp-section" aria-labelledby="sec-depois-app">
+        <div className="container">
+          <header className="lp-sec-header">
+            <p className="lp-eyebrow">depois que você entra no app</p>
+            <h2 className="lp-sec-title" id="sec-depois-app">
+              Depois que você entra no app
+            </h2>
+          </header>
+
+          <ul className="lp-cards-grid lp-cards-grid--compact" role="list" aria-label="Passos depois da entrada no app">
+            {[
+              "Você cria seu cadastro",
+              "A coordenação aprova",
+              "Você recebe uma missão simples",
+              "Você registra sua ação",
+              "Você compartilha e chama mais gente",
+            ].map((step, index) => (
+              <li key={step} className="lp-card lp-card--soft">
+                <h3 className="lp-card__title lp-card__title--light">
+                  {index + 1}. {step}
+                </h3>
+              </li>
+            ))}
+          </ul>
+
+          <p className="lp-sec-lead" style={{ marginTop: "1rem" }}>
+            A landing chama. O app organiza. A missão transforma escuta em ação.
+          </p>
+        </div>
+      </section>
+
+      <section className="lp-section lp-section--dark" aria-labelledby="sec-jogo-relampago">
+        <div className="container">
+          <div className="lp-game-callout">
+            <div className="lp-game-callout__preview" aria-hidden="true">
+              <Image
+                src={gamePreviewSrc}
+                alt=""
+                width={960}
+                height={540}
+                className="lp-game-callout__thumb"
+              />
+            </div>
+            <div className="lp-game-callout__copy">
+              <p className="lp-eyebrow">jogue a missão relâmpago</p>
+              <h2 className="lp-sec-title" id="sec-jogo-relampago">
+                Corre da Burocracia
+              </h2>
+              <p className="lp-sec-lead">
+                Corra da burocracia, colete relatos e desbloqueie uma cidade mais organizada.
+              </p>
+              <p className="lp-game-callout__note">
+                A landing apresenta. O jogo mobiliza. O app organiza.
+              </p>
+            </div>
+
+            <div className="lp-game-callout__actions">
+              <a href={gameUrl} className="btn btn-primary btn-lg">
+                Jogar agora
+              </a>
+              <a href={appUrl} className="btn btn-secondary btn-lg">
+                Depois entrar no app
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -325,9 +436,10 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           </header>
 
           <ViralBlock
-            signature={e.signature}
             dateLabel={e.dateLabel}
             locationLabel={e.locationLabel}
+            publicUrlLabel={e.publicUrlLabel}
+            siteOrigin={siteUrl}
             sharePath={sharePath}
             whatsAppSharePath={whatsAppSharePath}
           />
@@ -337,7 +449,12 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       <section className="lp-section lp-section--tight" aria-labelledby="sec-acao-final">
         <div className="container">
           <h2 className="lp-sec-title sr-only" id="sec-acao-final">Ação rápida</h2>
-          <LaunchActionStrip signupUrl={signupUrl} shareHref="#sec-viral" />
+          <LaunchActionStrip
+            participateUrl={participateUrl}
+            appUrl={appUrl}
+            missionUrl={missionUrl}
+            viralHref="#sec-viral"
+          />
         </div>
       </section>
 
@@ -371,12 +488,12 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       <footer className="lp-footer" role="contentinfo">
         <div className="container lp-footer__inner">
           <div className="lp-footer__brand">
-            <p className="lp-footer__name">MISSÃO ÉLUTA</p>
-            <p className="lp-footer__sig">{e.signature}</p>
-            <p className="lp-footer__sub">Pré-campanha · Alexandre VR Abandonada</p>
+            <p className="lp-footer__name">{SITE_IDENTITY.appName}</p>
+            <p className="lp-footer__sig">{SITE_IDENTITY.signature}</p>
+            <p className="lp-footer__sub">{SITE_IDENTITY.fullLabel}</p>
           </div>
-          <a href={signupUrl} className="btn btn-primary" aria-label="Entrar no app Missão ÉLuta">
-            Entrar no app
+          <a href={participateUrl} className="btn btn-primary" aria-label="Participar da pré-campanha">
+            Participar da pré-campanha
           </a>
           <p className="lp-footer__legal">
             Esta página é de organização de pré-campanha. Não constitui pedido de voto
@@ -399,12 +516,14 @@ function EventField({
 }: {
   icon: string; label: string; value: string; pending: boolean;
 }) {
+  const pendingLabel = label === "Local" ? "Volta Redonda" : "Em breve";
+
   return (
     <div className={`lp-ticket__field${pending ? " lp-ticket__field--pending" : ""}`}>
       <span className="lp-ticket__field-icon" aria-hidden="true">{icon}</span>
       <div>
         <dt className="lp-ticket__field-label">{label}</dt>
-        <dd className="lp-ticket__field-value">{pending ? "A confirmar" : value}</dd>
+        <dd className="lp-ticket__field-value">{pending ? pendingLabel : value}</dd>
       </div>
     </div>
   );
@@ -470,7 +589,87 @@ const css = `
   mask-image: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 78%);
 }
 .lp-hero__inner {
-  position: relative; z-index: 1; max-width: 840px;
+  position: relative; z-index: 1; max-width: 1180px;
+}
+.lp-hero__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 2rem;
+  align-items: center;
+}
+.lp-hero__copy {
+  min-width: 0;
+}
+.lp-hero__visual {
+  display: flex;
+  justify-content: flex-end;
+}
+.lp-hero__portrait-shell {
+  position: relative;
+  width: min(100%, 430px);
+}
+.lp-hero__portrait-glow {
+  position: absolute;
+  inset: 7% -4% -7% 18%;
+  background:
+    radial-gradient(circle at 35% 42%, rgba(255,209,0,0.2), transparent 46%),
+    radial-gradient(circle at 72% 28%, rgba(192,57,43,0.18), transparent 42%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+.lp-hero__portrait-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px 28px 120px 28px;
+  border: 1px solid rgba(255, 209, 0, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255,209,0,0.08), rgba(255,255,255,0.01)),
+    rgba(10, 10, 12, 0.92);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  aspect-ratio: 0.9 / 0.94;
+}
+.lp-hero__portrait-frame::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 46%;
+  background: linear-gradient(180deg, rgba(11,11,14,0), rgba(11,11,14,0.72) 28%, rgba(11,11,14,0.95) 62%, rgba(11,11,14,1));
+  pointer-events: none;
+}
+.lp-hero__portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 9%;
+  transform: scale(1.34);
+  filter: saturate(0.92) contrast(1.04) brightness(0.96);
+}
+.lp-hero__portrait-note {
+  position: absolute;
+  left: 1.15rem;
+  right: 1.15rem;
+  bottom: 1.15rem;
+  z-index: 1;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(255, 209, 0, 0.16);
+  border-radius: 14px;
+  background: rgba(11, 11, 14, 0.72);
+  backdrop-filter: blur(10px);
+}
+.lp-hero__portrait-name {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--yellow);
+}
+.lp-hero__portrait-role {
+  margin: 0.25rem 0 0;
+  font-size: 0.83rem;
+  line-height: 1.45;
+  color: rgba(242, 242, 242, 0.72);
 }
 .lp-hero__badge {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -752,6 +951,55 @@ const css = `
 .lp-step__desc { font-size: 0.87rem; color: var(--muted); margin: 0; line-height: 1.55; }
 .lp-steps__cta { text-align: center; }
 .lp-action-strip-wrap { margin-top: 1.8rem; }
+.lp-game-callout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.92fr) minmax(0, 1.08fr) minmax(220px, 0.72fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1.1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,209,0,0.22);
+  background:
+    radial-gradient(circle at 84% 22%, rgba(255,209,0,0.12), transparent 28%),
+    linear-gradient(145deg, rgba(255,209,0,0.06), rgba(255,255,255,0.02));
+  box-shadow:
+    0 24px 56px rgba(0,0,0,0.28),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+  overflow: hidden;
+}
+.lp-game-callout__preview {
+  min-height: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255,209,0,0.16);
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.36)),
+    rgba(8,9,12,0.96);
+  overflow: hidden;
+}
+.lp-game-callout__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lp-game-callout__note {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: var(--yellow);
+  letter-spacing: 0.03em;
+}
+.lp-game-callout__copy {
+  min-width: 0;
+}
+.lp-game-callout__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+.lp-game-callout__actions .btn {
+  justify-content: center;
+}
 
 .launch-action-strip {
   border: 1px solid var(--border-accent);
@@ -879,6 +1127,13 @@ const css = `
   font-size: clamp(1.1rem, 4vw, 1.7rem);
   color: var(--yellow);
   letter-spacing: 0.04em;
+}
+.launch-share-card__signature {
+  margin: 0.25rem 0 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.84);
 }
 .launch-share-card__event {
   margin-top: 0.7rem;
@@ -1043,10 +1298,25 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 860px) {
+  .lp-hero__content {
+    grid-template-columns: 1fr;
+  }
+  .lp-hero__visual {
+    justify-content: flex-start;
+  }
+  .lp-hero__portrait-shell {
+    width: min(100%, 460px);
+  }
   .lp-cards-grid { grid-template-columns: 1fr; }
   .launch-action-strip { flex-direction: column; align-items: flex-start; }
   .launch-action-strip__actions { width: 100%; }
   .launch-action-strip__actions .btn { flex: 1 1 48%; justify-content: center; }
+  .lp-game-callout {
+    grid-template-columns: 1fr;
+  }
+  .lp-game-callout__preview {
+    min-height: 180px;
+  }
   .lp-steps { grid-template-columns: 1fr; gap: 0; }
   .lp-steps::before { display: none; }
   .lp-step {
@@ -1063,6 +1333,29 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 
 @media (max-width: 600px) {
   .lp-hero { min-height: auto; padding-block: 3.7rem 2.6rem; }
+  .lp-hero__content {
+    gap: 1.35rem;
+  }
+  .lp-hero__portrait-frame {
+    border-radius: 22px 22px 84px 22px;
+    aspect-ratio: 1 / 0.92;
+  }
+  .lp-hero__portrait {
+    object-position: center 8%;
+    transform: scale(1.18);
+  }
+  .lp-hero__portrait-note {
+    left: 0.85rem;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    padding: 0.72rem 0.8rem;
+  }
+  .lp-hero__portrait-name {
+    font-size: 1rem;
+  }
+  .lp-hero__portrait-role {
+    font-size: 0.78rem;
+  }
   .lp-hero__event-inline { gap: 0.45rem; }
   .lp-hero__event-inline span { width: 100%; justify-content: space-between; }
   .hero-ctas { flex-direction: column; align-items: stretch; }

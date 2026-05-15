@@ -1,24 +1,31 @@
 interface LaunchActionStripProps {
-  signupUrl: string;
-  shareHref?: string;
+  participateUrl: string;
+  appUrl: string;
+  missionUrl: string;
+  viralHref?: string;
 }
 
 export function LaunchActionStrip({
-  signupUrl,
-  shareHref = "#sec-viral",
+  participateUrl,
+  appUrl,
+  missionUrl,
+  viralHref = "#sec-viral",
 }: LaunchActionStripProps) {
   return (
     <div className="launch-action-strip" role="region" aria-label="Ações rápidas de participação">
-      <p className="launch-action-strip__text">Vai ser o primeiro passo da organização.</p>
+      <p className="launch-action-strip__text">A landing chama. O app organiza. A missão transforma escuta em ação.</p>
       <div className="launch-action-strip__actions" role="group" aria-label="Botões de ação rápida">
-        <a href={signupUrl} className="btn btn-primary">
-          Quero participar
+        <a href={participateUrl} className="btn btn-primary">
+          Participar da pré-campanha
         </a>
-        <a href={signupUrl} className="btn btn-secondary">
-          Entrar no app
+        <a href={appUrl} className="btn btn-secondary">
+          Entrar no app Missão ÉLuta
         </a>
-        <a href={shareHref} className="btn btn-ghost" aria-label="Ir para compartilhar convite">
-          Compartilhar
+        <a href={missionUrl} className="btn btn-ghost">
+          Receber minha primeira missão
+        </a>
+        <a href={viralHref} className="btn btn-ghost" aria-label="Ir para compartilhar convite">
+          Chamar mais 3 pessoas
         </a>
       </div>
     </div>

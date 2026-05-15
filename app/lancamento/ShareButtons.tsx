@@ -4,28 +4,41 @@
  */
 
 interface HeroCTAsProps {
-  signupUrl: string;
+  participateUrl: string;
+  appUrl: string;
+  missionUrl: string;
+  viralHref: string;
   whatsappNumber: string;
 }
 
-export function ShareButtons({ signupUrl, whatsappNumber }: HeroCTAsProps) {
+export function ShareButtons({
+  participateUrl,
+  appUrl,
+  missionUrl,
+  viralHref,
+  whatsappNumber,
+}: HeroCTAsProps) {
   const waUrl = whatsappNumber
     ? `https://wa.me/${whatsappNumber}`
     : null;
 
   return (
     <div className="hero-ctas" role="group" aria-label="Ações principais">
-      <a href={signupUrl} className="btn btn-primary btn-lg hero-cta-main">
+      <a href={participateUrl} className="btn btn-primary btn-lg hero-cta-main">
         <span aria-hidden="true">✊</span>
-        Quero participar
+        Participar da pré-campanha
       </a>
 
-      <a href="#como-funciona" className="btn btn-secondary btn-lg">
-        Conhecer o app
+      <a href={appUrl} className="btn btn-secondary btn-lg">
+        Entrar no app Missão ÉLuta
+      </a>
+
+      <a href={missionUrl} className="btn btn-ghost btn-lg">
+        Receber minha primeira missão
       </a>
 
       <a
-        href="#sec-viral"
+        href={viralHref}
         className="btn btn-ghost btn-lg"
         aria-label="Ir para a seção de compartilhamento e chamar mais 3 pessoas"
       >

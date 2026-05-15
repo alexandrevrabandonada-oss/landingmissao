@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>Personagem correndo</title>
+  <defs>
+    <linearGradient id="shirt" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#23252c"/>
+      <stop offset="1" stop-color="#08090c"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f0c9a4"/>
+      <stop offset="1" stop-color="#d39d7d"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="20" fill="#0d0e12"/>
+  <ellipse cx="61" cy="112" rx="31" ry="8" fill="#000" opacity=".25"/>
+  <path d="M58 15c8-8 23-7 30 0 4 4 4 8 3 13-6-4-12-6-18-4-6 1-9 4-11 8-5-1-10-8-4-17Z" fill="#15161a"/>
+  <path d="M53 27c6-6 18-8 28-3 7 3 10 10 9 18-2 12-12 23-26 22-11-1-18-12-17-24 0-5 2-9 6-13Z" fill="url(#skin)"/>
+  <path d="M50 49c6 8 18 11 30 9-2 8-6 13-13 16-8 3-17 1-23-5-5-5-6-11-4-20Z" fill="#261917"/>
+  <path d="M52 39c6-4 18-4 28 4-1-8-4-12-9-15-7-4-16-2-22 2-4 3-6 5-8 11 3-1 7-2 11-2Z" fill="#111217"/>
+  <path d="M58 60h16l3 17H56Z" fill="#dfd8cd"/>
+  <path d="M50 64c6-8 19-10 28-6 6 2 9 7 11 12l7 19-19 3-6-18-8 1-2 16-18-1 1-19Z" fill="url(#shirt)"/>
+  <path d="M57 66h13" stroke="#ffd100" stroke-width="3" stroke-linecap="round"/>
+  <path d="M47 74l-6 17 10 3 7-16-11-4Z" fill="url(#skin)"/>
+  <path d="M83 70l11 14-9 7-11-12 9-9Z" fill="url(#skin)"/>
+  <path d="M47 91l16 6-4 10-18-5 6-11Z" fill="#c0392b"/>
+  <path d="M89 85l12-9 6 9-14 10-4-10Z" fill="#c0392b"/>
+  <path d="M55 75c-2 8-6 17-11 29h14l11-22-14-7Z" fill="#1f2330"/>
+  <path d="M72 75l13 8 16 21H85L72 90V75Z" fill="#1f2330"/>
+  <path d="M42 103h16l2 7H38Z" fill="#15161a"/>
+  <path d="M84 103h18l3 7H81Z" fill="#15161a"/>
+  <path d="M56 41h9M70 40h9" stroke="#7c8591" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M59 53c4 2 9 2 14 0" stroke="#5c2b1f" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" preserveAspectRatio="none">
+  <g fill="#111318">
+    <rect x="620" y="186" width="58" height="188"/>
+    <rect x="687" y="220" width="48" height="154"/>
+    <rect x="742" y="201" width="87" height="173"/>
+    <rect x="839" y="248" width="36" height="126"/>
+    <rect x="551" y="232" width="53" height="142"/>
+  </g>
+  <g fill="#2f343d">
+    <rect x="571" y="197" width="11" height="28"/>
+    <rect x="596" y="177" width="14" height="34"/>
+    <rect x="648" y="161" width="12" height="32"/>
+    <rect x="709" y="183" width="11" height="29"/>
+    <rect x="787" y="168" width="13" height="37"/>
+  </g>
+  <g fill="#ffd100" opacity=".28">
+    <rect x="636" y="276" width="10" height="13"/>
+    <rect x="654" y="301" width="10" height="13"/>
+    <rect x="705" y="288" width="9" height="12"/>
+    <rect x="770" y="273" width="12" height="13"/>
+    <rect x="793" y="304" width="12" height="13"/>
+    <rect x="854" y="297" width="9" height="13"/>
+  </g>
+  <path d="M556 232h46l16 25h-73Z" fill="#171920"/>
+  <path d="M619 186h58l15 16h-74Z" fill="#171920"/>
+  <path d="M742 201h87l18 24h-111Z" fill="#171920"/>
+</svg>
