@@ -166,9 +166,9 @@ function createObstacle(id: number): ObstacleState {
       id,
       type,
       x: GAME_WIDTH + 40,
-      y: GROUND_Y - 124,
-      w: 82,
-      h: 124,
+      y: GROUND_Y - 104,
+      w: 74,
+      h: 104,
     };
   }
 
@@ -225,6 +225,10 @@ function getCityLabel(progress: number) {
 }
 
 function getOutcomeTitle(snapshot: Snapshot) {
+  if (snapshot.status === "lost" && snapshot.total >= 8) {
+    return "Cidade em Movimento";
+  }
+
   if (snapshot.easterEggsFound >= 4) {
     return "Guardião da Memória";
   }
@@ -622,7 +626,7 @@ export default function GameExperience({
         }
 
         if (inputRef.current.jumpPressed && player.onGround) {
-          player.vy = -585;
+          player.vy = -615;
           player.onGround = false;
         }
 
@@ -701,7 +705,7 @@ export default function GameExperience({
             obstacle.type === "processinho"
               ? { x: obstacle.x + 18, y: obstacle.y + 16, w: obstacle.w - 36, h: obstacle.h - 32 }
               : obstacle.type === "muralha"
-                ? { x: obstacle.x + 14, y: obstacle.y + 12, w: obstacle.w - 28, h: obstacle.h - 20 }
+                ? { x: obstacle.x + 18, y: obstacle.y + 18, w: obstacle.w - 36, h: obstacle.h - 34 }
                 : { x: obstacle.x + 14, y: obstacle.y + 12, w: obstacle.w - 28, h: obstacle.h - 18 };
 
           if (intersects(playerHitbox, hitbox)) {
@@ -765,6 +769,14 @@ export default function GameExperience({
   }, [assets, prefersReducedMotion, gameStarted, runId]);
 
   const outcomeTitle = getOutcomeTitle(snapshot);
+  const didWin = snapshot.status === "won";
+  const finishTitle = didWin
+    ? "Você reuniu relatos e ajudou a organizar uma cidade melhor."
+    : "Você travou numa barreira, mas sua tentativa ainda ajuda a puxar mais gente para a missão.";
+  const shareLead = didWin
+    ? `Resultado · ${snapshot.total} relatos · ${snapshot.obstaclesDodged} obstáculos desviados · ${snapshot.easterEggsFound} easter eggs`
+    : `Tentativa compartilhável · ${snapshot.total} relatos · ${snapshot.obstaclesDodged} obstáculos desviados · ${snapshot.easterEggsFound} easter eggs`;
+  const shareButtonLabel = didWin ? "Compartilhar resultado" : "Compartilhar tentativa";
   const shareUrlAbsolute = toAbsoluteUrl(shareUrl);
   const shareMessage = buildGameShareMessage({
     link: shareUrlAbsolute,
@@ -1102,20 +1114,18 @@ export default function GameExperience({
             <div className="game-finish">
               <div className="game-finish__panel">
                 <p className="game-finish__eyebrow">{outcomeTitle}</p>
-                <h3 className="game-finish__title">
-                  Você reuniu relatos e ajudou a organizar uma cidade melhor.
-                </h3>
+                <h3 className="game-finish__title">{finishTitle}</h3>
                 <p className="game-finish__text">{SITE_IDENTITY.fullLabel}</p>
                 <p className="game-finish__text">{SITE_IDENTITY.appFullLabel}</p>
 
                 <div className="game-share-card" aria-label="Card visual compartilhável do resultado">
-                  <p className="game-share-card__eyebrow">Eu joguei a Missão Relâmpago</p>
+                  <p className="game-share-card__eyebrow">
+                    {didWin ? "Eu joguei a Missão Relâmpago" : "Eu joguei a Missão Relâmpago e quero puxar mais gente"}
+                  </p>
                   <h4 className="game-share-card__title">{outcomeTitle}</h4>
                   <p className="game-share-card__meta">Pré-campanha Alexandre VR Abandonada</p>
                   <p className="game-share-card__meta">Missão ÉLuta — Escutar • Cuidar • Organizar</p>
-                  <p className="game-share-card__lead">
-                    Resultado · {snapshot.total} relatos · {snapshot.obstaclesDodged} obstáculos desviados · {snapshot.easterEggsFound} easter eggs
-                  </p>
+                  <p className="game-share-card__lead">{shareLead}</p>
                   <div className="game-share-card__grid">
                     <span>Relatos coletados {snapshot.total}</span>
                     <span>Obstáculos desviados {snapshot.obstaclesDodged}</span>
@@ -1133,9 +1143,7 @@ export default function GameExperience({
                   <span>Easter eggs: {snapshot.easterEggsFound}/6</span>
                 </div>
                 <div className="game-finish__actions">
-                  <button type="button" className="btn btn-primary" onClick={handleShare}>
-                    Compartilhar resultado
-                  </button>
+                  <button type="button" className="btn btn-primary" onClick={handleShare}>{shareButtonLabel}</button>
                   <a href={appUrl} className="btn btn-secondary" onClick={() => handleAppCtaClick("app")}>Entrar no app</a>
                   <a href={signupUrl} className="btn btn-ghost" onClick={() => handleAppCtaClick("mission")}>Receber primeira missão</a>
                   <button type="button" className="btn btn-ghost" onClick={() => { handleAppCtaClick("share3"); void handleNetworkShare("whatsapp"); }}>
