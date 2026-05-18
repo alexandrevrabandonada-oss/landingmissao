@@ -1,0 +1,12 @@
+<svg width="124" height="164" viewBox="0 0 124 164" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M58 148H68V162H58V148Z" fill="#2A2B30"/>
+  <path d="M61 28L102 48V118L61 136L20 118V48L61 28Z" fill="#202127" stroke="#A77049" stroke-width="4"/>
+  <path d="M28 58H94V76H28V58Z" fill="#C64D34"/>
+  <path d="M28 84H94V102H28V84Z" fill="#F1ECE1"/>
+  <path d="M34 71H88" stroke="#F1ECE1" stroke-width="4" stroke-linecap="round" stroke-dasharray="6 6"/>
+  <path d="M35 96H87" stroke="#1A1B20" stroke-width="4" stroke-linecap="round" stroke-dasharray="5 5"/>
+  <text x="61" y="70" text-anchor="middle" fill="#F4F1E4" font-family="Arial, sans-serif" font-size="11" font-weight="700">NINGUÉM</text>
+  <text x="61" y="97" text-anchor="middle" fill="#1A1B20" font-family="Arial, sans-serif" font-size="11" font-weight="700">ESCUTA</text>
+  <path d="M18 40L26 34" stroke="#FFD100" stroke-width="4" stroke-linecap="round"/>
+  <path d="M96 132L104 126" stroke="#FFD100" stroke-width="4" stroke-linecap="round"/>
+</svg>

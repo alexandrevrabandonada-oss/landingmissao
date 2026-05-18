@@ -19,6 +19,7 @@ interface BuildTrackedPathParams {
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
+  utmContent?: string;
 }
 
 export function buildTrackedPath({
@@ -27,6 +28,7 @@ export function buildTrackedPath({
   utmSource,
   utmMedium,
   utmCampaign = defaultCampaign,
+  utmContent,
 }: BuildTrackedPathParams) {
   const parsedUrl = new URL(basePath, "https://landing.local");
 
@@ -48,6 +50,10 @@ export function buildTrackedPath({
     parsedUrl.searchParams.set("utm_campaign", utmCampaign);
   }
 
+  if (utmContent) {
+    parsedUrl.searchParams.set("utm_content", utmContent);
+  }
+
   return toOutputUrl(basePath, parsedUrl);
 }
 
@@ -57,6 +63,21 @@ export function buildGamePath(ref?: string | null, utmSource = "landing", utmMed
     ref,
     utmSource,
     utmMedium,
+  });
+}
+
+export function buildRunnerGamePath(
+  ref?: string | null,
+  utmSource = "landing",
+  utmMedium = "game_runner",
+  utmContent = "runner_rua",
+) {
+  return buildTrackedPath({
+    basePath: "/jogo/rua",
+    ref,
+    utmSource,
+    utmMedium,
+    utmContent,
   });
 }
 
@@ -93,6 +114,42 @@ export function buildGameShareMessage({
     metricLine,
     "Escutar • Cuidar • Organizar.",
     `Vem jogar: ${link}`,
+  ].filter(Boolean).join("\n\n");
+}
+
+interface BuildRunnerShareMessageParams {
+  link: string;
+  title?: string;
+  relatos?: number;
+  obstaculos?: number;
+  easterEggs?: number;
+}
+
+export function buildRunnerShareMessage({
+  link,
+  title,
+  relatos,
+  obstaculos,
+  easterEggs,
+}: BuildRunnerShareMessageParams) {
+  const metricLine =
+    typeof relatos === "number" || typeof obstaculos === "number" || typeof easterEggs === "number"
+      ? [
+          typeof relatos === "number" ? `${relatos} relatos` : null,
+          typeof obstaculos === "number" ? `${obstaculos} obstáculos desviados` : null,
+          typeof easterEggs === "number" ? `${easterEggs} easter eggs` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : "";
+
+  return [
+    title ? `${title}.` : "Eu joguei Rua em Movimento.",
+    "Joguei Rua em Movimento, a missão relâmpago da pré-campanha Alexandre VR Abandonada.",
+    "Coletei relatos, desviei da burocracia e ajudei a organizar uma cidade melhor.",
+    metricLine,
+    "Missão ÉLuta — Escutar • Cuidar • Organizar.",
+    `Jogue aqui: ${link}`,
   ].filter(Boolean).join("\n\n");
 }
 

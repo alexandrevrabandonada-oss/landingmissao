@@ -7,7 +7,7 @@ import {
   buildAppMissoesUrl,
   buildAppSignupUrl,
 } from "@/src/content/siteLinks";
-import { buildGamePath, buildLaunchUrl } from "@/src/lib/shareLaunch";
+import { buildGamePath, buildLaunchUrl, buildRunnerGamePath } from "@/src/lib/shareLaunch";
 import { LaunchActionStrip } from "@/src/components/launch/LaunchActionStrip";
 import { ShareButtons } from "./ShareButtons";
 import { ViralBlock } from "./ViralBlock";
@@ -81,7 +81,9 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
   const appUrl = buildAppBaseUrl(ref);
   const missionUrl = buildAppMissoesUrl(ref);
   const gameUrl = buildGamePath(ref, "landing", "game_teaser");
+  const runnerGameUrl = buildRunnerGamePath(ref, "landing", "game_teaser");
   const gamePreviewSrc = "/game/lancamento-preview.svg";
+  const runnerPreviewSrc = "/game-runner/lancamento-preview.svg";
 
   const cleanParams = new URLSearchParams();
   if (utmSource) cleanParams.set("utm_source", utmSource);
@@ -384,36 +386,69 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 
       <section className="lp-section lp-section--dark" aria-labelledby="sec-jogo-relampago">
         <div className="container">
-          <div className="lp-game-callout">
-            <div className="lp-game-callout__preview" aria-hidden="true">
-              <Image
-                src={gamePreviewSrc}
-                alt=""
-                width={960}
-                height={540}
-                className="lp-game-callout__thumb"
-              />
-            </div>
-            <div className="lp-game-callout__copy">
-              <p className="lp-eyebrow">jogue a missão relâmpago</p>
+          <div className="lp-game-mission-grid">
+            <div className="lp-sec-header lp-sec-header--tight">
+              <p className="lp-eyebrow">escolha sua missão relâmpago</p>
               <h2 className="lp-sec-title" id="sec-jogo-relampago">
-                Corre da Burocracia
+                Duas formas de puxar a rua para a organização
               </h2>
               <p className="lp-sec-lead">
                 Corra da burocracia, colete relatos e desbloqueie uma cidade mais organizada.
               </p>
-              <p className="lp-game-callout__note">
-                A landing apresenta. O jogo mobiliza. O app organiza.
-              </p>
             </div>
 
-            <div className="lp-game-callout__actions">
-              <a href={gameUrl} className="btn btn-primary btn-lg">
-                Jogar agora
-              </a>
-              <a href={appUrl} className="btn btn-secondary btn-lg">
-                Depois entrar no app
-              </a>
+            <div className="lp-game-callout lp-game-callout--stack">
+              <div className="lp-game-mission-card">
+                <div className="lp-game-callout__preview" aria-hidden="true">
+                  <Image
+                    src={gamePreviewSrc}
+                    alt=""
+                    width={960}
+                    height={540}
+                    className="lp-game-callout__thumb"
+                  />
+                </div>
+                <div className="lp-game-callout__copy">
+                  <p className="lp-eyebrow">plataforma</p>
+                  <h3 className="lp-game-card__title">Corre da Burocracia</h3>
+                  <p className="lp-game-card__text">
+                    Modo Retrô — plataforma 2D autoral.
+                  </p>
+                </div>
+                <div className="lp-game-callout__actions">
+                  <a href={gameUrl} className="btn btn-secondary btn-lg">
+                    Jogar agora
+                  </a>
+                </div>
+              </div>
+
+              <div className="lp-game-mission-card lp-game-mission-card--highlight">
+                <div className="lp-game-callout__preview" aria-hidden="true">
+                  <Image
+                    src={runnerPreviewSrc}
+                    alt=""
+                    width={960}
+                    height={540}
+                    className="lp-game-callout__thumb"
+                  />
+                </div>
+                <div className="lp-game-callout__copy">
+                  <p className="lp-game-card__badge">Melhor no celular</p>
+                  <p className="lp-eyebrow">runner mobile</p>
+                  <h3 className="lp-game-card__title">Rua em Movimento</h3>
+                  <p className="lp-game-card__text">
+                    Modo Rua — rápido, vertical e feito para jogar com uma mão.
+                  </p>
+                </div>
+                <div className="lp-game-callout__actions">
+                  <a href={runnerGameUrl} className="btn btn-primary btn-lg">
+                    Jogar no celular
+                  </a>
+                  <a href={appUrl} className="btn btn-secondary btn-lg">
+                    Depois entrar no app
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -967,6 +1002,51 @@ const css = `
     inset 0 0 0 1px rgba(255,255,255,0.03);
   overflow: hidden;
 }
+.lp-game-callout--stack {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+.lp-game-mission-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.lp-game-mission-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+.lp-game-mission-card--highlight {
+  border-left: 1px solid rgba(255,209,0,0.16);
+  padding-left: 1rem;
+}
+.lp-game-card__title {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  line-height: 1.02;
+  color: var(--text);
+}
+.lp-game-card__badge {
+  width: fit-content;
+  margin: 0 0 0.45rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,209,0,0.26);
+  background: rgba(255,209,0,0.12);
+  color: var(--yellow);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lp-game-card__text {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
 .lp-game-callout__preview {
   min-height: 100%;
   border-radius: 16px;
@@ -1313,6 +1393,15 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
   .launch-action-strip__actions .btn { flex: 1 1 48%; justify-content: center; }
   .lp-game-callout {
     grid-template-columns: 1fr;
+  }
+  .lp-game-callout--stack {
+    grid-template-columns: 1fr;
+  }
+  .lp-game-mission-card--highlight {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid rgba(255,209,0,0.16);
+    padding-top: 1rem;
   }
   .lp-game-callout__preview {
     min-height: 180px;

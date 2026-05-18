@@ -278,6 +278,7 @@ export default function GameExperience({
   exitUrl,
 }: GameExperienceProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const finishPanelRef = useRef<HTMLDivElement | null>(null);
   const finishTrackedRef = useRef<string>("");
   const inputRef = useRef<InputState>({
     left: false,
@@ -917,6 +918,18 @@ export default function GameExperience({
     }
   }, [snapshot.status, snapshot.total, snapshot.obstaclesDodged, snapshot.easterEggsFound]);
 
+  useEffect(() => {
+    if (snapshot.status === "playing") {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      finishPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+
+    return () => window.clearTimeout(timeout);
+  }, [snapshot.status]);
+
   const staticShareText = shareMessage;
   const progressPercent = Math.round(snapshot.progress * 100);
 
@@ -1043,75 +1056,8 @@ export default function GameExperience({
             )}
           </div>
 
-          <div className="game-instructions">
-            <p>
-              PC: esquerda/direita ou A/D para mover, espaço para pular. Mobile: use os botões fixos abaixo.
-            </p>
-          </div>
-
-          <div className="game-toolbar">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => setShowEasterEggs((value) => !value)}
-            >
-              Ver easter eggs encontrados
-            </button>
-            <span className="game-toolbar__count">{discoveredEggs.length} de {EASTER_EGGS.length} vistos</span>
-          </div>
-
-          {showEasterEggs && (
-            <div className="game-eggs-panel">
-              {EASTER_EGGS.map((egg) => {
-                const found = discoveredEggs.includes(egg.key);
-                return (
-                  <div
-                    key={egg.key}
-                    className={`game-eggs-panel__item${found ? " game-eggs-panel__item--found" : ""}`}
-                  >
-                    <strong>{egg.label}</strong>
-                    <span>{found ? "Encontrado nesta corrida" : "Ainda não apareceu para você"}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="game-controls" aria-label="Controles mobile">
-            <button
-              type="button"
-              className="game-controls__btn"
-              onPointerDown={() => handleButtonPress("left", true)}
-              onPointerUp={() => handleButtonPress("left", false)}
-              onPointerCancel={() => handleButtonPress("left", false)}
-              onPointerLeave={() => handleButtonPress("left", false)}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="game-controls__btn"
-              onPointerDown={() => handleButtonPress("right", true)}
-              onPointerUp={() => handleButtonPress("right", false)}
-              onPointerCancel={() => handleButtonPress("right", false)}
-              onPointerLeave={() => handleButtonPress("right", false)}
-            >
-              →
-            </button>
-            <button
-              type="button"
-              className="game-controls__btn game-controls__btn--jump"
-              onPointerDown={() => handleButtonPress("jumpPressed", true)}
-              onPointerUp={() => handleButtonPress("jumpPressed", false)}
-              onPointerCancel={() => handleButtonPress("jumpPressed", false)}
-              onPointerLeave={() => handleButtonPress("jumpPressed", false)}
-            >
-              Pular
-            </button>
-          </div>
-
           {snapshot.status !== "playing" && (
-            <div className="game-finish">
+            <div className="game-finish" ref={finishPanelRef}>
               <div className="game-finish__panel">
                 <p className="game-finish__eyebrow">{outcomeTitle}</p>
                 <h3 className="game-finish__title">{finishTitle}</h3>
@@ -1166,6 +1112,75 @@ export default function GameExperience({
                 </div>
                 <p className="game-share-feedback">{shareFeedback}</p>
               </div>
+            </div>
+          )}
+
+          <div className="game-instructions">
+            <p>
+              PC: esquerda/direita ou A/D para mover, espaço para pular. Mobile: use os botões fixos abaixo.
+            </p>
+          </div>
+
+          <div className="game-toolbar">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => setShowEasterEggs((value) => !value)}
+            >
+              Ver easter eggs encontrados
+            </button>
+            <span className="game-toolbar__count">{discoveredEggs.length} de {EASTER_EGGS.length} vistos</span>
+          </div>
+
+          {showEasterEggs && (
+            <div className="game-eggs-panel">
+              {EASTER_EGGS.map((egg) => {
+                const found = discoveredEggs.includes(egg.key);
+                return (
+                  <div
+                    key={egg.key}
+                    className={`game-eggs-panel__item${found ? " game-eggs-panel__item--found" : ""}`}
+                  >
+                    <strong>{egg.label}</strong>
+                    <span>{found ? "Encontrado nesta corrida" : "Ainda não apareceu para você"}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {snapshot.status === "playing" && (
+            <div className="game-controls" aria-label="Controles mobile">
+              <button
+                type="button"
+                className="game-controls__btn"
+                onPointerDown={() => handleButtonPress("left", true)}
+                onPointerUp={() => handleButtonPress("left", false)}
+                onPointerCancel={() => handleButtonPress("left", false)}
+                onPointerLeave={() => handleButtonPress("left", false)}
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                className="game-controls__btn"
+                onPointerDown={() => handleButtonPress("right", true)}
+                onPointerUp={() => handleButtonPress("right", false)}
+                onPointerCancel={() => handleButtonPress("right", false)}
+                onPointerLeave={() => handleButtonPress("right", false)}
+              >
+                →
+              </button>
+              <button
+                type="button"
+                className="game-controls__btn game-controls__btn--jump"
+                onPointerDown={() => handleButtonPress("jumpPressed", true)}
+                onPointerUp={() => handleButtonPress("jumpPressed", false)}
+                onPointerCancel={() => handleButtonPress("jumpPressed", false)}
+                onPointerLeave={() => handleButtonPress("jumpPressed", false)}
+              >
+                Pular
+              </button>
             </div>
           )}
         </>
