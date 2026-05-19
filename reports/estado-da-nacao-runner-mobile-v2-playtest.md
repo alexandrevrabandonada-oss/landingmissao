@@ -109,6 +109,12 @@ Campos incluídos:
 
 - `npm run verify` -> OK
 
+## Publicação
+
+- branch publicada: `codex/runner-mobile-v2-playtest`
+- commit publicado: `f7f246d`
+- status do pacote: pronto para playtest manual no branch remoto
+
 ### Checks adicionais
 
 - `ref=TESTE123` continua presente no fluxo do runner

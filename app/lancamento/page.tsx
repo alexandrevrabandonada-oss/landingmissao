@@ -1016,6 +1016,8 @@ const css = `
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
+  position: relative;
+  z-index: 0;
 }
 .lp-game-mission-card--highlight {
   border-left: 1px solid rgba(255,209,0,0.16);
@@ -1048,7 +1050,11 @@ const css = `
   line-height: 1.6;
 }
 .lp-game-callout__preview {
-  min-height: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  z-index: 0;
+  flex: 0 0 auto;
   border-radius: 16px;
   border: 1px solid rgba(255,209,0,0.16);
   background:
@@ -1059,7 +1065,8 @@ const css = `
 .lp-game-callout__thumb {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 .lp-game-callout__note {
@@ -1070,12 +1077,16 @@ const css = `
 }
 .lp-game-callout__copy {
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 .lp-game-callout__actions {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 .lp-game-callout__actions .btn {
   justify-content: center;
@@ -1404,7 +1415,7 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
     padding-top: 1rem;
   }
   .lp-game-callout__preview {
-    min-height: 180px;
+    min-height: 0;
   }
   .lp-steps { grid-template-columns: 1fr; gap: 0; }
   .lp-steps::before { display: none; }
