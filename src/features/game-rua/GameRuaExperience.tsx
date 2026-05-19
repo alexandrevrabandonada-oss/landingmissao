@@ -1209,6 +1209,15 @@ export default function GameRuaExperience({
     setShareFeedback(copied ? "Resumo do teste copiado." : "Não foi possível copiar o resumo do teste.");
   }
 
+  async function handleCopyPlaytestLink() {
+    const playtestLink =
+      typeof window !== "undefined"
+        ? window.location.href
+        : shareUrlAbsolute;
+    const copied = await copyToClipboardSafe(playtestLink);
+    setShareFeedback(copied ? "Link de playtest copiado." : "Não foi possível copiar o link de playtest.");
+  }
+
   async function handleNetworkShare(network: "whatsapp" | "facebook" | "instagram" | "tiktok") {
     trackEventIfAvailable("game_share_click", {
       variant: "runner_rua",
@@ -1317,6 +1326,20 @@ export default function GameRuaExperience({
           )}
         </div>
       </div>
+
+      {playtest && (
+        <div className="runner-playtest-banner" aria-label="Modo playtest">
+          <div className="runner-playtest-banner__copy">
+            <strong>Modo playtest ativo</strong>
+            <span>Entregue o celular, observe em silêncio e copie o resumo no final.</span>
+          </div>
+          <div className="runner-playtest-banner__actions">
+            <button type="button" className="btn btn-ghost" onClick={() => void handleCopyPlaytestLink()}>
+              Copiar link de playtest
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="runner-stage-shell">
         <div className="runner-hud">
@@ -1632,6 +1655,38 @@ const css = `
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+.runner-playtest-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.85rem 0.95rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255,209,0,0.24);
+  background:
+    linear-gradient(135deg, rgba(255,209,0,0.08), rgba(255,255,255,0.02)),
+    rgba(14,14,17,0.9);
+}
+.runner-playtest-banner__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+.runner-playtest-banner__copy strong {
+  color: var(--yellow);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.runner-playtest-banner__copy span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.runner-playtest-banner__actions {
+  display: flex;
+  gap: 0.55rem;
 }
 .runner-stage-shell {
   position: relative;
@@ -2075,6 +2130,7 @@ const css = `
   .runner-share-card {
     aspect-ratio: auto;
   }
+  .runner-playtest-banner,
   .runner-finish__actions,
   .runner-social-actions,
   .runner-finish__subactions,
@@ -2088,6 +2144,7 @@ const css = `
   .runner-finish__subactions .btn,
   .runner-shell__header-actions .btn,
   .runner-shell__header-actions a,
+  .runner-playtest-banner .btn,
   .runner-toolbar .btn {
     width: 100%;
     justify-content: center;
