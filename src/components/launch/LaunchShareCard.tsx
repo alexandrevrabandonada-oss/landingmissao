@@ -6,6 +6,7 @@ import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 
 interface LaunchShareCardProps {
   dateLabel: string;
+  timeLabel: string;
   locationLabel: string;
   messageToCopy: string;
   publicUrlLabel: string;
@@ -19,8 +20,13 @@ function normalizeLocation(locationLabel: string) {
   return locationLabel === "LOCAL_A_CONFIRMAR" ? "VOLTA REDONDA" : locationLabel;
 }
 
+function normalizeTime(timeLabel: string) {
+  return timeLabel === "HORARIO_A_CONFIRMAR" ? "HORARIO EM BREVE" : timeLabel;
+}
+
 export function LaunchShareCard({
   dateLabel,
+  timeLabel,
   locationLabel,
   messageToCopy,
   publicUrlLabel,
@@ -29,6 +35,7 @@ export function LaunchShareCard({
   const [copied, setCopied] = useState(false);
 
   const displayDate = normalizeDate(dateLabel);
+  const displayTime = normalizeTime(timeLabel);
   const displayLocation = normalizeLocation(locationLabel);
 
   async function handleCopyMessage() {
@@ -67,8 +74,9 @@ export function LaunchShareCard({
             <p className="launch-share-card__signature">{SITE_IDENTITY.signature}</p>
 
             <div className="launch-share-card__event">
-              <p className="launch-share-card__event-label">DATA • LOCAL</p>
+              <p className="launch-share-card__event-label">DATA • HORARIO • LOCAL</p>
               <p>{displayDate}</p>
+              <p>{displayTime}</p>
               <p>{displayLocation}</p>
             </div>
 
@@ -151,8 +159,9 @@ export function LaunchShareCard({
                 <p className="launch-share-card__name">{SITE_IDENTITY.publicName}</p>
                 <p className="launch-share-card__signature">{SITE_IDENTITY.signature}</p>
                 <div className="launch-share-card__event">
-                  <p className="launch-share-card__event-label">DATA • LOCAL</p>
+                  <p className="launch-share-card__event-label">DATA • HORARIO • LOCAL</p>
                   <p>{displayDate}</p>
+                  <p>{displayTime}</p>
                   <p>{displayLocation}</p>
                 </div>
                 <p className="launch-share-card__invite">Chame mais 3 pessoas.</p>

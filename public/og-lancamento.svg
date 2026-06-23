@@ -1,39 +1,70 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A organização popular agora cabe no bolso · Missão ÉLuta · Pré-campanha Alexandre VR Abandonada">
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lançamento da pré-campanha Alexandre VR Abandonada, sábado 4 de julho de 2026 às 14h, Conforto, Volta Redonda - RJ">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop stop-color="#0B0B0E"/>
-      <stop offset="1" stop-color="#141418"/>
+      <stop offset="1" stop-color="#17171B"/>
     </linearGradient>
-    <radialGradient id="spot" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(890 160) rotate(135) scale(440 300)">
-      <stop stop-color="#FFD100" stop-opacity="0.26"/>
+    <linearGradient id="band" x1="74" y1="88" x2="1128" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8F130F"/>
+      <stop offset="1" stop-color="#D12D17"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(948 164) rotate(146) scale(364 248)">
+      <stop stop-color="#FFD100" stop-opacity="0.34"/>
       <stop offset="1" stop-color="#FFD100" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect width="1200" height="630" fill="url(#spot)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="74" y="78" width="722" height="84" rx="16" fill="url(#band)"/>
 
-  <g opacity="0.18">
-    <path d="M0 70H1200" stroke="#FFD100" stroke-width="1"/>
-    <path d="M0 560H1200" stroke="#FFD100" stroke-width="1"/>
-    <path d="M70 0V630" stroke="#FFD100" stroke-width="1"/>
-    <path d="M1130 0V630" stroke="#FFD100" stroke-width="1"/>
+  <g opacity="0.16">
+    <path d="M0 84H1200" stroke="#FFD100" stroke-width="1"/>
+    <path d="M0 548H1200" stroke="#FFD100" stroke-width="1"/>
+    <path d="M72 0V630" stroke="#FFD100" stroke-width="1"/>
+    <path d="M1128 0V630" stroke="#FFD100" stroke-width="1"/>
   </g>
 
-  <g>
-    <text x="88" y="215" fill="#F2F2F2" font-size="68" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="-0.02em">
-      A organizacao popular
-    </text>
-    <text x="88" y="293" fill="#FFD100" font-size="68" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="-0.02em">
-      agora cabe no bolso
-    </text>
+  <text x="102" y="132" fill="#F3F3F3" font-size="34" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="0.06em">
+    LANCAMENTO DA PRE-CAMPANHA
+  </text>
 
-    <text x="88" y="392" fill="#FFD100" font-size="44" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="0.04em">
-      MISSAO ELUTA
-    </text>
+  <text x="88" y="248" fill="#F5F5F5" font-size="88" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="-0.03em">
+    Alexandre
+  </text>
+  <text x="88" y="320" fill="#FFD100" font-size="64" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="-0.02em">
+    VR Abandonada
+  </text>
 
-    <text x="88" y="450" fill="#F2F2F2" font-size="30" font-weight="500" font-family="Inter, Arial, sans-serif">
-      Pre-campanha Alexandre VR Abandonada
-    </text>
-  </g>
+  <text x="88" y="382" fill="#F1F1F1" font-size="34" font-weight="500" font-family="Inter, Arial, sans-serif">
+    Missao ELuta • Escutar • Cuidar • Organizar
+  </text>
+
+  <rect x="88" y="430" width="496" height="122" rx="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,209,0,0.32)"/>
+  <text x="120" y="472" fill="#FFD100" font-size="26" font-weight="700" font-family="Inter, Arial, sans-serif" letter-spacing="0.12em">
+    DATA • HORARIO • LOCAL
+  </text>
+  <text x="120" y="512" fill="#F3F3F3" font-size="30" font-weight="600" font-family="Inter, Arial, sans-serif">
+    Sabado, 4 de julho de 2026 • 14h
+  </text>
+  <text x="120" y="546" fill="#F3F3F3" font-size="26" font-weight="500" font-family="Inter, Arial, sans-serif">
+    Conforto, Volta Redonda - RJ
+  </text>
+
+  <text x="812" y="224" fill="#FFD100" font-size="32" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="0.08em">
+    PRE-CAMPANHA
+  </text>
+  <text x="812" y="282" fill="#F3F3F3" font-size="56" font-weight="700" font-family="Oswald, Inter, Arial, sans-serif" letter-spacing="-0.02em">
+    04 JUL
+  </text>
+  <text x="812" y="336" fill="#F3F3F3" font-size="34" font-weight="600" font-family="Inter, Arial, sans-serif">
+    sabado • 14h
+  </text>
+
+  <text x="812" y="448" fill="#FFD100" font-size="22" font-weight="700" font-family="Inter, Arial, sans-serif" letter-spacing="0.14em">
+    LINK PUBLICO
+  </text>
+  <text x="812" y="492" fill="#F3F3F3" font-size="28" font-weight="500" font-family="Inter, Arial, sans-serif">
+    landingmissao.vercel.app/lancamento
+  </text>
 </svg>

@@ -46,10 +46,10 @@ export const metadata: Metadata = {
   },
 };
 
-const dataPending = e.dateLabel === "DATA_A_CONFIRMAR";
-const timePending = e.timeLabel === "HORARIO_A_CONFIRMAR";
-const localPending = e.locationLabel === "LOCAL_A_CONFIRMAR";
-const addrPending = e.addressLabel === "ENDERECO_A_CONFIRMAR";
+const dataPending = (e.dateLabel as string) === "DATA_A_CONFIRMAR";
+const timePending = (e.timeLabel as string) === "HORARIO_A_CONFIRMAR";
+const localPending = (e.locationLabel as string) === "LOCAL_A_CONFIRMAR";
+const addrPending = (e.addressLabel as string) === "ENDERECO_A_CONFIRMAR";
 const hasAddress = !addrPending;
 const praQuemCards = [
   "Nunca participei, mas quero entender",
@@ -291,9 +291,14 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           <blockquote className="lp-why__quote">
             <p>{e.whyDifferent}</p>
           </blockquote>
-          <a href={participateUrl} className="btn btn-primary btn-lg">
-            Participar da pré-campanha
-          </a>
+          <div className="lp-why__actions">
+            <a href={participateUrl} className="btn btn-primary btn-lg">
+              Participar da pré-campanha
+            </a>
+            <a href="/apoio" className="btn btn-secondary btn-lg">
+              Criar foto de apoio
+            </a>
+          </div>
         </div>
       </section>
 
@@ -401,6 +406,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 
           <ViralBlock
             dateLabel={e.dateLabel}
+            timeLabel={e.timeLabel}
             locationLabel={e.locationLabel}
             publicUrlLabel={e.publicUrlLabel}
             siteOrigin={siteUrl}
@@ -877,6 +883,11 @@ const css = `
 .lp-why__quote p {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   color: var(--muted); line-height: 1.72; margin: 0;
+}
+.lp-why__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 /* ── TIMELINE APP ───────────────────────────────────────── */

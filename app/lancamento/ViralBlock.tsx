@@ -10,6 +10,7 @@ import { LaunchShareCard } from "@/src/components/launch/LaunchShareCard";
 
 interface ViralBlockProps {
   dateLabel: string;
+  timeLabel: string;
   locationLabel: string;
   publicUrlLabel: string;
   siteOrigin?: string;
@@ -19,6 +20,7 @@ interface ViralBlockProps {
 
 export function ViralBlock({
   dateLabel,
+  timeLabel,
   locationLabel,
   publicUrlLabel,
   siteOrigin,
@@ -60,6 +62,7 @@ export function ViralBlock({
     <div className="viral-wrap">
       <LaunchShareCard
         dateLabel={dateLabel}
+        timeLabel={timeLabel}
         locationLabel={locationLabel}
         messageToCopy={messageToCopy}
         publicUrlLabel={publicUrlLabel}

@@ -29,13 +29,13 @@ export const launchEvent = {
 
   // ── Evento ─────────────────────────────────────────────────────────────────
   /** Data do evento. Substituir quando confirmada. Ex: "12 de julho de 2026" */
-  dateLabel: "DATA_A_CONFIRMAR",
+  dateLabel: "Sábado, 4 de julho de 2026",
   /** Horário. Ex: "19h" */
-  timeLabel: "HORARIO_A_CONFIRMAR",
+  timeLabel: "14h",
   /** Nome do local. Ex: "Centro Cultural VR" */
-  locationLabel: "LOCAL_A_CONFIRMAR",
+  locationLabel: "Conforto, Volta Redonda - RJ",
   /** Endereço completo. Quando preenchido, o botão "Abrir no mapa" aparece. */
-  addressLabel: "ENDERECO_A_CONFIRMAR",
+  addressLabel: "Av. Nossa Senhora da Conceição (Antiga Rua 4), nº 370, Conforto, Volta Redonda - RJ",
 
   // ── O que vai acontecer ────────────────────────────────────────────────────
   whatWillHappen: [
