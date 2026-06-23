@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CampanhasDeBaseModule } from "@/src/components/campanhas/CampanhasDeBaseModule";
+import { ExternalGamesHubCallout } from "@/src/components/public/ExternalGamesHubCallout";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 
 export const metadata: Metadata = {
@@ -27,5 +28,10 @@ export default async function FormacaoCampanhasDeBasePage({ searchParams }: Page
   const resolvedSearchParams = await searchParams;
   const ref = getSearchValue(resolvedSearchParams?.ref);
 
-  return <CampanhasDeBaseModule context="interno" refId={ref} />;
+  return (
+    <>
+      <ExternalGamesHubCallout refId={ref} variant="formacao" />
+      <CampanhasDeBaseModule context="interno" refId={ref} />
+    </>
+  );
 }

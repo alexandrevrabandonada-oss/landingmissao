@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CampanhasDeBaseModule } from "@/src/components/campanhas/CampanhasDeBaseModule";
+import { ExternalGamesHubCallout } from "@/src/components/public/ExternalGamesHubCallout";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default async function MetodoPage({ searchParams }: PageProps) {
           Página pública de apresentação do método. A formação aplicada, missões e debates acontecem no App Missão ÉLuta.
         </div>
       </section>
+      <ExternalGamesHubCallout refId={ref} variant="metodo" />
       <CampanhasDeBaseModule context="publico" refId={ref} />
     </>
   );

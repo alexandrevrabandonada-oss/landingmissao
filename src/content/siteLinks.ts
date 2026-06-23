@@ -1,6 +1,9 @@
 const appBaseUrl = (
   process.env.NEXT_PUBLIC_ELUTA_APP_URL || "https://app.missaoeluta.org"
 ).replace(/\/$/, "");
+const gamesBaseUrl = (
+  process.env.NEXT_PUBLIC_ABANDONADA_GAMES_URL || "https://abandonadagames.online"
+).replace(/\/$/, "");
 
 export const defaultCampaign = "pre_campanha_alexandre_vr_abandonada";
 const defaultSource = "landing";
@@ -46,6 +49,7 @@ function buildAppUrl(path: string, options?: TrackingOptions) {
 
 export const siteLinks = {
   appBaseUrl,
+  gamesBaseUrl,
   appSignupUrl: join("/auth?mode=signup&next=/voluntario/hoje"),
   appFormacaoUrl: join("/auth?mode=signup&next=/formacao"),
   appMissoesUrl: join("/auth?mode=signup&next=/voluntario/missoes"),
@@ -98,6 +102,13 @@ export function buildGameAppMissoesUrl(ref?: string | null) {
     ref,
     utmSource: "game",
     utmMedium: "mission",
+  });
+}
+
+export function buildGamesHubUrl(ref?: string | null) {
+  return addTracking(gamesBaseUrl, {
+    ref,
+    utmMedium: "external_hub",
   });
 }
 

@@ -121,3 +121,94 @@ Resultado:
 - Integracao aplicada com seguranca: vitrine publica + links externos configuraveis para o app.
 - Nenhuma simulacao de area interna foi criada na landing.
 - Proxima etapa para integracao profunda deve ocorrer no repositorio do App Missao ELuta.
+
+## 8) Atualizacao 2026-06-23 - Hub externo de jogos
+
+### 8.1 Decisao de arquitetura
+- Os mini-jogos deixaram de ser promovidos como experiencia principal dentro da Landing Missao.
+- A vitrine publica agora aponta para um hub externo dedicado:
+  - `https://abandonadagames.online`
+- A Landing Missao permanece com papel de:
+  - identidade publica
+  - apresentacao do metodo
+  - encaminhamento para o App Missao ELuta
+
+Racional:
+- reduz acoplamento visual entre landing e runtime de jogos
+- evita peso desnecessario nas paginas publicas
+- separa melhor vitrine, jogos e organizacao
+
+### 8.2 Centralizacao de links
+Arquivo alterado:
+- `src/content/siteLinks.ts`
+
+Novidades:
+- `gamesBaseUrl`
+- `buildGamesHubUrl(ref?)`
+
+Comportamento:
+- fallback padrao: `https://abandonadagames.online`
+- configuravel por `NEXT_PUBLIC_ABANDONADA_GAMES_URL`
+- preserva `ref` quando existir
+- aplica tracking:
+  - `utm_source=landing`
+  - `utm_medium=external_hub`
+  - `utm_campaign=pre_campanha_alexandre_vr_abandonada`
+
+### 8.3 Componente compartilhado de integracao
+Arquivo criado:
+- `src/components/public/ExternalGamesHubCallout.tsx`
+
+Objetivo:
+- evitar blocos duplicados em paginas publicas
+- padronizar copy, CTA e tracking
+- permitir variacoes de contexto sem repetir markup
+
+Variantes implementadas:
+- `lancamento`
+- `metodo`
+- `formacao`
+
+### 8.4 Paginas atualizadas
+Arquivos alterados:
+- `app/lancamento/page.tsx`
+- `app/metodo/page.tsx`
+- `app/formacao/campanhas-de-base/page.tsx`
+
+Resultado por rota:
+- `/lancamento`
+  - remove os cards internos dos jogos
+  - substitui por callout para o Abandonada Games
+  - mantem CTA de volta para o app
+- `/metodo`
+  - adiciona callout de jogos autorais sem mexer no modulo principal
+- `/formacao/campanhas-de-base`
+  - adiciona callout equivalente para quem chega pela trilha de formacao
+
+### 8.5 CSS e manutencao
+Arquivo limpo:
+- `app/lancamento/page.tsx`
+
+Mudanca:
+- remocao do CSS especifico dos antigos cards de jogo
+- consolidacao da integracao no componente compartilhado
+
+Impacto:
+- menos superficie para regressao visual
+- manutencao mais simples
+
+### 8.6 Validacao tecnica
+Comando executado:
+- `npm run verify`
+
+Resultado:
+- typecheck: OK
+- lint: OK
+- build: OK
+
+### 8.7 Estado atual
+- Landing Missao nao embute mais os jogos como destaque principal
+- O fluxo publico agora ficou:
+  - landing/metodo/formacao -> Abandonada Games -> App Missao ELuta
+- Tracking e `ref` ficaram centralizados
+- A integracao publica ficou consistente entre as tres rotas
