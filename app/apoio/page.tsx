@@ -55,11 +55,11 @@ export default async function ApoioPage({ searchParams }: PageProps) {
               ← Voltar para o lançamento
             </Link>
             <div>
-              <p className="support-page__label">Concreto zen / estúdio de imagem</p>
-              <h1>Foto de apoio com presença</h1>
+              <p className="support-page__label">Estúdio de imagem · concreto zen</p>
+              <h1>Uma foto de apoio com cara de campanha viva.</h1>
               <p>
-                Uma ferramenta simples para transformar sua foto em uma peça limpa,
-                forte e pronta para perfil. O processamento acontece só no seu navegador.
+                Envie sua foto, ajuste o enquadramento e baixe uma peça quadrada
+                ou circular para redes sociais. Tudo acontece no seu navegador.
               </p>
             </div>
             <div className="support-page__tags" aria-label="Características da ferramenta">
@@ -73,7 +73,7 @@ export default async function ApoioPage({ searchParams }: PageProps) {
               rel="noopener noreferrer"
               className="support-page__donation"
             >
-              Contribuir com a vaquinha
+              Apoiar a vaquinha
             </a>
           </div>
 
@@ -84,12 +84,12 @@ export default async function ApoioPage({ searchParams }: PageProps) {
       <style>{`
         .support-page {
           min-height: 100vh;
-          padding-block: 1.5rem 4rem;
+          padding-block: 1.25rem 4rem;
           background:
-            radial-gradient(circle at 18% 8%, rgba(255, 209, 0, 0.08), transparent 24rem),
-            radial-gradient(circle at 92% 18%, rgba(192, 57, 43, 0.08), transparent 30rem),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 100%),
-            linear-gradient(180deg, #181714 0%, #0b0b0e 58%, #070708 100%),
+            radial-gradient(circle at 15% 10%, rgba(255, 209, 0, 0.11), transparent 24rem),
+            radial-gradient(circle at 86% 8%, rgba(192, 57, 43, 0.11), transparent 28rem),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.032) 0 1px, transparent 1px 100%),
+            linear-gradient(180deg, #1b1914 0%, #0b0b0e 52%, #070708 100%),
             var(--bg);
           background-size: auto, auto, 42px 100%, auto, auto;
         }
@@ -101,10 +101,11 @@ export default async function ApoioPage({ searchParams }: PageProps) {
 
         .support-page__header {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
           gap: 1.25rem;
-          align-items: end;
-          padding: 1.25rem 0 0.25rem;
+          align-items: start;
+          padding: 1.25rem 0 0.65rem;
+          overflow: hidden;
         }
 
         .support-page__back {
@@ -130,13 +131,16 @@ export default async function ApoioPage({ searchParams }: PageProps) {
           font-weight: 800;
           letter-spacing: 0.18em;
           text-transform: uppercase;
+          overflow-wrap: anywhere;
         }
 
         .support-page__header h1 {
-          max-width: 760px;
-          font-size: clamp(2.6rem, 7vw, 5.5rem);
-          letter-spacing: -0.055em;
-          line-height: 0.9;
+          max-width: 880px;
+          font-size: clamp(3rem, 8vw, 6.2rem);
+          letter-spacing: -0.06em;
+          line-height: 0.86;
+          text-wrap: balance;
+          overflow-wrap: normal;
         }
 
         .support-page__header p:not(.support-page__label) {
@@ -153,6 +157,7 @@ export default async function ApoioPage({ searchParams }: PageProps) {
           gap: 0.55rem;
           justify-content: flex-end;
           max-width: 360px;
+          justify-self: end;
         }
 
         .support-page__donation {
@@ -161,12 +166,13 @@ export default async function ApoioPage({ searchParams }: PageProps) {
           align-items: center;
           justify-content: center;
           min-height: 44px;
-          padding: 0.65rem 1rem;
+          padding: 0.72rem 1.05rem;
           border: 1px solid rgba(255, 209, 0, 0.38);
-          border-radius: 8px;
+          border-radius: 999px;
           background: rgba(255, 209, 0, 0.1);
           color: var(--yellow);
           font-weight: 800;
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
         }
 
         .support-page__donation:hover {
@@ -194,14 +200,34 @@ export default async function ApoioPage({ searchParams }: PageProps) {
 
           .support-page__header {
             grid-template-columns: 1fr;
+            gap: 1rem;
+            overflow: visible;
           }
 
           .support-page__header h1 {
-            font-size: 3rem;
+            max-width: 10ch;
+            font-size: clamp(2.55rem, 13vw, 3.25rem);
+            line-height: 0.92;
+            letter-spacing: -0.045em;
+            text-wrap: balance;
+          }
+
+          .support-page__label {
+            max-width: 28ch;
+            font-size: 0.68rem;
+            letter-spacing: 0.13em;
+            line-height: 1.45;
+          }
+
+          .support-page__header p:not(.support-page__label) {
+            max-width: 27ch;
+            font-size: 0.96rem;
+            overflow-wrap: break-word;
           }
 
           .support-page__tags {
             justify-content: flex-start;
+            max-width: 100%;
           }
 
           .support-page__donation {

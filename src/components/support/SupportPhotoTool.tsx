@@ -43,6 +43,65 @@ function drawStencilText(
   context.fillText(text, x, y, maxWidth);
 }
 
+function drawGrain(context: CanvasRenderingContext2D, opacity = 0.06) {
+  context.save();
+  context.globalAlpha = opacity;
+  for (let y = 0; y < CANVAS_SIZE; y += 9) {
+    for (let x = 0; x < CANVAS_SIZE; x += 9) {
+      const tone = (x * 17 + y * 31) % 255;
+      context.fillStyle = tone > 128 ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.18)";
+      context.fillRect(x, y, 1, 1);
+    }
+  }
+  context.restore();
+}
+
+function drawCornerMark(context: CanvasRenderingContext2D, x: number, y: number, flip = false) {
+  context.save();
+  context.translate(x, y);
+  if (flip) context.scale(-1, 1);
+  context.fillStyle = "#ffd100";
+  context.fillRect(0, 0, 96, 8);
+  context.fillRect(0, 0, 8, 96);
+  context.fillStyle = "rgba(226, 219, 199, 0.7)";
+  context.fillRect(18, 18, 52, 5);
+  context.fillRect(18, 18, 5, 52);
+  context.restore();
+}
+
+function drawProfilePlaceholder(context: CanvasRenderingContext2D, variant: FrameVariant) {
+  const centerX = variant === "circular" ? CIRCLE_CENTER : 560;
+  const centerY = variant === "circular" ? CIRCLE_CENTER : 420;
+  const radius = variant === "circular" ? 248 : 162;
+
+  context.save();
+  context.strokeStyle = "rgba(255, 209, 0, 0.32)";
+  context.lineWidth = 4;
+  context.setLineDash([18, 14]);
+  context.beginPath();
+  context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  context.stroke();
+  context.setLineDash([]);
+
+  context.fillStyle = "rgba(255, 209, 0, 0.075)";
+  context.beginPath();
+  context.arc(centerX, centerY, radius - 5, 0, Math.PI * 2);
+  context.fill();
+
+  context.textAlign = "center";
+  context.fillStyle = "#ffd100";
+  setFont(context, 900, variant === "circular" ? 44 : 42, "Arial Black, Arial");
+  context.fillText("ENVIE SUA FOTO", centerX, centerY + 8);
+  context.fillStyle = "rgba(242,242,242,0.72)";
+  setFont(context, 700, variant === "circular" ? 24 : 23);
+  context.fillText(
+    variant === "circular" ? "centralize o rosto no círculo" : "rosto dentro da área guia",
+    centerX,
+    centerY + 52,
+  );
+  context.restore();
+}
+
 function drawCoverImage(
   context: CanvasRenderingContext2D,
   image: HTMLImageElement,
@@ -119,55 +178,62 @@ function drawArcText(
 }
 
 function drawStrongFrame(context: CanvasRenderingContext2D) {
-  const bottomY = 820;
+  const bottomY = 794;
 
   const shade = context.createLinearGradient(0, 0, 0, CANVAS_SIZE);
-  shade.addColorStop(0, "rgba(35,35,32,0.08)");
-  shade.addColorStop(0.58, "rgba(0,0,0,0)");
-  shade.addColorStop(0.8, "rgba(0,0,0,0.12)");
-  shade.addColorStop(1, "rgba(0,0,0,0.74)");
+  shade.addColorStop(0, "rgba(11,11,14,0.08)");
+  shade.addColorStop(0.52, "rgba(0,0,0,0)");
+  shade.addColorStop(0.75, "rgba(0,0,0,0.18)");
+  shade.addColorStop(1, "rgba(0,0,0,0.86)");
   context.fillStyle = shade;
   context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  context.fillStyle = "rgba(226, 219, 199, 0.86)";
-  context.fillRect(42, 42, 22, 736);
-  context.fillStyle = "rgba(255, 209, 0, 0.92)";
-  context.fillRect(76, 42, 9, 736);
-  context.fillStyle = "rgba(11, 11, 14, 0.82)";
-  context.fillRect(104, 56, 286, 74);
-  context.fillStyle = "#ffd100";
-  context.fillRect(104, 130, 286, 8);
+  context.fillStyle = "rgba(11, 11, 14, 0.42)";
+  context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  drawGrain(context, 0.045);
 
-  context.fillStyle = "rgba(14, 14, 13, 0.9)";
-  context.fillRect(0, bottomY, CANVAS_SIZE, CANVAS_SIZE - bottomY);
-  context.fillStyle = "rgba(226, 219, 199, 0.1)";
-  context.fillRect(42, bottomY + 24, CANVAS_SIZE - 84, 1);
+  context.fillStyle = "rgba(7, 7, 8, 0.64)";
+  context.fillRect(56, 56, 316, 98);
+  context.fillStyle = "#f3f0e8";
+  context.fillRect(56, 56, 9, 98);
   context.fillStyle = "#ffd100";
-  context.fillRect(42, bottomY, 420, 14);
-  context.fillStyle = "rgba(174, 55, 38, 0.88)";
-  context.fillRect(42, bottomY + 22, 220, 8);
+  context.fillRect(76, 56, 9, 98);
 
   context.textAlign = "left";
-  drawStencilText(context, "EU APOIO", 126, 112, 240, 36, "#ffffff");
+  drawStencilText(context, "EU APOIO", 112, 116, 218, 34, "#ffffff");
+
+  context.fillStyle = "rgba(7, 7, 8, 0.92)";
+  context.fillRect(0, bottomY, CANVAS_SIZE, CANVAS_SIZE - bottomY);
+  context.fillStyle = "rgba(226, 219, 199, 0.1)";
+  context.fillRect(56, bottomY + 24, CANVAS_SIZE - 112, 1);
+  context.fillStyle = "#ffd100";
+  context.fillRect(56, bottomY, 474, 14);
+  context.fillStyle = "rgba(174, 55, 38, 0.9)";
+  context.fillRect(56, bottomY + 26, 192, 8);
+  context.fillStyle = "rgba(255, 209, 0, 0.11)";
+  context.fillRect(56, bottomY + 50, CANVAS_SIZE - 112, 86);
 
   context.fillStyle = "#ffd100";
   setFont(context, 900, 70, "Arial Black, Arial");
-  context.fillText("GLAUBER BRAGA", 70, 910, 940);
+  context.fillText("GLAUBER BRAGA", 78, 886, 940);
 
   context.fillStyle = "#f3f0e8";
-  setFont(context, 900, 54, "Arial Black, Arial");
-  context.fillText("ALEXANDRE VR ABANDONADA", 70, 978, 940);
+  setFont(context, 900, 50, "Arial Black, Arial");
+  context.fillText("ALEXANDRE VR ABANDONADA", 78, 954, 940);
 
   context.fillStyle = "rgba(243, 240, 232, 0.82)";
-  setFont(context, 700, 29);
-  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 72, 1028);
+  setFont(context, 700, 28);
+  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 80, 1012);
 
-  context.strokeStyle = "rgba(226, 219, 199, 0.5)";
+  drawCornerMark(context, 34, 34);
+  drawCornerMark(context, CANVAS_SIZE - 34, 34, true);
+
+  context.strokeStyle = "rgba(226, 219, 199, 0.46)";
   context.lineWidth = 2;
-  context.strokeRect(42, 42, CANVAS_SIZE - 84, CANVAS_SIZE - 84);
+  context.strokeRect(54, 54, CANVAS_SIZE - 108, CANVAS_SIZE - 108);
   context.strokeStyle = "rgba(255, 209, 0, 0.7)";
-  context.lineWidth = 5;
-  context.strokeRect(30, 30, CANVAS_SIZE - 60, CANVAS_SIZE - 60);
+  context.lineWidth = 6;
+  context.strokeRect(28, 28, CANVAS_SIZE - 56, CANVAS_SIZE - 56);
 }
 
 function drawCleanFrame(context: CanvasRenderingContext2D) {
@@ -176,6 +242,7 @@ function drawCleanFrame(context: CanvasRenderingContext2D) {
   topFade.addColorStop(1, "rgba(11, 11, 14, 0)");
   context.fillStyle = topFade;
   context.fillRect(0, 0, CANVAS_SIZE, 180);
+  drawGrain(context, 0.03);
 
   const panel = context.createLinearGradient(0, 790, 0, CANVAS_SIZE);
   panel.addColorStop(0, "rgba(11, 11, 14, 0)");
@@ -185,9 +252,9 @@ function drawCleanFrame(context: CanvasRenderingContext2D) {
   context.fillRect(0, 720, CANVAS_SIZE, 360);
 
   context.fillStyle = "#ffd100";
-  context.fillRect(62, 824, 260, 10);
+  context.fillRect(62, 820, 260, 10);
   context.fillStyle = "rgba(226, 219, 199, 0.76)";
-  context.fillRect(62, 846, 126, 6);
+  context.fillRect(62, 844, 126, 6);
 
   context.textAlign = "left";
   context.fillStyle = "rgba(243, 240, 232, 0.94)";
@@ -196,15 +263,15 @@ function drawCleanFrame(context: CanvasRenderingContext2D) {
 
   context.fillStyle = "#ffd100";
   setFont(context, 900, 64, "Arial Black, Arial");
-  context.fillText("GLAUBER BRAGA", 62, 910, 920);
+  context.fillText("GLAUBER BRAGA", 62, 904, 920);
 
   context.fillStyle = "#f3f0e8";
   setFont(context, 900, 48, "Arial Black, Arial");
-  context.fillText("ALEXANDRE VR ABANDONADA", 62, 970, 920);
+  context.fillText("ALEXANDRE VR ABANDONADA", 62, 966, 920);
 
   context.fillStyle = "rgba(242,242,242,0.82)";
   setFont(context, 700, 27);
-  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 62, 1018, 920);
+  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 62, 1016, 920);
 
   context.strokeStyle = "rgba(226, 219, 199, 0.48)";
   context.lineWidth = 3;
@@ -219,13 +286,7 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean)
     context.beginPath();
     context.arc(CIRCLE_CENTER, CIRCLE_CENTER, CIRCLE_INNER_RADIUS, 0, Math.PI * 2);
     context.fill();
-    context.fillStyle = "#ffd100";
-    context.textAlign = "center";
-    setFont(context, 800, 46);
-    context.fillText("ENVIE SUA FOTO", CIRCLE_CENTER, CIRCLE_CENTER - 10);
-    context.fillStyle = "rgba(242,242,242,0.72)";
-    setFont(context, 600, 26);
-    context.fillText("modelo circular para perfil", CIRCLE_CENTER, CIRCLE_CENTER + 42);
+    drawProfilePlaceholder(context, "circular");
   }
 
   const ringGradient = context.createRadialGradient(
@@ -291,14 +352,14 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean)
 
   context.textAlign = "center";
   context.fillStyle = "#ffd100";
-  setFont(context, 900, 42);
-  context.fillText("EU APOIO", CIRCLE_CENTER, 166);
+  setFont(context, 900, 34);
+  context.fillText("EU APOIO", CIRCLE_CENTER, 174);
 
-  context.fillStyle = "rgba(11, 11, 14, 0.68)";
-  context.fillRect(314, 850, 452, 58);
+  context.fillStyle = "rgba(11, 11, 14, 0.78)";
+  context.fillRect(274, 842, 532, 70);
   context.fillStyle = "#ffffff";
-  setFont(context, 800, 30);
-  context.fillText("ALEXANDRE", CIRCLE_CENTER, 888);
+  setFont(context, 800, 28);
+  context.fillText("ALEXANDRE VR ABANDONADA", CIRCLE_CENTER, 886);
 }
 
 function drawFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, variant: FrameVariant) {
@@ -322,23 +383,8 @@ function drawFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, variant
     context.fillStyle = placeholder;
     context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    context.strokeStyle = "rgba(255, 209, 0, 0.34)";
-    context.lineWidth = 5;
-    context.beginPath();
-    context.arc(CANVAS_SIZE / 2, 420, 184, 0, Math.PI * 2);
-    context.stroke();
-    context.fillStyle = "rgba(255, 209, 0, 0.08)";
-    context.beginPath();
-    context.arc(CANVAS_SIZE / 2, 420, 178, 0, Math.PI * 2);
-    context.fill();
-
-    context.fillStyle = "#ffd100";
-    setFont(context, 900, 52, "Arial Black, Arial");
-    context.textAlign = "center";
-    context.fillText("ENVIE SUA FOTO", CANVAS_SIZE / 2, 472);
-    context.fillStyle = "rgba(242,242,242,0.72)";
-    setFont(context, 600, 28);
-    context.fillText("centralize o rosto nesta area", CANVAS_SIZE / 2, 524);
+    drawGrain(context, 0.05);
+    drawProfilePlaceholder(context, variant);
   }
 
   if (variant === "limpo") {
@@ -598,24 +644,25 @@ export function SupportPhotoTool() {
       <style>{`
         .support-tool {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 350px;
-          gap: 1.25rem;
+          grid-template-columns: minmax(0, 1fr) 370px;
+          gap: 1.35rem;
           align-items: start;
         }
 
         .support-tool__stage,
         .support-tool__controls {
           border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 18px;
+          border-radius: 28px;
           background:
-            linear-gradient(180deg, rgba(226, 219, 199, 0.07), rgba(226, 219, 199, 0.022)),
-            rgba(23, 23, 20, 0.9);
-          box-shadow: 0 30px 90px rgba(0, 0, 0, 0.32);
-          backdrop-filter: blur(12px);
+            radial-gradient(circle at 18% 0%, rgba(255, 209, 0, 0.1), transparent 18rem),
+            linear-gradient(180deg, rgba(226, 219, 199, 0.08), rgba(226, 219, 199, 0.025)),
+            rgba(20, 20, 18, 0.92);
+          box-shadow: 0 34px 110px rgba(0, 0, 0, 0.36);
+          backdrop-filter: blur(16px);
         }
 
         .support-tool__stage {
-          padding: 0.9rem;
+          padding: clamp(0.85rem, 1.4vw, 1.25rem);
         }
 
         .support-tool__stage-head {
@@ -623,11 +670,11 @@ export function SupportPhotoTool() {
           align-items: center;
           justify-content: space-between;
           gap: 1rem;
-          padding: 0.15rem 0.25rem 0.85rem;
+          padding: 0.2rem 0.35rem 1rem;
           color: var(--muted);
-          font-size: 0.78rem;
+          font-size: 0.74rem;
           font-weight: 800;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.13em;
           text-transform: uppercase;
         }
 
@@ -638,11 +685,12 @@ export function SupportPhotoTool() {
 
         .support-tool__preview {
           position: relative;
-          padding: clamp(0.55rem, 1.4vw, 0.9rem);
-          border-radius: 14px;
+          padding: clamp(0.6rem, 1.6vw, 1rem);
+          border: 1px solid rgba(226, 219, 199, 0.12);
+          border-radius: 22px;
           background:
-            linear-gradient(135deg, rgba(226, 219, 199, 0.18), rgba(255, 209, 0, 0.09)),
-            #11110f;
+            linear-gradient(135deg, rgba(226, 219, 199, 0.16), rgba(255, 209, 0, 0.075)),
+            #12110f;
           overflow: hidden;
         }
 
@@ -650,9 +698,11 @@ export function SupportPhotoTool() {
           width: 100%;
           aspect-ratio: 1;
           height: auto;
-          border-radius: 10px;
+          border-radius: 16px;
           background: var(--bg);
-          box-shadow: 0 18px 42px rgba(0,0,0,0.45);
+          box-shadow:
+            0 22px 58px rgba(0,0,0,0.48),
+            0 0 0 1px rgba(255,255,255,0.045);
         }
 
         .support-tool__guide {
@@ -667,7 +717,7 @@ export function SupportPhotoTool() {
         .support-tool__controls {
           position: sticky;
           top: 1rem;
-          padding: 1rem;
+          padding: 1.1rem;
           display: grid;
           gap: 0.95rem;
         }
@@ -677,7 +727,7 @@ export function SupportPhotoTool() {
           grid-template-columns: auto 1fr;
           gap: 0.75rem;
           align-items: start;
-          padding-bottom: 0.15rem;
+          padding: 0.15rem 0 0.35rem;
         }
 
         .support-tool__controls-head > span {
@@ -685,8 +735,9 @@ export function SupportPhotoTool() {
           place-items: center;
           width: 38px;
           height: 38px;
-          border-radius: 50%;
-          background: var(--yellow);
+          border-radius: 12px;
+          background:
+            linear-gradient(135deg, #ffe262, var(--yellow));
           color: var(--bg);
           font-weight: 900;
         }
@@ -709,15 +760,15 @@ export function SupportPhotoTool() {
           display: inline-flex;
           justify-content: center;
           align-items: center;
-          min-height: 48px;
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
+          min-height: 52px;
+          padding: 0.8rem 1rem;
+          border-radius: 14px;
           background:
             linear-gradient(135deg, #f7d64a, var(--yellow));
           color: var(--bg);
           font-weight: 900;
           cursor: pointer;
-          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+          box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
         }
 
         .support-tool__upload input {
@@ -763,19 +814,28 @@ export function SupportPhotoTool() {
           display: grid;
           grid-template-columns: auto 1fr;
           gap: 0.1rem 0.55rem;
-          min-height: 54px;
-          padding: 0.65rem 0.75rem;
+          min-height: 62px;
+          padding: 0.72rem 0.82rem;
           border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 10px;
-          background: rgba(226, 219, 199, 0.04);
+          border-radius: 14px;
+          background:
+            linear-gradient(180deg, rgba(226, 219, 199, 0.055), rgba(226, 219, 199, 0.025));
           color: var(--text);
           font-weight: 800;
           cursor: pointer;
+          transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
         }
 
         .support-tool__variant label:has(input:checked) {
           border-color: rgba(255, 209, 0, 0.58);
-          background: rgba(255, 209, 0, 0.085);
+          background:
+            radial-gradient(circle at 92% 22%, rgba(255, 209, 0, 0.18), transparent 5rem),
+            rgba(255, 209, 0, 0.085);
+        }
+
+        .support-tool__variant label:hover {
+          transform: translateY(-1px);
+          border-color: rgba(255, 209, 0, 0.34);
         }
 
         .support-tool__variant label span {
@@ -791,9 +851,9 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__chip {
-          min-height: 40px;
+          min-height: 42px;
           border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 8px;
+          border-radius: 999px;
           background: rgba(226, 219, 199, 0.04);
           color: var(--text);
           cursor: pointer;
@@ -816,6 +876,7 @@ export function SupportPhotoTool() {
         .support-tool__field input {
           width: 100%;
           accent-color: var(--yellow);
+          cursor: pointer;
         }
 
         .support-tool__actions {
@@ -825,7 +886,8 @@ export function SupportPhotoTool() {
 
         .support-tool__actions .btn {
           justify-content: center;
-          border-radius: 8px;
+          border-radius: 14px;
+          min-height: 50px;
         }
 
         @media (max-width: 860px) {
