@@ -12,6 +12,7 @@ type ToolState = {
 };
 
 type FrameVariant = "forte" | "limpo" | "circular";
+type SupportMessage = "dupla" | "alexandre";
 
 const CIRCLE_CENTER = CANVAS_SIZE / 2;
 const CIRCLE_OUTER_RADIUS = 520;
@@ -177,8 +178,9 @@ function drawArcText(
   context.restore();
 }
 
-function drawStrongFrame(context: CanvasRenderingContext2D) {
+function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
   const bottomY = 794;
+  const isAlexandreOnly = message === "alexandre";
 
   const shade = context.createLinearGradient(0, 0, 0, CANVAS_SIZE);
   shade.addColorStop(0, "rgba(11,11,14,0.08)");
@@ -214,12 +216,12 @@ function drawStrongFrame(context: CanvasRenderingContext2D) {
   context.fillRect(56, bottomY + 50, CANVAS_SIZE - 112, 86);
 
   context.fillStyle = "#ffd100";
-  setFont(context, 900, 70, "Arial Black, Arial");
-  context.fillText("GLAUBER BRAGA", 78, 886, 940);
+  setFont(context, 900, isAlexandreOnly ? 66 : 70, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "ALEXANDRE" : "GLAUBER BRAGA", 78, 886, 940);
 
   context.fillStyle = "#f3f0e8";
-  setFont(context, 900, 50, "Arial Black, Arial");
-  context.fillText("ALEXANDRE VR ABANDONADA", 78, 954, 940);
+  setFont(context, 900, isAlexandreOnly ? 58 : 50, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", 78, 954, 940);
 
   context.fillStyle = "rgba(243, 240, 232, 0.82)";
   setFont(context, 700, 28);
@@ -236,7 +238,8 @@ function drawStrongFrame(context: CanvasRenderingContext2D) {
   context.strokeRect(28, 28, CANVAS_SIZE - 56, CANVAS_SIZE - 56);
 }
 
-function drawCleanFrame(context: CanvasRenderingContext2D) {
+function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
+  const isAlexandreOnly = message === "alexandre";
   const topFade = context.createLinearGradient(0, 0, 0, 180);
   topFade.addColorStop(0, "rgba(11, 11, 14, 0.48)");
   topFade.addColorStop(1, "rgba(11, 11, 14, 0)");
@@ -262,12 +265,12 @@ function drawCleanFrame(context: CanvasRenderingContext2D) {
   context.fillText("EU APOIO", 62, 92);
 
   context.fillStyle = "#ffd100";
-  setFont(context, 900, 64, "Arial Black, Arial");
-  context.fillText("GLAUBER BRAGA", 62, 904, 920);
+  setFont(context, 900, isAlexandreOnly ? 64 : 64, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "ALEXANDRE" : "GLAUBER BRAGA", 62, 904, 920);
 
   context.fillStyle = "#f3f0e8";
-  setFont(context, 900, 48, "Arial Black, Arial");
-  context.fillText("ALEXANDRE VR ABANDONADA", 62, 966, 920);
+  setFont(context, 900, isAlexandreOnly ? 56 : 48, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", 62, 966, 920);
 
   context.fillStyle = "rgba(242,242,242,0.82)";
   setFont(context, 700, 27);
@@ -278,7 +281,8 @@ function drawCleanFrame(context: CanvasRenderingContext2D) {
   context.strokeRect(36, 36, CANVAS_SIZE - 72, CANVAS_SIZE - 72);
 }
 
-function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean) {
+function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, message: SupportMessage) {
+  const isAlexandreOnly = message === "alexandre";
   if (!hasPhoto) {
     context.fillStyle = "#0b0b0e";
     context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -328,7 +332,7 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean)
 
   drawArcText(
     context,
-    "EU APOIO  *  GLAUBER BRAGA  *",
+    isAlexandreOnly ? "EU APOIO  *  ALEXANDRE  *" : "EU APOIO  *  GLAUBER BRAGA  *",
     CIRCLE_CENTER,
     CIRCLE_CENTER,
     444,
@@ -339,7 +343,7 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean)
   );
   drawArcText(
     context,
-    "VR ABANDONADA",
+    isAlexandreOnly ? "VR ABANDONADA" : "VR ABANDONADA",
     CIRCLE_CENTER,
     CIRCLE_CENTER,
     444,
@@ -358,13 +362,18 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean)
   context.fillStyle = "rgba(11, 11, 14, 0.78)";
   context.fillRect(274, 842, 532, 70);
   context.fillStyle = "#ffffff";
-  setFont(context, 800, 28);
-  context.fillText("ALEXANDRE VR ABANDONADA", CIRCLE_CENTER, 886);
+  setFont(context, 800, isAlexandreOnly ? 32 : 28);
+  context.fillText(isAlexandreOnly ? "ALEXANDRE VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", CIRCLE_CENTER, 886);
 }
 
-function drawFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, variant: FrameVariant) {
+function drawFrame(
+  context: CanvasRenderingContext2D,
+  hasPhoto: boolean,
+  variant: FrameVariant,
+  message: SupportMessage,
+) {
   if (variant === "circular") {
-    drawCircularFrame(context, hasPhoto);
+    drawCircularFrame(context, hasPhoto, message);
     return;
   }
 
@@ -388,9 +397,9 @@ function drawFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, variant
   }
 
   if (variant === "limpo") {
-    drawCleanFrame(context);
+    drawCleanFrame(context, message);
   } else {
-    drawStrongFrame(context);
+    drawStrongFrame(context, message);
   }
 }
 
@@ -401,6 +410,7 @@ export function SupportPhotoTool() {
   const [status, setStatus] = useState("A foto fica no seu navegador. Nada é enviado para servidor.");
   const [state, setState] = useState<ToolState>({ zoom: 1, offsetX: 0, offsetY: 0 });
   const [variant, setVariant] = useState<FrameVariant>("forte");
+  const [message, setMessage] = useState<SupportMessage>("dupla");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -417,12 +427,12 @@ export function SupportPhotoTool() {
       } else {
         drawCoverImage(context, image, state);
       }
-      drawFrame(context, true, variant);
+      drawFrame(context, true, variant, message);
       return;
     }
 
-    drawFrame(context, false, variant);
-  }, [image, state, variant]);
+    drawFrame(context, false, variant, message);
+  }, [image, state, variant, message]);
 
   function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -485,7 +495,10 @@ export function SupportPhotoTool() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "eu-apoio-glauber-braga-alexandre-vr-abandonada.png";
+    link.download =
+      message === "alexandre"
+        ? "eu-apoio-alexandre-vr-abandonada.png"
+        : "eu-apoio-glauber-braga-alexandre-vr-abandonada.png";
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -499,9 +512,15 @@ export function SupportPhotoTool() {
     const blob = await getCanvasBlob();
     if (!blob) return;
 
-    const file = new File([blob], "eu-apoio-glauber-braga-alexandre-vr-abandonada.png", {
-      type: "image/png",
-    });
+    const file = new File(
+      [blob],
+      message === "alexandre"
+        ? "eu-apoio-alexandre-vr-abandonada.png"
+        : "eu-apoio-glauber-braga-alexandre-vr-abandonada.png",
+      {
+        type: "image/png",
+      },
+    );
     const nav = navigator as Navigator & {
       canShare?: (data: ShareData) => boolean;
       share?: (data: ShareData) => Promise<void>;
@@ -510,7 +529,10 @@ export function SupportPhotoTool() {
     if (nav.canShare?.({ files: [file] }) && nav.share) {
       await nav.share({
         files: [file],
-        title: "Eu apoio Glauber Braga e Alexandre VR Abandonada",
+        title:
+          message === "alexandre"
+            ? "Eu apoio Alexandre VR Abandonada"
+            : "Eu apoio Glauber Braga e Alexandre VR Abandonada",
       });
       return;
     }
@@ -548,6 +570,32 @@ export function SupportPhotoTool() {
         <p className="support-tool__status" role="status">
           {fileName ? `Arquivo: ${fileName}` : status}
         </p>
+
+        <fieldset className="support-tool__variant">
+          <legend>Mensagem da arte</legend>
+          <label>
+            <input
+              type="radio"
+              name="support-message"
+              value="dupla"
+              checked={message === "dupla"}
+              onChange={() => setMessage("dupla")}
+            />
+            Glauber + Alexandre
+            <span>Eu apoio Glauber Braga e Alexandre VR Abandonada</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="support-message"
+              value="alexandre"
+              checked={message === "alexandre"}
+              onChange={() => setMessage("alexandre")}
+            />
+            Só Alexandre
+            <span>Eu apoio Alexandre VR Abandonada</span>
+          </label>
+        </fieldset>
 
         <fieldset className="support-tool__variant">
           <legend>Modelo</legend>
