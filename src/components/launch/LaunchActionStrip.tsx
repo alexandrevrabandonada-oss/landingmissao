@@ -15,8 +15,8 @@ export function LaunchActionStrip({
     <div className="launch-action-strip" role="region" aria-label="Ações rápidas de participação">
       <p className="launch-action-strip__text">A landing chama. O app organiza. A missão transforma escuta em ação.</p>
       <div className="launch-action-strip__actions" role="group" aria-label="Botões de ação rápida">
-        <a href={participateUrl} className="btn btn-primary">
-          Participar da pré-campanha
+        <a href={participateUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+          Participar do grupo de voluntários da pré-campanha
         </a>
         <a href={appUrl} className="btn btn-secondary">
           Entrar no app Missão ÉLuta

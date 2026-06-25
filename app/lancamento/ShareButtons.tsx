@@ -7,6 +7,8 @@ interface HeroCTAsProps {
   participateUrl: string;
   appUrl: string;
   missionUrl: string;
+  supportUrl: string;
+  donationUrl: string;
   viralHref: string;
   whatsappNumber: string;
 }
@@ -15,6 +17,8 @@ export function ShareButtons({
   participateUrl,
   appUrl,
   missionUrl,
+  supportUrl,
+  donationUrl,
   viralHref,
   whatsappNumber,
 }: HeroCTAsProps) {
@@ -24,9 +28,9 @@ export function ShareButtons({
 
   return (
     <div className="hero-ctas" role="group" aria-label="Ações principais">
-      <a href={participateUrl} className="btn btn-primary btn-lg hero-cta-main">
+      <a href={participateUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg hero-cta-main">
         <span aria-hidden="true">✊</span>
-        Participar da pré-campanha
+        Participar do grupo de voluntários da pré-campanha
       </a>
 
       <a href={appUrl} className="btn btn-secondary btn-lg">
@@ -35,6 +39,14 @@ export function ShareButtons({
 
       <a href={missionUrl} className="btn btn-ghost btn-lg">
         Receber minha primeira missão
+      </a>
+
+      <a href={supportUrl} className="btn btn-ghost btn-lg">
+        Criar foto de apoio
+      </a>
+
+      <a href={donationUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-lg">
+        Contribuir com a vaquinha
       </a>
 
       <a

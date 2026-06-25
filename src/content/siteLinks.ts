@@ -1,8 +1,18 @@
 const appBaseUrl = (
-  process.env.NEXT_PUBLIC_ELUTA_APP_URL || "https://app.missaoeluta.org"
+  process.env.NEXT_PUBLIC_ELUTA_APP_URL || "https://missaoeluta.online"
+).replace(/\/$/, "");
+const appAuthUrl = (
+  process.env.NEXT_PUBLIC_ELUTA_AUTH_URL || "https://missaoeluta.online/auth"
 ).replace(/\/$/, "");
 const gamesBaseUrl = (
   process.env.NEXT_PUBLIC_ABANDONADA_GAMES_URL || "https://abandonadagames.online"
+).replace(/\/$/, "");
+const donationBaseUrl = (
+  process.env.NEXT_PUBLIC_DONATION_URL || "https://queroapoiar.com.br/alexandrefonseca"
+).replace(/\/$/, "");
+const volunteerGroupUrl = (
+  process.env.NEXT_PUBLIC_VOLUNTEER_GROUP_URL ||
+  "https://chat.whatsapp.com/Bg2hJf84ih47kXgPcMVOGW"
 ).replace(/\/$/, "");
 
 export const defaultCampaign = "pre_campanha_alexandre_vr_abandonada";
@@ -49,7 +59,10 @@ function buildAppUrl(path: string, options?: TrackingOptions) {
 
 export const siteLinks = {
   appBaseUrl,
+  appAuthUrl,
   gamesBaseUrl,
+  donationBaseUrl,
+  volunteerGroupUrl,
   appSignupUrl: join("/auth?mode=signup&next=/voluntario/hoje"),
   appFormacaoUrl: join("/auth?mode=signup&next=/formacao"),
   appMissoesUrl: join("/auth?mode=signup&next=/voluntario/missoes"),
@@ -57,8 +70,22 @@ export const siteLinks = {
   appConviteUrl: join("/auth?mode=signup&next=/voluntario/convite"),
 } as const;
 
+export function buildDonationUrl(ref?: string | null) {
+  return addTracking(donationBaseUrl, {
+    ref,
+    utmMedium: "donation_cta",
+  });
+}
+
+export function buildVolunteerGroupUrl(ref?: string | null) {
+  return addTracking(volunteerGroupUrl, {
+    ref,
+    utmMedium: "volunteer_group",
+  });
+}
+
 export function buildAppBaseUrl(ref?: string | null) {
-  return addTracking(appBaseUrl, { ref });
+  return addTracking(appAuthUrl, { ref });
 }
 
 export function buildAppSignupUrl(ref?: string | null) {
@@ -82,7 +109,7 @@ export function buildAppConviteUrl(ref?: string | null) {
 }
 
 export function buildGameAppBaseUrl(ref?: string | null) {
-  return addTracking(appBaseUrl, {
+  return addTracking(appAuthUrl, {
     ref,
     utmSource: "game",
     utmMedium: "finish",

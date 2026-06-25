@@ -35,7 +35,7 @@ export const launchEvent = {
   /** Nome do local. Ex: "Centro Cultural VR" */
   locationLabel: "Conforto, Volta Redonda - RJ",
   /** Endereço completo. Quando preenchido, o botão "Abrir no mapa" aparece. */
-  addressLabel: "Av. Nossa Senhora da Conceição (Antiga Rua 4), nº 370, Conforto, Volta Redonda - RJ",
+  addressLabel: "Av. Nossa Senhora da Conceição (Antiga Rua 4), número 370",
 
   // ── O que vai acontecer ────────────────────────────────────────────────────
   whatWillHappen: [

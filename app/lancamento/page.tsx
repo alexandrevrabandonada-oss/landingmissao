@@ -5,7 +5,9 @@ import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 import {
   buildAppBaseUrl,
   buildAppMissoesUrl,
-  buildAppSignupUrl,
+  buildDonationUrl,
+  buildGamesHubUrl,
+  buildVolunteerGroupUrl,
 } from "@/src/content/siteLinks";
 import { ExternalGamesHubCallout } from "@/src/components/public/ExternalGamesHubCallout";
 import { buildLaunchUrl } from "@/src/lib/shareLaunch";
@@ -19,13 +21,13 @@ const canonicalUrl = siteUrl ? `${siteUrl}/lancamento` : "/lancamento";
 
 export const metadata: Metadata = {
   title: {
-    absolute: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    absolute: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
   },
-  description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
+  description: `Hub público da pré-candidatura Alexandre VR Abandonada: voluntariado, app, vaquinha, foto de apoio, jogos e lançamento.`,
   alternates: { canonical: canonicalUrl },
   openGraph: {
-    title: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
-    description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
+    title: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
+    description: `Voluntariado, app, vaquinha, foto de apoio, jogos e lançamento da pré-candidatura Alexandre VR Abandonada.`,
     type: "website",
     locale: "pt_BR",
     url: canonicalUrl,
@@ -40,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: `${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
-    description: `${SITE_IDENTITY.fullLabel}. Evento público do ${SITE_IDENTITY.appFullLabel}.`,
+    title: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
+    description: `Hub público da pré-candidatura Alexandre VR Abandonada.`,
     images: ["/og-lancamento.svg"],
   },
 };
@@ -78,9 +80,64 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
   const utmCampaign = getSearchValue(resolvedSearchParams?.utm_campaign);
   const inviteReceived = Boolean(ref);
 
-  const participateUrl = buildAppSignupUrl(ref);
+  const participateUrl = buildVolunteerGroupUrl(ref);
   const appUrl = buildAppBaseUrl(ref);
   const missionUrl = buildAppMissoesUrl(ref);
+  const supportUrl = ref ? `/apoio?ref=${encodeURIComponent(ref)}` : "/apoio";
+  const donationUrl = buildDonationUrl(ref);
+  const gamesUrl = buildGamesHubUrl(ref);
+
+  const actionCards = [
+    {
+      eyebrow: "organizar",
+      title: "Entrar no grupo de voluntários",
+      description: "Receba orientação, combine tarefas e participe da construção da pré-campanha.",
+      href: participateUrl,
+      cta: "Entrar no grupo",
+      external: true,
+      featured: true,
+    },
+    {
+      eyebrow: "app",
+      title: "Acessar o Missão ÉLuta",
+      description: "O app é o motor organizativo: cadastro, missão, formação e ação de base.",
+      href: appUrl,
+      cta: "Entrar no app",
+      external: true,
+    },
+    {
+      eyebrow: "financiar",
+      title: "Contribuir com a vaquinha",
+      description: "Ajude a sustentar comunicação, material e mobilização de base.",
+      href: donationUrl,
+      cta: "Apoiar financeiramente",
+      external: true,
+    },
+    {
+      eyebrow: "viralizar",
+      title: "Criar foto de perfil",
+      description: "Monte uma imagem de apoio com sua foto, sem cadastro e sem enviar arquivo para servidor.",
+      href: supportUrl,
+      cta: "Criar minha foto",
+      external: false,
+    },
+    {
+      eyebrow: "jogar",
+      title: "Conhecer o Abandonada Games",
+      description: "Experiências leves e compartilháveis para apresentar a pré-campanha de outro jeito.",
+      href: gamesUrl,
+      cta: "Abrir jogos",
+      external: true,
+    },
+    {
+      eyebrow: "compartilhar",
+      title: "Chamar mais gente",
+      description: "Convide três pessoas para conhecer a pré-campanha e escolher uma ação.",
+      href: "#sec-viral",
+      cta: "Compartilhar agora",
+      external: false,
+    },
+  ] as const;
 
   const cleanParams = new URLSearchParams();
   if (utmSource) cleanParams.set("utm_source", utmSource);
@@ -98,10 +155,28 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 
   return (
     <>
+      <nav className="lp-topbar" aria-label="Navegação da pré-candidatura">
+        <div className="container lp-topbar__inner">
+          <a href="#topo" className="lp-topbar__brand">
+            Alexandre VR Abandonada
+          </a>
+          <div className="lp-topbar__links" role="list">
+            <a href="#acoes">Ações</a>
+            <a href="#metodo">Método</a>
+            <a href="#evento">Lançamento</a>
+            <a href="#como-funciona">App</a>
+            <a href="#sec-viral">Compartilhar</a>
+          </div>
+          <a href={participateUrl} target="_blank" rel="noopener noreferrer" className="lp-topbar__cta">
+            Grupo de voluntários
+          </a>
+        </div>
+      </nav>
+
       {/* ═══════════════════════════════════════════════════════
           1. HERO
       ═══════════════════════════════════════════════════════ */}
-      <section className="lp-hero" aria-label="Lançamento da pré-campanha">
+      <section className="lp-hero" aria-label="Pré-candidatura Alexandre VR Abandonada" id="topo">
         <div className="lp-hero__glow" aria-hidden="true" />
         <div className="lp-hero__grid-lines" aria-hidden="true" />
 
@@ -119,8 +194,13 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
               )}
 
               <p className="lp-eyebrow">{e.eyebrow}</p>
-              <h1 className="lp-hero__title">{e.title}</h1>
-              <p className="lp-hero__subtitle">{e.subtitle}</p>
+              <h1 className="lp-hero__title">
+                Alexandre VR Abandonada pré-candidato a deputado estadual.
+              </h1>
+              <p className="lp-hero__subtitle">
+                Uma pré-candidatura organizada por escuta, tecnologia popular e ação de base.
+                A landing chama. O app organiza. A rua confirma.
+              </p>
 
               <div className="lp-hero__event-inline" role="status" aria-label="Resumo rápido de data, horário e local">
                 <span><strong>Data:</strong> {dataPending ? "Em breve" : e.dateLabel}</span>
@@ -128,7 +208,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
                 <span><strong>Local:</strong> {localPending ? "Volta Redonda" : e.locationLabel}</span>
               </div>
               <p className="lp-hero__event-note">
-                Entre para receber o aviso assim que a data e o local forem confirmados.
+                Entre no grupo, acesse o app, contribua, compartilhe e venha para o lançamento público.
               </p>
 
               <p className="lp-hero__sig">
@@ -140,6 +220,8 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
                 participateUrl={participateUrl}
                 appUrl={appUrl}
                 missionUrl={missionUrl}
+                supportUrl={supportUrl}
+                donationUrl={donationUrl}
                 viralHref="#sec-viral"
                 whatsappNumber={e.whatsappNumber}
               />
@@ -170,18 +252,84 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
         </div>
       </section>
 
+      <section className="lp-section lp-section--command" aria-labelledby="sec-acoes" id="acoes">
+        <div className="container">
+          <header className="lp-sec-header lp-sec-header--wide">
+            <p className="lp-eyebrow">central de mobilização</p>
+            <h2 className="lp-sec-title" id="sec-acoes">
+              Escolha uma ação concreta para fortalecer a pré-candidatura.
+            </h2>
+            <p className="lp-sec-lead">
+              Voluntariado, contribuição, app, foto de apoio, jogos e compartilhamento no mesmo lugar.
+              Cada ação leva a um próximo passo real.
+            </p>
+          </header>
+
+          <div className="lp-action-grid" role="list" aria-label="Ações para apoiar a pré-candidatura">
+            {actionCards.map((action) => (
+              <a
+                key={action.title}
+                href={action.href}
+                target={action.external ? "_blank" : undefined}
+                rel={action.external ? "noopener noreferrer" : undefined}
+                className={`lp-action-card${"featured" in action && action.featured ? " lp-action-card--featured" : ""}`}
+                role="listitem"
+              >
+                <span className="lp-action-card__eyebrow">{action.eyebrow}</span>
+                <strong className="lp-action-card__title">{action.title}</strong>
+                <span className="lp-action-card__desc">{action.description}</span>
+                <span className="lp-action-card__cta">{action.cta} →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="lp-section lp-section--manifesto" aria-labelledby="sec-metodo" id="metodo">
+        <div className="container lp-manifesto">
+          <div className="lp-manifesto__copy">
+            <p className="lp-eyebrow">tese da pré-candidatura</p>
+            <h2 className="lp-sec-title" id="sec-metodo">
+              Volta Redonda não precisa de espectador. Precisa de povo organizado.
+            </h2>
+            <p className="lp-sec-lead">
+              A pré-candidatura Alexandre VR Abandonada nasce para transformar denúncia cidadã,
+              memória do território e escuta popular em organização permanente.
+            </p>
+          </div>
+          <div className="lp-manifesto__grid" role="list" aria-label="Método da pré-candidatura">
+            <article className="lp-manifesto__item" role="listitem">
+              <span>01</span>
+              <strong>Escutar</strong>
+              <p>Ouvir bairro, trabalhador, juventude, cultura, escola, saúde, transporte e periferia.</p>
+            </article>
+            <article className="lp-manifesto__item" role="listitem">
+              <span>02</span>
+              <strong>Cuidar</strong>
+              <p>Tratar relatos com responsabilidade, sem exposição indevida e sem promessa individual.</p>
+            </article>
+            <article className="lp-manifesto__item" role="listitem">
+              <span>03</span>
+              <strong>Organizar</strong>
+              <p>Converter interesse em missão, formação, presença pública e rede de voluntários.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════
           2. O QUE VAI ACONTECER
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--dark" aria-labelledby="sec-acontecer">
         <div className="container">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">o que vai acontecer</p>
+            <p className="lp-eyebrow">pré-candidatura em movimento</p>
             <h2 className="lp-sec-title" id="sec-acontecer">
-              Quatro momentos do evento
+              Quatro frentes para transformar escuta em organização.
             </h2>
             <p className="lp-sec-lead">
-              Do lançamento público ao cadastro no app — tudo acontece no mesmo dia.
+              O lançamento é a porta de entrada. A pré-candidatura continua no grupo,
+              no app, nas missões e na circulação pública das ferramentas.
             </p>
           </header>
 
@@ -222,15 +370,19 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          4. BLOCO DO EVENTO
+          4. AGENDA DO LANÇAMENTO
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section" aria-labelledby="sec-evento" id="evento">
         <div className="container lp-event-wrap">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">quando e onde</p>
+            <p className="lp-eyebrow">agenda pública</p>
             <h2 className="lp-sec-title" id="sec-evento">
-              Informações do evento
+              Lançamento público da pré-candidatura
             </h2>
+            <p className="lp-sec-lead">
+              O encontro presencial apresenta a pré-candidatura, organiza voluntários
+              e conecta cada pessoa ao App Missão ÉLuta.
+            </p>
           </header>
 
           <div className="lp-ticket">
@@ -283,20 +435,23 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--accent" aria-labelledby="sec-diferente">
         <div className="container lp-why-wrap">
-          <p className="lp-eyebrow">por que isso é diferente</p>
-          <h2 className="lp-why__title" id="sec-diferente">
-            Não é evento de palco.<br />
-            <span className="lp-why__hl">É ferramenta de organização.</span>
+            <p className="lp-eyebrow">método público</p>
+            <h2 className="lp-why__title" id="sec-diferente">
+            Não é só presença digital.<br />
+            <span className="lp-why__hl">É uma arquitetura de organização popular.</span>
           </h2>
           <blockquote className="lp-why__quote">
             <p>{e.whyDifferent}</p>
           </blockquote>
           <div className="lp-why__actions">
-            <a href={participateUrl} className="btn btn-primary btn-lg">
-              Participar da pré-campanha
+            <a href={participateUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
+              Participar do grupo de voluntários da pré-campanha
             </a>
             <a href="/apoio" className="btn btn-secondary btn-lg">
               Criar foto de apoio
+            </a>
+            <a href={donationUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-lg">
+              Contribuir com a vaquinha
             </a>
           </div>
         </div>
@@ -312,12 +467,13 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       >
         <div className="container">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">como o app funciona</p>
+            <p className="lp-eyebrow">motor organizativo</p>
             <h2 className="lp-sec-title" id="sec-app">
-              4 passos, do celular à ação
+              O App Missão ÉLuta transforma interesse em tarefa.
             </h2>
             <p className="lp-sec-lead">
-              Simples o suficiente para funcionar na primeira visita.
+              Quem chega pela landing pode entrar no app, receber uma missão,
+              registrar ação e chamar mais gente.
             </p>
           </header>
 
@@ -358,7 +514,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       <section className="lp-section" aria-labelledby="sec-depois-app">
         <div className="container">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">depois que você entra no app</p>
+            <p className="lp-eyebrow">fluxo de voluntariado</p>
             <h2 className="lp-sec-title" id="sec-depois-app">
               Depois que você entra no app
             </h2>
@@ -394,13 +550,13 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       <section className="lp-section lp-section--viral" aria-labelledby="sec-viral">
         <div className="container lp-viral-container">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">mobilize sua rede</p>
+            <p className="lp-eyebrow">viralização ética</p>
             <h2 className="lp-sec-title" id="sec-viral">
-              Cada pessoa que você chamar<br />
-              <span className="lp-hl-yellow">é mais base organizada.</span>
+              Compartilhar também é organizar.<br />
+              <span className="lp-hl-yellow">Mas sem ranking tóxico e sem coleta excessiva.</span>
             </h2>
             <p className="lp-sec-lead">
-              Compartilhe o convite e leve o movimento para a rua.
+              Use o card, a foto de perfil e os jogos para chamar pessoas para uma ação concreta.
             </p>
           </header>
 
@@ -462,9 +618,20 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
             <p className="lp-footer__sig">{SITE_IDENTITY.signature}</p>
             <p className="lp-footer__sub">{SITE_IDENTITY.fullLabel}</p>
           </div>
-          <a href={participateUrl} className="btn btn-primary" aria-label="Participar da pré-campanha">
-            Participar da pré-campanha
-          </a>
+          <div className="lp-footer__actions">
+            <a
+              href={participateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              aria-label="Participar do grupo de voluntários da pré-campanha"
+            >
+              Participar do grupo de voluntários da pré-campanha
+            </a>
+            <a href={donationUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+              Contribuir com a vaquinha
+            </a>
+          </div>
           <p className="lp-footer__legal">
             Esta página é de organização de pré-campanha. Não constitui pedido de voto
             nem publicidade eleitoral nos termos da legislação vigente.
@@ -533,6 +700,77 @@ const css = `
   60%       { box-shadow: 0 0 0 6px rgba(255,209,0,0); }
 }
 
+/* ── NAVEGAÇÃO ──────────────────────────────────────────── */
+.lp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(255, 209, 0, 0.12);
+  background: rgba(8, 8, 10, 0.86);
+  backdrop-filter: blur(18px);
+}
+.lp-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 62px;
+  min-width: 0;
+}
+.lp-topbar__brand {
+  min-width: 0;
+  font-family: var(--font-head);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lp-topbar__links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+}
+.lp-topbar__links a {
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  color: rgba(242, 242, 242, 0.72);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+.lp-topbar__links a:hover,
+.lp-topbar__links a:focus-visible {
+  color: var(--yellow);
+  background: rgba(255, 209, 0, 0.08);
+}
+.lp-topbar__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.48rem 0.9rem;
+  border: 1px solid rgba(255, 209, 0, 0.4);
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #14110a;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(255, 209, 0, 0.18);
+}
+
 /* ── HERO ───────────────────────────────────────────────── */
 .lp-hero {
   position: relative;
@@ -542,6 +780,11 @@ const css = `
   align-items: center;
   padding-block: 4.6rem 3.2rem;
   border-bottom: 1px solid var(--border);
+}
+.lp-hero,
+.lp-section,
+.lp-footer {
+  overflow-x: clip;
 }
 .lp-hero__glow {
   position: absolute; inset: 0; pointer-events: none;
@@ -760,7 +1003,14 @@ const css = `
     radial-gradient(ellipse 60% 50% at 80% 60%, rgba(255,209,0,0.06), transparent 55%),
     var(--bg-elevated);
 }
+.lp-section--command {
+  background:
+    linear-gradient(135deg, rgba(255,209,0,0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,0.025), transparent),
+    #0f0f11;
+}
 .lp-sec-header { margin-bottom: 2.2rem; max-width: 640px; }
+.lp-sec-header--wide { max-width: 860px; }
 .lp-sec-header--tight { margin-bottom: 1.5rem; }
 .lp-sec-title {
   font-family: var(--font-head);
@@ -769,6 +1019,164 @@ const css = `
   margin: 0 0 0.65rem; color: var(--text);
 }
 .lp-sec-lead { color: var(--muted); font-size: 1.05rem; max-width: 55ch; margin: 0; }
+
+/* ── CENTRAL DE AÇÕES ───────────────────────────────────── */
+.lp-action-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.lp-action-card {
+  position: relative;
+  min-height: 245px;
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 18px;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.018)),
+    var(--surface);
+  box-shadow: 0 18px 52px rgba(0,0,0,0.28);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.lp-action-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,209,0,0.18) 0 2px, transparent 2px 100%),
+    radial-gradient(circle at 92% 10%, rgba(255,209,0,0.16), transparent 9rem);
+  opacity: 0.6;
+}
+.lp-action-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,209,0,0.48);
+  background:
+    linear-gradient(160deg, rgba(255,209,0,0.11), rgba(255,255,255,0.024)),
+    var(--surface);
+}
+.lp-action-card--featured {
+  grid-column: span 3;
+  background:
+    linear-gradient(140deg, rgba(255,209,0,0.18), rgba(192,57,43,0.08)),
+    var(--surface);
+  border-color: rgba(255,209,0,0.42);
+}
+.lp-action-card__eyebrow {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  padding: 0.28rem 0.5rem;
+  border: 1px solid rgba(255,209,0,0.3);
+  border-radius: 999px;
+  color: var(--yellow);
+  background: rgba(0,0,0,0.28);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.lp-action-card__title {
+  position: relative;
+  z-index: 1;
+  max-width: 11ch;
+  font-family: var(--font-head);
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  line-height: 0.96;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.lp-action-card__desc {
+  position: relative;
+  z-index: 1;
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.lp-action-card__cta {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  color: var(--yellow);
+  font-weight: 800;
+}
+
+/* ── MANIFESTO / MÉTODO ─────────────────────────────────── */
+.lp-section--manifesto {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255, 209, 0, 0.13), transparent 28%),
+    linear-gradient(135deg, rgba(192, 57, 43, 0.08), transparent 45%),
+    #08080a;
+}
+.lp-manifesto {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(340px, 1.12fr);
+  gap: 1.2rem;
+  align-items: stretch;
+}
+.lp-manifesto__copy {
+  position: sticky;
+  top: 86px;
+  align-self: start;
+  padding: 2rem;
+  border: 1px solid rgba(255, 209, 0, 0.18);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    rgba(15, 15, 17, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+.lp-manifesto__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.lp-manifesto__item {
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 209, 0, 0.08), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)),
+    rgba(22, 22, 25, 0.92);
+}
+.lp-manifesto__item span {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.32rem 0.55rem;
+  border: 1px solid rgba(255, 209, 0, 0.28);
+  border-radius: 999px;
+  color: var(--yellow);
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+}
+.lp-manifesto__item strong {
+  display: block;
+  margin-top: auto;
+  font-family: var(--font-head);
+  color: var(--text);
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.lp-manifesto__item p {
+  margin: 0.8rem 0 0;
+  color: rgba(242, 242, 242, 0.68);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
 
 /* ── CARDS ──────────────────────────────────────────────── */
 .lp-cards-grid {
@@ -1208,6 +1616,12 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
   display: flex; flex-direction: column; align-items: center;
   gap: 1.5rem; text-align: center;
 }
+.lp-footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
 .lp-footer__brand { display: flex; flex-direction: column; align-items: center; }
 .lp-footer__name {
   font-family: var(--font-head); font-size: 1.3rem; font-weight: 700;
@@ -1223,6 +1637,29 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 860px) {
+  .lp-topbar {
+    overflow: hidden;
+  }
+  .lp-topbar__inner {
+    gap: 0.55rem;
+  }
+  .lp-topbar__links {
+    display: none;
+  }
+  .lp-topbar__brand {
+    flex: 1 1 auto;
+    font-size: 0.76rem;
+    letter-spacing: 0.045em;
+  }
+  .lp-topbar__cta {
+    flex: 0 0 auto;
+    min-height: 34px;
+    max-width: 132px;
+    padding-inline: 0.64rem;
+    font-size: 0.66rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .lp-hero__content {
     grid-template-columns: 1fr;
   }
@@ -1233,6 +1670,24 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
     width: min(100%, 460px);
   }
   .lp-cards-grid { grid-template-columns: 1fr; }
+  .lp-action-grid { grid-template-columns: 1fr; }
+  .lp-action-card,
+  .lp-action-card--featured {
+    grid-column: auto;
+    min-height: 210px;
+  }
+  .lp-manifesto {
+    grid-template-columns: 1fr;
+  }
+  .lp-manifesto__copy {
+    position: static;
+  }
+  .lp-manifesto__grid {
+    grid-template-columns: 1fr;
+  }
+  .lp-manifesto__item {
+    min-height: 220px;
+  }
   .launch-action-strip { flex-direction: column; align-items: flex-start; }
   .launch-action-strip__actions { width: 100%; }
   .launch-action-strip__actions .btn { flex: 1 1 48%; justify-content: center; }
@@ -1251,6 +1706,19 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
 }
 
 @media (max-width: 600px) {
+  .lp-hero__badge,
+  .lp-hero__invite {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+  }
+  .lp-hero__badge {
+    letter-spacing: 0.035em;
+  }
+  .lp-eyebrow {
+    max-width: 100%;
+    letter-spacing: 0.14em;
+  }
   .lp-hero { min-height: auto; padding-block: 3.7rem 2.6rem; }
   .lp-hero__content {
     gap: 1.35rem;
@@ -1276,7 +1744,15 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
     font-size: 0.78rem;
   }
   .lp-hero__event-inline { gap: 0.45rem; }
-  .lp-hero__event-inline span { width: 100%; justify-content: space-between; }
+  .lp-hero__event-inline span {
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    white-space: normal;
+  }
+  .lp-hero__event-inline strong {
+    flex: 0 0 auto;
+  }
   .hero-ctas { flex-direction: column; align-items: stretch; }
   .hero-ctas .btn { justify-content: center; }
   .lp-section { padding-block: 3.15rem; }
@@ -1289,6 +1765,31 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
   .launch-share-card__actions { width: min(100%, 340px); }
   .viral-actions { flex-direction: column; }
   .viral-actions .btn, .viral-actions button { justify-content: center; width: 100%; }
+  .lp-footer__actions {
+    width: 100%;
+  }
+  .lp-footer__actions .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+  }
+  .launch-share-card {
+    overflow: hidden;
+  }
+  .launch-share-card__orb {
+    max-width: 72vw;
+  }
+  .launch-share-card .launch-share-card__orb--yellow {
+    width: 210px !important;
+    height: 210px !important;
+    right: -34px !important;
+  }
+  .launch-share-card .launch-share-card__orb--rust {
+    width: 145px !important;
+    height: 145px !important;
+    left: -38px !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
