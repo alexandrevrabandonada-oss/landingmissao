@@ -1065,9 +1065,7 @@ export function SupportPhotoTool() {
           }
 
           .support-tool__stage {
-            position: sticky;
-            top: 0.4rem;
-            z-index: 5;
+            position: relative;
             padding: 0.72rem;
             border-radius: 24px;
           }
@@ -1135,10 +1133,6 @@ export function SupportPhotoTool() {
         }
 
         @media (max-width: 480px) {
-          .support-tool__stage {
-            top: 0.2rem;
-          }
-
           .support-tool__stage-head {
             align-items: flex-start;
           }
