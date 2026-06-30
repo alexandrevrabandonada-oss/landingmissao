@@ -168,7 +168,8 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
             <a href="#sec-viral">Compartilhar</a>
           </div>
           <a href={participateUrl} target="_blank" rel="noopener noreferrer" className="lp-topbar__cta">
-            Grupo de voluntários
+            <span className="lp-topbar__cta-full">Grupo de voluntários</span>
+            <span className="lp-topbar__cta-short">Voluntários</span>
           </a>
         </div>
       </nav>
@@ -718,6 +719,9 @@ const css = `
   min-width: 0;
 }
 .lp-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   min-width: 0;
   font-family: var(--font-head);
   font-size: 0.98rem;
@@ -740,6 +744,9 @@ const css = `
   background: rgba(255, 255, 255, 0.035);
 }
 .lp-topbar__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
   padding: 0.42rem 0.72rem;
   border-radius: 999px;
   color: rgba(242, 242, 242, 0.72);
@@ -757,7 +764,7 @@ const css = `
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
+  min-height: 44px;
   padding: 0.48rem 0.9rem;
   border: 1px solid rgba(255, 209, 0, 0.4);
   border-radius: 999px;
@@ -770,6 +777,7 @@ const css = `
   white-space: nowrap;
   box-shadow: 0 10px 30px rgba(255, 209, 0, 0.18);
 }
+.lp-topbar__cta-short { display: none; }
 
 /* ── HERO ───────────────────────────────────────────────── */
 .lp-hero {
@@ -1653,13 +1661,15 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
   }
   .lp-topbar__cta {
     flex: 0 0 auto;
-    min-height: 34px;
-    max-width: 132px;
+    min-height: 44px;
+    max-width: 124px;
     padding-inline: 0.64rem;
-    font-size: 0.66rem;
+    font-size: 0.72rem;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .lp-topbar__cta-full { display: none; }
+  .lp-topbar__cta-short { display: inline; }
   .lp-hero__content {
     grid-template-columns: 1fr;
   }
@@ -1720,6 +1730,16 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
     letter-spacing: 0.14em;
   }
   .lp-hero { min-height: auto; padding-block: 3.7rem 2.6rem; }
+  .lp-hero__title {
+    max-width: 10ch;
+    font-size: clamp(2.45rem, 12.2vw, 3.15rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .lp-hero__subtitle {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
   .lp-hero__content {
     gap: 1.35rem;
   }

@@ -56,10 +56,10 @@ export default async function ApoioPage({ searchParams }: PageProps) {
             </Link>
             <div>
               <p className="support-page__label">Estúdio de imagem · concreto zen</p>
-              <h1>Uma foto de apoio com cara de campanha viva.</h1>
+              <h1>Crie sua foto de apoio.</h1>
               <p>
-                Envie sua foto, ajuste o enquadramento e baixe uma peça quadrada
-                ou circular para redes sociais. Tudo acontece no seu navegador.
+                Envie sua foto, ajuste o rosto e baixe uma peça pronta para redes sociais.
+                Tudo acontece no seu navegador.
               </p>
             </div>
             <div className="support-page__tags" aria-label="Características da ferramenta">
@@ -67,6 +67,9 @@ export default async function ApoioPage({ searchParams }: PageProps) {
               <span>perfil circular</span>
               <span>processamento local</span>
             </div>
+            <a href="#montar-foto" className="support-page__jump">
+              Montar agora
+            </a>
             <a
               href={donationUrl}
               target="_blank"
@@ -77,7 +80,9 @@ export default async function ApoioPage({ searchParams }: PageProps) {
             </a>
           </div>
 
-          <SupportPhotoTool />
+          <div id="montar-foto">
+            <SupportPhotoTool />
+          </div>
         </div>
       </section>
 
@@ -110,7 +115,9 @@ export default async function ApoioPage({ searchParams }: PageProps) {
 
         .support-page__back {
           display: inline-flex;
+          align-items: center;
           grid-column: 1 / -1;
+          min-height: 44px;
           width: fit-content;
           color: var(--yellow);
           font-size: 0.9rem;
@@ -175,6 +182,24 @@ export default async function ApoioPage({ searchParams }: PageProps) {
           box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
         }
 
+        .support-page__jump {
+          justify-self: end;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 44px;
+          padding: 0.72rem 1.05rem;
+          border-radius: 999px;
+          background: var(--yellow);
+          color: var(--bg);
+          font-weight: 900;
+          box-shadow: 0 18px 48px rgba(255, 209, 0, 0.16);
+        }
+
+        .support-page__jump:hover {
+          transform: translateY(-1px);
+        }
+
         .support-page__donation:hover {
           background: var(--yellow);
           color: var(--bg);
@@ -194,20 +219,25 @@ export default async function ApoioPage({ searchParams }: PageProps) {
         }
 
         @media (max-width: 720px) {
+          html {
+            scroll-padding-top: 0.8rem;
+          }
+
           .support-page {
-            padding-block: 1rem 2.5rem;
+            padding-block: 0.8rem 2.5rem;
           }
 
           .support-page__header {
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 0.7rem;
+            padding-top: 0.7rem;
             overflow: visible;
           }
 
           .support-page__header h1 {
-            max-width: 10ch;
-            font-size: clamp(2.55rem, 13vw, 3.25rem);
-            line-height: 0.92;
+            max-width: 11ch;
+            font-size: clamp(2.35rem, 11vw, 3rem);
+            line-height: 0.9;
             letter-spacing: -0.045em;
             text-wrap: balance;
           }
@@ -220,8 +250,10 @@ export default async function ApoioPage({ searchParams }: PageProps) {
           }
 
           .support-page__header p:not(.support-page__label) {
-            max-width: 27ch;
-            font-size: 0.96rem;
+            max-width: 31ch;
+            margin-top: 0.7rem;
+            font-size: 0.92rem;
+            line-height: 1.55;
             overflow-wrap: break-word;
           }
 
@@ -230,8 +262,15 @@ export default async function ApoioPage({ searchParams }: PageProps) {
             max-width: 100%;
           }
 
+          .support-page__tags span {
+            padding: 0.34rem 0.58rem;
+            font-size: 0.68rem;
+          }
+
+          .support-page__jump,
           .support-page__donation {
             justify-self: stretch;
+            min-height: 48px;
           }
         }
       `}</style>

@@ -212,23 +212,29 @@ function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMess
   context.fillStyle = shade;
   context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  context.fillStyle = "rgba(11, 11, 14, 0.42)";
+  context.fillStyle = isAlexandreOnly ? "rgba(11, 11, 14, 0.24)" : "rgba(11, 11, 14, 0.42)";
   context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   drawGrain(context, 0.045);
 
-  context.fillStyle = "rgba(7, 7, 8, 0.64)";
-  context.fillRect(56, 56, 316, 98);
+  context.fillStyle = isAlexandreOnly ? "rgba(7, 7, 8, 0.82)" : "rgba(7, 7, 8, 0.64)";
+  context.fillRect(56, 56, isAlexandreOnly ? 360 : 316, 106);
   context.fillStyle = "#f3f0e8";
-  context.fillRect(56, 56, 9, 98);
+  context.fillRect(56, 56, 9, 106);
   context.fillStyle = "#ffd100";
-  context.fillRect(76, 56, 9, 98);
+  context.fillRect(76, 56, 9, 106);
 
   context.textAlign = "left";
-  drawStencilText(context, "EU APOIO", 112, 116, 218, 34, "#ffffff");
+  drawStencilText(context, "EU APOIO", 112, 122, isAlexandreOnly ? 248 : 218, isAlexandreOnly ? 40 : 34, "#ffffff");
 
   if (isAlexandreOnly) {
-    context.fillStyle = "rgba(255, 209, 0, 0.96)";
-    context.fillRect(0, 0, 20, CANVAS_SIZE);
+    const sideWash = context.createLinearGradient(0, 0, 260, 0);
+    sideWash.addColorStop(0, "rgba(255, 209, 0, 0.34)");
+    sideWash.addColorStop(0.38, "rgba(255, 209, 0, 0.08)");
+    sideWash.addColorStop(1, "rgba(255, 209, 0, 0)");
+    context.fillStyle = sideWash;
+    context.fillRect(0, 0, 300, CANVAS_SIZE);
+    context.fillStyle = "rgba(255, 209, 0, 0.98)";
+    context.fillRect(0, 0, 18, CANVAS_SIZE);
     context.fillStyle = "rgba(243, 240, 232, 0.88)";
     context.fillRect(34, 0, 6, CANVAS_SIZE);
     context.fillStyle = "rgba(255, 209, 0, 0.14)";
@@ -279,6 +285,33 @@ function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMess
   context.strokeStyle = "rgba(255, 209, 0, 0.7)";
   context.lineWidth = 6;
   context.strokeRect(28, 28, CANVAS_SIZE - 56, CANVAS_SIZE - 56);
+}
+
+function renderSupportCanvas(
+  canvas: HTMLCanvasElement,
+  image: HTMLImageElement | null,
+  state: ToolState,
+  variant: FrameVariant,
+  message: SupportMessage,
+) {
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  canvas.width = CANVAS_SIZE;
+  canvas.height = CANVAS_SIZE;
+  context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+  if (image) {
+    if (variant === "circular") {
+      drawCircularImage(context, image, state);
+    } else {
+      drawCoverImage(context, image, state);
+    }
+    drawFrame(context, true, variant, message);
+    return;
+  }
+
+  drawFrame(context, false, variant, message);
 }
 
 function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
@@ -469,24 +502,8 @@ export function SupportPhotoTool() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    if (!canvas || !context) return;
-
-    canvas.width = CANVAS_SIZE;
-    canvas.height = CANVAS_SIZE;
-    context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-    if (image) {
-      if (variant === "circular") {
-        drawCircularImage(context, image, state);
-      } else {
-        drawCoverImage(context, image, state);
-      }
-      drawFrame(context, true, variant, message);
-      return;
-    }
-
-    drawFrame(context, false, variant, message);
+    if (!canvas) return;
+    renderSupportCanvas(canvas, image, state, variant, message);
   }, [image, state, variant, message]);
 
   function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -532,6 +549,7 @@ export function SupportPhotoTool() {
   function getCanvasBlob() {
     const canvas = canvasRef.current;
     if (!canvas) return Promise.resolve<Blob | null>(null);
+    renderSupportCanvas(canvas, image, state, variant, message);
 
     return new Promise<Blob | null>((resolve) => {
       canvas.toBlob((blob) => resolve(blob), "image/png", 0.95);
@@ -605,6 +623,49 @@ export function SupportPhotoTool() {
         <div className="support-tool__preview" aria-label="Prévia da montagem">
           <canvas ref={canvasRef} className="support-tool__canvas" />
           {image ? <div className="support-tool__guide" aria-hidden="true" /> : null}
+        </div>
+        <div className="support-tool__mobile-adjust" aria-label="Ajuste rápido da foto">
+          <div className="support-tool__mobile-actions" role="group" aria-label="Ajustes rápidos">
+            <button type="button" className="support-tool__chip" onClick={portraitFrame}>
+              Centralizar rosto
+            </button>
+            <button type="button" className="support-tool__chip" onClick={resetFrame}>
+              Resetar
+            </button>
+          </div>
+          <label>
+            Zoom
+            <input
+              type="range"
+              min="1"
+              max="2.2"
+              step="0.02"
+              value={state.zoom}
+              onChange={(event) => updateState("zoom", Number(event.target.value))}
+            />
+          </label>
+          <label>
+            Horizontal
+            <input
+              type="range"
+              min="-260"
+              max="260"
+              step="4"
+              value={state.offsetX}
+              onChange={(event) => updateState("offsetX", Number(event.target.value))}
+            />
+          </label>
+          <label>
+            Vertical
+            <input
+              type="range"
+              min="-420"
+              max="460"
+              step="4"
+              value={state.offsetY}
+              onChange={(event) => updateState("offsetY", Number(event.target.value))}
+            />
+          </label>
         </div>
       </div>
 
@@ -817,6 +878,10 @@ export function SupportPhotoTool() {
           box-shadow: 0 0 0 999px rgba(11, 11, 14, 0.05);
         }
 
+        .support-tool__mobile-adjust {
+          display: none;
+        }
+
         .support-tool__controls {
           position: sticky;
           top: 1rem;
@@ -996,10 +1061,86 @@ export function SupportPhotoTool() {
         @media (max-width: 860px) {
           .support-tool {
             grid-template-columns: 1fr;
+            gap: 0.85rem;
+          }
+
+          .support-tool__stage {
+            position: sticky;
+            top: 0.4rem;
+            z-index: 5;
+            padding: 0.72rem;
+            border-radius: 24px;
+          }
+
+          .support-tool__stage-head {
+            padding-bottom: 0.55rem;
+            font-size: 0.63rem;
+            letter-spacing: 0.12em;
+          }
+
+          .support-tool__stage-head strong {
+            font-size: 0.68rem;
+          }
+
+          .support-tool__preview {
+            padding: 0.5rem;
+            border-radius: 18px;
+          }
+
+          .support-tool__canvas {
+            border-radius: 12px;
+          }
+
+          .support-tool__mobile-adjust {
+            display: grid;
+            gap: 0.62rem;
+            margin-top: 0.72rem;
+            padding: 0.72rem;
+            border: 1px solid rgba(255, 209, 0, 0.18);
+            border-radius: 18px;
+            background:
+              radial-gradient(circle at 0% 0%, rgba(255, 209, 0, 0.12), transparent 9rem),
+              rgba(7, 7, 8, 0.54);
+          }
+
+          .support-tool__mobile-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+          }
+
+          .support-tool__mobile-adjust .support-tool__chip {
+            min-height: 38px;
+            font-size: 0.82rem;
+          }
+
+          .support-tool__mobile-adjust label {
+            display: grid;
+            gap: 0.28rem;
+            color: var(--text);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+          }
+
+          .support-tool__mobile-adjust input {
+            width: 100%;
+            accent-color: var(--yellow);
           }
 
           .support-tool__controls {
             position: static;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .support-tool__stage {
+            top: 0.2rem;
+          }
+
+          .support-tool__stage-head {
+            align-items: flex-start;
           }
         }
       `}</style>
