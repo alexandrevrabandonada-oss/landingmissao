@@ -70,6 +70,27 @@ function drawCornerMark(context: CanvasRenderingContext2D, x: number, y: number,
   context.restore();
 }
 
+function drawAngledBlock(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  color: string,
+  slant = 26,
+) {
+  context.save();
+  context.fillStyle = color;
+  context.beginPath();
+  context.moveTo(x + slant, y);
+  context.lineTo(x + width, y);
+  context.lineTo(x + width - slant, y + height);
+  context.lineTo(x, y + height);
+  context.closePath();
+  context.fill();
+  context.restore();
+}
+
 function drawProfilePlaceholder(context: CanvasRenderingContext2D, variant: FrameVariant) {
   const centerX = variant === "circular" ? CIRCLE_CENTER : 560;
   const centerY = variant === "circular" ? CIRCLE_CENTER : 420;
@@ -181,6 +202,7 @@ function drawArcText(
 function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
   const bottomY = 794;
   const isAlexandreOnly = message === "alexandre";
+  const alexandrePanelY = 722;
 
   const shade = context.createLinearGradient(0, 0, 0, CANVAS_SIZE);
   shade.addColorStop(0, "rgba(11,11,14,0.08)");
@@ -204,28 +226,49 @@ function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMess
   context.textAlign = "left";
   drawStencilText(context, "EU APOIO", 112, 116, 218, 34, "#ffffff");
 
-  context.fillStyle = "rgba(7, 7, 8, 0.92)";
-  context.fillRect(0, bottomY, CANVAS_SIZE, CANVAS_SIZE - bottomY);
+  if (isAlexandreOnly) {
+    context.fillStyle = "rgba(255, 209, 0, 0.96)";
+    context.fillRect(0, 0, 20, CANVAS_SIZE);
+    context.fillStyle = "rgba(243, 240, 232, 0.88)";
+    context.fillRect(34, 0, 6, CANVAS_SIZE);
+    context.fillStyle = "rgba(255, 209, 0, 0.14)";
+    context.fillRect(0, 676, CANVAS_SIZE, 48);
+    context.fillStyle = "rgba(192, 57, 43, 0.86)";
+    context.fillRect(0, 704, 460, 10);
+  }
+
+  context.fillStyle = isAlexandreOnly ? "rgba(7, 7, 8, 0.95)" : "rgba(7, 7, 8, 0.92)";
+  context.fillRect(0, isAlexandreOnly ? alexandrePanelY : bottomY, CANVAS_SIZE, CANVAS_SIZE);
   context.fillStyle = "rgba(226, 219, 199, 0.1)";
-  context.fillRect(56, bottomY + 24, CANVAS_SIZE - 112, 1);
+  context.fillRect(56, (isAlexandreOnly ? alexandrePanelY : bottomY) + 24, CANVAS_SIZE - 112, 1);
   context.fillStyle = "#ffd100";
-  context.fillRect(56, bottomY, 474, 14);
+  context.fillRect(56, isAlexandreOnly ? alexandrePanelY : bottomY, isAlexandreOnly ? 780 : 474, 16);
   context.fillStyle = "rgba(174, 55, 38, 0.9)";
-  context.fillRect(56, bottomY + 26, 192, 8);
+  context.fillRect(56, (isAlexandreOnly ? alexandrePanelY : bottomY) + 30, isAlexandreOnly ? 330 : 192, 8);
   context.fillStyle = "rgba(255, 209, 0, 0.11)";
-  context.fillRect(56, bottomY + 50, CANVAS_SIZE - 112, 86);
+  context.fillRect(56, (isAlexandreOnly ? alexandrePanelY : bottomY) + 58, CANVAS_SIZE - 112, isAlexandreOnly ? 150 : 86);
 
   context.fillStyle = "#ffd100";
-  setFont(context, 900, isAlexandreOnly ? 66 : 70, "Arial Black, Arial");
-  context.fillText(isAlexandreOnly ? "ALEXANDRE" : "GLAUBER BRAGA", 78, 886, 940);
+  setFont(context, 900, isAlexandreOnly ? 108 : 70, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "ALEXANDRE" : "GLAUBER BRAGA", 74, isAlexandreOnly ? 840 : 886, 960);
 
   context.fillStyle = "#f3f0e8";
-  setFont(context, 900, isAlexandreOnly ? 58 : 50, "Arial Black, Arial");
-  context.fillText(isAlexandreOnly ? "VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", 78, 954, 940);
+  setFont(context, 900, isAlexandreOnly ? 84 : 50, "Arial Black, Arial");
+  context.fillText(isAlexandreOnly ? "VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", 74, isAlexandreOnly ? 928 : 954, 960);
 
-  context.fillStyle = "rgba(243, 240, 232, 0.82)";
-  setFont(context, 700, 28);
-  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 80, 1012);
+  if (isAlexandreOnly) {
+    drawAngledBlock(context, 74, 958, 610, 46, "rgba(255, 209, 0, 0.94)", 20);
+    context.fillStyle = "#0b0b0e";
+    setFont(context, 900, 27, "Arial Black, Arial");
+    context.fillText("PRÉ-CANDIDATO A DEPUTADO ESTADUAL", 102, 991, 550);
+    context.fillStyle = "rgba(243, 240, 232, 0.82)";
+    setFont(context, 800, 25);
+    context.fillText(SITE_IDENTITY.signature, 76, 1046);
+  } else {
+    context.fillStyle = "rgba(243, 240, 232, 0.82)";
+    setFont(context, 700, 28);
+    context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 80, 1012);
+  }
 
   drawCornerMark(context, 34, 34);
   drawCornerMark(context, CANVAS_SIZE - 34, 34, true);
@@ -273,8 +316,15 @@ function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessa
   context.fillText(isAlexandreOnly ? "VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", 62, 966, 920);
 
   context.fillStyle = "rgba(242,242,242,0.82)";
-  setFont(context, 700, 27);
-  context.fillText(`${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`, 62, 1016, 920);
+  setFont(context, 700, isAlexandreOnly ? 25 : 27);
+  context.fillText(
+    isAlexandreOnly
+      ? `Pré-candidato a deputado estadual • ${SITE_IDENTITY.signature}`
+      : `${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`,
+    62,
+    1016,
+    920,
+  );
 
   context.strokeStyle = "rgba(226, 219, 199, 0.48)";
   context.lineWidth = 3;
@@ -332,7 +382,7 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean,
 
   drawArcText(
     context,
-    isAlexandreOnly ? "EU APOIO  *  ALEXANDRE  *" : "EU APOIO  *  GLAUBER BRAGA  *",
+    isAlexandreOnly ? "EU APOIO  *  ALEXANDRE VR  *" : "EU APOIO  *  GLAUBER BRAGA  *",
     CIRCLE_CENTER,
     CIRCLE_CENTER,
     444,
@@ -360,10 +410,15 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean,
   context.fillText("EU APOIO", CIRCLE_CENTER, 174);
 
   context.fillStyle = "rgba(11, 11, 14, 0.78)";
-  context.fillRect(274, 842, 532, 70);
+  context.fillRect(isAlexandreOnly ? 210 : 274, 842, isAlexandreOnly ? 660 : 532, 82);
   context.fillStyle = "#ffffff";
-  setFont(context, 800, isAlexandreOnly ? 32 : 28);
+  setFont(context, 800, isAlexandreOnly ? 31 : 28);
   context.fillText(isAlexandreOnly ? "ALEXANDRE VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", CIRCLE_CENTER, 886);
+  if (isAlexandreOnly) {
+    context.fillStyle = "#ffd100";
+    setFont(context, 800, 20);
+    context.fillText("PRÉ-CANDIDATO A DEPUTADO ESTADUAL", CIRCLE_CENTER, 914);
+  }
 }
 
 function drawFrame(
@@ -410,7 +465,7 @@ export function SupportPhotoTool() {
   const [status, setStatus] = useState("A foto fica no seu navegador. Nada é enviado para servidor.");
   const [state, setState] = useState<ToolState>({ zoom: 1, offsetX: 0, offsetY: 0 });
   const [variant, setVariant] = useState<FrameVariant>("forte");
-  const [message, setMessage] = useState<SupportMessage>("dupla");
+  const [message, setMessage] = useState<SupportMessage>("alexandre");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -577,23 +632,23 @@ export function SupportPhotoTool() {
             <input
               type="radio"
               name="support-message"
+              value="alexandre"
+              checked={message === "alexandre"}
+              onChange={() => setMessage("alexandre")}
+            />
+            Só Alexandre
+            <span>Eu apoio Alexandre VR Abandonada, pré-candidato a deputado estadual</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="support-message"
               value="dupla"
               checked={message === "dupla"}
               onChange={() => setMessage("dupla")}
             />
             Glauber + Alexandre
             <span>Eu apoio Glauber Braga e Alexandre VR Abandonada</span>
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="support-message"
-              value="alexandre"
-              checked={message === "alexandre"}
-              onChange={() => setMessage("alexandre")}
-            />
-            Só Alexandre
-            <span>Eu apoio Alexandre VR Abandonada</span>
           </label>
         </fieldset>
 
