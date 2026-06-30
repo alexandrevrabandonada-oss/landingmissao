@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { launchEvent as e } from "@/content/launchEvent";
+import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import { canonicalUrl, publicAssetUrl, SEO_IMAGES, SITE_URL } from "@/src/content/siteSeo";
 import {
   buildAppBaseUrl,
   buildAppMissoesUrl,
@@ -16,24 +18,26 @@ import { ShareButtons } from "./ShareButtons";
 import { ViralBlock } from "./ViralBlock";
 import { CopyInfoBtn } from "./CopyInfoBtn";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-const canonicalUrl = siteUrl ? `${siteUrl}/lancamento` : "/lancamento";
+const pageUrl = canonicalUrl("/lancamento");
+const pageTitle = `Lançamento da pré-campanha Alexandre VR Abandonada`;
+const pageDescription =
+  `Evento de lançamento da ${SITE_IDENTITY.fullLabel} em Volta Redonda: sábado, 4 de julho de 2026, às 14h, no Conforto.`;
 
 export const metadata: Metadata = {
   title: {
-    absolute: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
+    absolute: pageTitle,
   },
-  description: `Hub público da pré-candidatura Alexandre VR Abandonada: voluntariado, app, vaquinha, foto de apoio, jogos e lançamento.`,
-  alternates: { canonical: canonicalUrl },
+  description: pageDescription,
+  alternates: { canonical: pageUrl },
   openGraph: {
-    title: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
-    description: `Voluntariado, app, vaquinha, foto de apoio, jogos e lançamento da pré-candidatura Alexandre VR Abandonada.`,
+    title: pageTitle,
+    description: pageDescription,
     type: "website",
     locale: "pt_BR",
-    url: canonicalUrl,
+    url: pageUrl,
     images: [
       {
-        url: "/og-lancamento.svg",
+        url: SEO_IMAGES.lancamento,
         width: 1200,
         height: 630,
         alt: SITE_IDENTITY.appFullLabel,
@@ -41,10 +45,10 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary",
-    title: `Pré-candidatura Alexandre VR Abandonada · ${SITE_IDENTITY.appName}`,
-    description: `Hub público da pré-candidatura Alexandre VR Abandonada.`,
-    images: ["/og-lancamento.svg"],
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: [SEO_IMAGES.lancamento],
   },
 };
 
@@ -152,9 +156,64 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
     "/lancamento?utm_source=landing&utm_medium=share&utm_campaign=pre_campanha_alexandre_vr_abandonada",
     ref,
   );
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: SITE_IDENTITY.publicName,
+    url: pageUrl,
+    image: publicAssetUrl("/alexandre-retrato-hero.webp"),
+    description:
+      "Rosto público da pré-campanha Alexandre VR Abandonada, pré-candidato a deputado estadual em Volta Redonda.",
+    knowsAbout: [
+      "Volta Redonda",
+      "organização popular",
+      "escuta territorial",
+      SITE_IDENTITY.appName,
+    ],
+  };
+  const eventJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "Lançamento da pré-campanha Alexandre VR Abandonada",
+    description: pageDescription,
+    startDate: "2026-07-04T14:00:00-03:00",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    url: pageUrl,
+    image: publicAssetUrl(SEO_IMAGES.lancamento),
+    location: {
+      "@type": "Place",
+      name: e.locationLabel,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: e.addressLabel,
+        addressLocality: "Volta Redonda",
+        addressRegion: "RJ",
+        addressCountry: "BR",
+      },
+    },
+    organizer: {
+      "@type": "Organization",
+      name: SITE_IDENTITY.fullLabel,
+      url: SITE_URL,
+    },
+  };
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: e.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
 
   return (
     <>
+      <JsonLd data={[personJsonLd, eventJsonLd, faqJsonLd]} />
       <nav className="lp-topbar" aria-label="Navegação da pré-candidatura">
         <div className="container lp-topbar__inner">
           <a href="#topo" className="lp-topbar__brand">
@@ -233,11 +292,12 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
                 <div className="lp-hero__portrait-glow" aria-hidden="true" />
                 <div className="lp-hero__portrait-frame">
                   <Image
-                    src="/alexandre-retrato.png"
+                    src="/alexandre-retrato-hero.webp"
                     alt="Retrato de Alexandre VR Abandonada em composição editorial"
                     width={1024}
                     height={1024}
                     priority
+                    sizes="(max-width: 860px) 92vw, 42vw"
                     className="lp-hero__portrait"
                   />
                 </div>
@@ -566,7 +626,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
             timeLabel={e.timeLabel}
             locationLabel={e.locationLabel}
             publicUrlLabel={e.publicUrlLabel}
-            siteOrigin={siteUrl}
+            siteOrigin={SITE_URL}
             sharePath={sharePath}
             whatsAppSharePath={whatsAppSharePath}
           />

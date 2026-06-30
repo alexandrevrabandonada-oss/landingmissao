@@ -1,31 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SupportPhotoTool } from "@/src/components/support/SupportPhotoTool";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import { canonicalUrl, SEO_IMAGES } from "@/src/content/siteSeo";
 import { buildDonationUrl } from "@/src/content/siteLinks";
+
+const pageUrl = canonicalUrl("/apoio");
+const pageTitle = `Foto de apoio | ${SITE_IDENTITY.publicName}`;
+const pageDescription =
+  `Crie sua foto de apoio a ${SITE_IDENTITY.publicName}, pré-candidato a deputado estadual. Gere a imagem no navegador, sem cadastro e sem enviar sua foto para servidor.`;
 
 export const metadata: Metadata = {
   title: {
-    absolute: `Foto de apoio | ${SITE_IDENTITY.fullLabel}`,
+    absolute: pageTitle,
   },
-  description:
-    "Crie uma montagem de perfil com a mensagem Eu apoio Glauber Braga e Alexandre VR Abandonada.",
-  alternates: { canonical: "/apoio" },
+  description: pageDescription,
+  alternates: { canonical: pageUrl },
   openGraph: {
-    title: `Foto de apoio | ${SITE_IDENTITY.fullLabel}`,
-    description:
-      "Crie sua imagem de apoio para redes sociais. A foto é processada no seu navegador.",
+    title: pageTitle,
+    description: pageDescription,
     type: "website",
     locale: "pt_BR",
-    url: "/apoio",
+    url: pageUrl,
     images: [
       {
-        url: "/og-lancamento.svg",
+        url: SEO_IMAGES.apoio,
         width: 1200,
         height: 630,
         alt: SITE_IDENTITY.fullLabel,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: [SEO_IMAGES.apoio],
   },
 };
 
@@ -45,9 +56,28 @@ export default async function ApoioPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const ref = getSearchValue(resolvedSearchParams?.ref);
   const donationUrl = buildDonationUrl(ref);
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Pré-campanha",
+        item: canonicalUrl("/lancamento"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Foto de apoio",
+        item: pageUrl,
+      },
+    ],
+  };
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd} />
       <section className="support-page">
         <div className="container support-page__inner">
           <div className="support-page__header">

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import { canonicalUrl, SEO_IMAGES } from "@/src/content/siteSeo";
 import {
   buildGameAppBaseUrl,
   buildGameAppMissoesUrl,
@@ -8,31 +10,38 @@ import {
 import { buildRunnerGamePath, buildTrackedPath } from "@/src/lib/shareLaunch";
 import { GameRuaEntry } from "./GameRuaEntry";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-const canonicalUrl = siteUrl ? `${siteUrl}/jogo/rua` : "/jogo/rua";
+const pageUrl = canonicalUrl("/jogo/rua");
+const pageTitle = "Missão ÉLuta: Rua em Movimento";
+const pageDescription =
+  `${SITE_IDENTITY.fullLabel}. Runner mobile-first autoral para coletar relatos, provas, memória e apoio popular em uma rua urbana de Volta Redonda.`;
 
 export const metadata: Metadata = {
   title: {
-    absolute: `Jogo Runner | ${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    absolute: pageTitle,
   },
-  description:
-    `${SITE_IDENTITY.fullLabel}. Missão relâmpago mobile-first para coletar relatos, provas, memória e apoio popular em uma rua urbana de Volta Redonda.`,
-  alternates: { canonical: canonicalUrl },
+  description: pageDescription,
+  alternates: { canonical: pageUrl },
+  robots: { index: false, follow: true },
   openGraph: {
-    title: "Missão ÉLuta: Rua em Movimento",
-    description:
-      `${SITE_IDENTITY.fullLabel}. Runner autoral mobile-first para transformar escuta em organização popular.`,
+    title: pageTitle,
+    description: pageDescription,
     type: "website",
     locale: "pt_BR",
-    url: canonicalUrl,
+    url: pageUrl,
     images: [
       {
-        url: "/game-runner/lancamento-preview.svg",
+        url: SEO_IMAGES.jogoRua,
         width: 1200,
         height: 630,
         alt: "Preview de Rua em Movimento",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: [SEO_IMAGES.jogoRua],
   },
 };
 
@@ -65,9 +74,28 @@ export default async function JogoRuaPage({ searchParams }: PageProps) {
     utmMedium: "exit_runner",
     utmContent: "runner_rua",
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Pré-campanha",
+        item: canonicalUrl("/lancamento"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Rua em Movimento",
+        item: pageUrl,
+      },
+    ],
+  };
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd} />
       <section className="runner-page">
         <div className="container runner-page__inner">
           <div className="runner-page__intro">

@@ -1,15 +1,42 @@
 import type { Metadata } from "next";
 import { CampanhasDeBaseModule } from "@/src/components/campanhas/CampanhasDeBaseModule";
 import { ExternalGamesHubCallout } from "@/src/components/public/ExternalGamesHubCallout";
+import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import { canonicalUrl, SEO_IMAGES } from "@/src/content/siteSeo";
+
+const pageUrl = canonicalUrl("/metodo");
+const pageTitle = `Método de organização popular | ${SITE_IDENTITY.appName}`;
+const pageDescription =
+  `Conheça o método da ${SITE_IDENTITY.fullLabel}: escuta, cuidado, organização popular, missões de base e participação territorial.`;
 
 export const metadata: Metadata = {
   title: {
-    absolute: `Método | ${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    absolute: pageTitle,
   },
-  description:
-    `${SITE_IDENTITY.fullLabel}. Formação aplicada com foco em organização popular, território, escuta, missão e participação no ${SITE_IDENTITY.appName}.`,
-  alternates: { canonical: "/metodo" },
+  description: pageDescription,
+  alternates: { canonical: pageUrl },
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    type: "website",
+    locale: "pt_BR",
+    url: pageUrl,
+    images: [
+      {
+        url: SEO_IMAGES.metodo,
+        width: 1200,
+        height: 630,
+        alt: `Método ${SITE_IDENTITY.appName}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: [SEO_IMAGES.metodo],
+  },
 };
 
 type PageProps = {
@@ -27,9 +54,28 @@ function getSearchValue(value: string | string[] | undefined) {
 export default async function MetodoPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const ref = getSearchValue(resolvedSearchParams?.ref);
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Pré-campanha",
+        item: canonicalUrl("/lancamento"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Método",
+        item: pageUrl,
+      },
+    ],
+  };
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd} />
       <section
         aria-label="Aviso de escopo publico"
         style={{

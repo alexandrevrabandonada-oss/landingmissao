@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
+import { canonicalUrl, SEO_IMAGES } from "@/src/content/siteSeo";
 import {
   buildGameAppBaseUrl,
   buildGameAppMissoesUrl,
@@ -8,31 +10,38 @@ import {
 import { buildGamePath, buildTrackedPath } from "@/src/lib/shareLaunch";
 import { GameEntry } from "./GameEntry";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-const canonicalUrl = siteUrl ? `${siteUrl}/jogo` : "/jogo";
+const pageUrl = canonicalUrl("/jogo");
+const pageTitle = `Missão ÉLuta: Corre da Burocracia`;
+const pageDescription =
+  `${SITE_IDENTITY.fullLabel}. Missão relâmpago autoral para reunir relatos, memória, provas e apoio popular.`;
 
 export const metadata: Metadata = {
   title: {
-    absolute: `Jogo | ${SITE_IDENTITY.fullLabel} · ${SITE_IDENTITY.appName}`,
+    absolute: pageTitle,
   },
-  description:
-    `${SITE_IDENTITY.fullLabel}. Missão relâmpago autoral para reunir relatos, memória, provas e apoio popular no ${SITE_IDENTITY.appName}.`,
-  alternates: { canonical: canonicalUrl },
+  description: pageDescription,
+  alternates: { canonical: pageUrl },
+  robots: { index: false, follow: true },
   openGraph: {
-    title: `Missão ÉLuta: Corre da Burocracia`,
-    description:
-      `${SITE_IDENTITY.fullLabel}. Jogo relâmpago para transformar escuta em organização popular.`,
+    title: pageTitle,
+    description: pageDescription,
     type: "website",
     locale: "pt_BR",
-    url: canonicalUrl,
+    url: pageUrl,
     images: [
       {
-        url: "/og-lancamento.svg",
+        url: SEO_IMAGES.jogo,
         width: 1200,
         height: 630,
         alt: SITE_IDENTITY.appFullLabel,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: [SEO_IMAGES.jogo],
   },
 };
 
@@ -62,9 +71,28 @@ export default async function JogoPage({ searchParams }: PageProps) {
     utmSource: "game",
     utmMedium: "exit",
   });
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Pré-campanha",
+        item: canonicalUrl("/lancamento"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Corre da Burocracia",
+        item: pageUrl,
+      },
+    ],
+  };
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd} />
       <section className="game-page">
         <div className="container game-page__inner">
           <div className="game-page__intro">
