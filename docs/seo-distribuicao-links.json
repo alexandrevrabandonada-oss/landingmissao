@@ -1,0 +1,32 @@
+{
+  "site": "https://www.alexandrevrabandonada.online",
+  "sitemap": "https://www.alexandrevrabandonada.online/sitemap.xml",
+  "campaign": "pre_campanha_alexandre_vr_abandonada",
+  "searchConsoleSubmit": [
+    "https://www.alexandrevrabandonada.online/",
+    "https://www.alexandrevrabandonada.online/quem-e-alexandre-vr-abandonada",
+    "https://www.alexandrevrabandonada.online/pre-campanha-volta-redonda",
+    "https://www.alexandrevrabandonada.online/missao-eluta",
+    "https://www.alexandrevrabandonada.online/participar",
+    "https://www.alexandrevrabandonada.online/pautas",
+    "https://www.alexandrevrabandonada.online/perguntas-frequentes",
+    "https://www.alexandrevrabandonada.online/apoio",
+    "https://www.alexandrevrabandonada.online/metodo",
+    "https://www.alexandrevrabandonada.online/formacao/campanhas-de-base"
+  ],
+  "doNotSubmit": [
+    "https://www.alexandrevrabandonada.online/lancamento",
+    "https://www.alexandrevrabandonada.online/pre-campanha",
+    "https://www.alexandrevrabandonada.online/jogo",
+    "https://www.alexandrevrabandonada.online/jogo/rua"
+  ],
+  "distributionLinks": {
+    "home": "https://www.alexandrevrabandonada.online/",
+    "whatsapp": "https://www.alexandrevrabandonada.online/?utm_source=whatsapp&utm_medium=share&utm_campaign=pre_campanha_alexandre_vr_abandonada",
+    "instagramBio": "https://www.alexandrevrabandonada.online/?utm_source=instagram&utm_medium=bio&utm_campaign=pre_campanha_alexandre_vr_abandonada",
+    "instagramStory": "https://www.alexandrevrabandonada.online/?utm_source=instagram&utm_medium=story&utm_campaign=pre_campanha_alexandre_vr_abandonada",
+    "facebookPost": "https://www.alexandrevrabandonada.online/?utm_source=facebook&utm_medium=post&utm_campaign=pre_campanha_alexandre_vr_abandonada",
+    "volunteerMaterial": "https://www.alexandrevrabandonada.online/?utm_source=voluntarios&utm_medium=material&utm_campaign=pre_campanha_alexandre_vr_abandonada",
+    "supporterProfile": "https://www.alexandrevrabandonada.online/?utm_source=apoiador&utm_medium=link&utm_campaign=pre_campanha_alexandre_vr_abandonada"
+  }
+}
