@@ -64,7 +64,7 @@ export default async function ApoioPage({ searchParams }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Pré-campanha",
-        item: canonicalUrl("/lancamento"),
+        item: canonicalUrl("/"),
       },
       {
         "@type": "ListItem",
@@ -81,7 +81,7 @@ export default async function ApoioPage({ searchParams }: PageProps) {
       <section className="support-page">
         <div className="container support-page__inner">
           <div className="support-page__header">
-            <Link href="/lancamento" className="support-page__back">
+            <Link href="/" className="support-page__back">
               ← Voltar para a pré-campanha
             </Link>
             <div>

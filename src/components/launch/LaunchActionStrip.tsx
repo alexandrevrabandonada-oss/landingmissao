@@ -24,7 +24,7 @@ export function LaunchActionStrip({
         <a href={missionUrl} className="btn btn-ghost">
           Receber minha primeira missão
         </a>
-        <a href={viralHref} className="btn btn-ghost" aria-label="Ir para compartilhar convite">
+        <a href={viralHref} className="btn btn-ghost">
           Chamar mais 3 pessoas
         </a>
       </div>

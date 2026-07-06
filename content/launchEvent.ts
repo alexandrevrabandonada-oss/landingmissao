@@ -90,7 +90,7 @@ export const launchEvent = {
 
   // ── Compartilhamento ───────────────────────────────────────────────────────
   /** Domínio curto exibido no card de compartilhamento. */
-  publicUrlLabel: "landingmissao.vercel.app/lancamento",
+  publicUrlLabel: "alexandrevrabandonada.online",
 
   shareText:
     "Conheça a pré-campanha Alexandre VR Abandonada e o app Missão ÉLuta.\n\n" +

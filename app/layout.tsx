@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: canonicalUrl("/lancamento"),
+    url: canonicalUrl("/"),
     siteName: SITE_IDENTITY.publicName,
     title: `${SITE_IDENTITY.publicName} | Pré-candidato a deputado estadual`,
     description: `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.mainPhrase}`,
     images: [
       {
-        url: SEO_IMAGES.lancamento,
+        url: SEO_IMAGES.preCampanha,
         width: 1200,
         height: 630,
         alt: SITE_IDENTITY.fullLabel,
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_IDENTITY.publicName} | Pré-candidato a deputado estadual`,
     description: `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.mainPhrase}`,
-    images: [SEO_IMAGES.lancamento],
+    images: [SEO_IMAGES.preCampanha],
   },
   robots: { index: true, follow: true },
 };
@@ -63,7 +63,7 @@ export default function RootLayout({
     alternateName: SITE_IDENTITY.fullLabel,
     url: SITE_URL,
     inLanguage: "pt-BR",
-    image: publicAssetUrl(SEO_IMAGES.lancamento),
+    image: publicAssetUrl(SEO_IMAGES.preCampanha),
     description: `${SITE_IDENTITY.fullLabel}. ${SITE_IDENTITY.mainPhrase}`,
   };
 

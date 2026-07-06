@@ -68,7 +68,7 @@ export default async function JogoRuaPage({ searchParams }: PageProps) {
   const signupUrl = buildGameAppSignupUrl(ref);
   const missionUrl = buildGameAppMissoesUrl(ref);
   const exitUrl = buildTrackedPath({
-    basePath: "/lancamento",
+    basePath: "/",
     ref,
     utmSource: "game",
     utmMedium: "exit_runner",
@@ -82,7 +82,7 @@ export default async function JogoRuaPage({ searchParams }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Pré-campanha",
-        item: canonicalUrl("/lancamento"),
+        item: canonicalUrl("/"),
       },
       {
         "@type": "ListItem",

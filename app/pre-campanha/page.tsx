@@ -1,5 +1,5 @@
 import { permanentRedirect } from "next/navigation";
 
-export default function LancamentoRedirectPage() {
+export default function PreCampanhaRedirectPage() {
   permanentRedirect("/");
 }

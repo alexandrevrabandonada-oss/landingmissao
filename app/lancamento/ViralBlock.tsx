@@ -65,7 +65,6 @@ export function ViralBlock({
           type="button"
           onClick={openWhatsApp}
           className="btn btn-whatsapp btn-lg"
-          aria-label="Compartilhar página da pré-campanha no WhatsApp"
         >
           <WhatsAppIcon />
           Chamar mais 3 pessoas

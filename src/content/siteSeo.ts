@@ -5,7 +5,13 @@ export const SITE_URL = (
 ).replace(/\/$/, "");
 
 export const SEO_IMAGES = {
-  lancamento: "/og-lancamento.png",
+  preCampanha: "/og-pre-campanha.png",
+  quemE: "/og-quem-e.png",
+  preCampanhaVoltaRedonda: "/og-pre-campanha-volta-redonda.png",
+  missaoEluta: "/og-missao-eluta.png",
+  participar: "/og-participar.png",
+  pautas: "/og-pautas.png",
+  perguntasFrequentes: "/og-perguntas-frequentes.png",
   apoio: "/og-apoio.png",
   metodo: "/og-metodo.png",
   formacao: "/og-formacao.png",
@@ -28,4 +34,3 @@ export const defaultSeo = {
   locale: "pt_BR",
   twitterCard: "summary_large_image",
 } as const;
-

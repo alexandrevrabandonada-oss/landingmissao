@@ -62,7 +62,7 @@ export default async function FormacaoCampanhasDeBasePage({ searchParams }: Page
         "@type": "ListItem",
         position: 1,
         name: "Pré-campanha",
-        item: canonicalUrl("/lancamento"),
+        item: canonicalUrl("/"),
       },
       {
         "@type": "ListItem",

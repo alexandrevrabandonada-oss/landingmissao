@@ -2,10 +2,8 @@
    MISSÃO ÉLUTA — Design System
    Estética: Urbano/Industrial, Alto Contraste, Stencil
    Paleta: Preto Carvão · Amarelo Luta · Vermelho Ferrugem
-   Tipografia: Oswald (headlines) · Inter (corpo)
+   Tipografia: Bahnschrift/System (headlines) · Segoe UI/System (corpo)
    ============================================================ */
-
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
 
 /* ── Tokens ────────────────────────────────────────────────── */
 :root {
@@ -25,8 +23,8 @@
   --rust:          #c0392b;
   --rust-dim:      rgba(192, 57, 43, 0.14);
 
-  --font-head: "Oswald", "Bahnschrift", system-ui, sans-serif;
-  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-head: "Bahnschrift", "Arial Narrow", "Oswald", system-ui, sans-serif;
+  --font-body: "Segoe UI", Inter, system-ui, sans-serif;
 
   --radius-sm: 6px;
   --radius:    12px;
@@ -192,7 +190,7 @@ h1, h2, h3, h4 {
 
 .btn-whatsapp {
   background: #25d366;
-  color: #fff;
+  color: #07150c;
 }
 .btn-whatsapp:hover { opacity: 0.88; }
 
