@@ -126,3 +126,11 @@ Depois da leitura, ajustar apenas com base em evidencia:
 - FAQ se surgirem perguntas reais.
 - Pautas se uma busca territorial aparecer com frequencia.
 - Links internos se uma pagina importante estiver isolada.
+
+Antes da leitura semanal, rodar a auditoria publica:
+
+```bash
+npm run audit:seo-public
+```
+
+Ela confere producao, redirects antigos, `robots.txt`, `sitemap.xml`, metadados da home, ausencia de schema `Event`, ausencia de sinais publicos de lancamento e `noindex` nas experiencias auxiliares.

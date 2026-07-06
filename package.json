@@ -10,6 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "audit:identity": "node scripts/audit-landing-identity.mjs",
+    "audit:seo-public": "node scripts/audit-public-seo.mjs",
     "verify": "npm run typecheck && npm run lint && npm run build"
   },
   "dependencies": {
