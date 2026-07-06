@@ -1,0 +1,25 @@
+name: Public SEO Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 10 * * 1"
+
+jobs:
+  public-seo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit public SEO
+        run: npm run audit:seo-public

@@ -138,3 +138,7 @@ npm run audit:seo-public
 ```
 
 Ela confere producao, redirects antigos, `robots.txt`, `sitemap.xml`, metadados da home, ausencia de schema `Event`, ausencia de sinais publicos de lancamento e `noindex` nas experiencias auxiliares.
+
+O mesmo teste roda no GitHub Actions pelo workflow `Public SEO Audit`, toda segunda-feira as 10:15 UTC e tambem manualmente por `workflow_dispatch`.
+
+O workflow `Quality` roda typecheck e build em push para `main` e pull requests.
