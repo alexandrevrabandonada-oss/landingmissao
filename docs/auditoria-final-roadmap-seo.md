@@ -5,6 +5,7 @@ Data da verificacao: 2026-07-06
 ## Evidencias tecnicas verificadas
 
 - Home publica: `https://www.alexandrevrabandonada.online/` respondeu `200`.
+- Busca publica `site:alexandrevrabandonada.online` ja retorna a home do projeto.
 - `robots.txt` publico permite indexacao e aponta para o sitemap.
 - `sitemap.xml` publico responde e lista as paginas principais.
 - `/lancamento` redireciona para `/` com status `308`.
@@ -48,6 +49,7 @@ Estas etapas dependem de acesso a contas e canais oficiais:
 
 - Enviar `https://www.alexandrevrabandonada.online/sitemap.xml` no Google Search Console.
 - Solicitar indexacao das URLs listadas em `docs/seo-distribuicao-links.json`.
+- Acompanhar a indexacao das paginas internas, que ainda podem nao aparecer em busca publica logo apos o deploy.
 - Monitorar Search Console semanalmente.
 - Atualizar links em perfis publicos oficiais.
 - Distribuir links com UTMs nos canais reais de WhatsApp, Instagram, Facebook, materiais de voluntarios e apoiadores.
