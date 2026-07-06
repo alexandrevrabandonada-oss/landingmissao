@@ -1,9 +1,9 @@
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 
 /**
- * Configuração central do evento de lançamento da pré-campanha.
+ * Configuração central da página pública da pré-campanha.
  *
- * ➜ Atualize este arquivo quando datas, local e WhatsApp forem confirmados.
+ * ➜ Atualize este arquivo quando frentes, links e WhatsApp forem confirmados.
  *   Não edite o componente da página — edite apenas aqui.
  *
  * ATENÇÃO ELEITORAL:
@@ -27,35 +27,25 @@ export const launchEvent = {
   /** Número do WhatsApp com DDI, sem espaços ou símbolos. Ex: "5524999998888". Deixar vazio para ocultar o botão. */
   whatsappNumber: "",
 
-  // ── Evento ─────────────────────────────────────────────────────────────────
-  /** Data do evento. Substituir quando confirmada. Ex: "12 de julho de 2026" */
-  dateLabel: "Sábado, 4 de julho de 2026",
-  /** Horário. Ex: "19h" */
-  timeLabel: "14h",
-  /** Nome do local. Ex: "Centro Cultural VR" */
-  locationLabel: "Conforto, Volta Redonda - RJ",
-  /** Endereço completo. Quando preenchido, o botão "Abrir no mapa" aparece. */
-  addressLabel: "Av. Nossa Senhora da Conceição (Antiga Rua 4), número 370",
-
-  // ── O que vai acontecer ────────────────────────────────────────────────────
+  // ── Frentes de organização ─────────────────────────────────────────────────
   whatWillHappen: [
     {
-      icon: "🚀",
-      title: "Lançamento público da pré-campanha",
+      icon: "🧭",
+      title: "Direção política da pré-campanha",
       description:
-        "A pré-campanha Alexandre VR Abandonada se apresenta formalmente para a base.",
+        "A pré-campanha organiza escuta, presença territorial e ação coletiva em Volta Redonda.",
     },
     {
       icon: "📱",
-      title: "Demonstração do app Missão ÉLuta",
+      title: "App Missão ÉLuta",
       description:
-        "Ao vivo: como o app funciona, o que você pode fazer com ele e como entrar no App Missão ÉLuta.",
+        "O app concentra cadastro, missões, formação e acompanhamento da organização de base.",
     },
     {
       icon: "🤝",
       title: "Convite para voluntários e apoiadores",
       description:
-        "Quem quiser participar recebe missão, contato e próximo passo na hora.",
+        "Quem quiser participar entra no grupo, recebe orientação e encontra um próximo passo possível.",
     },
     {
       icon: "🗺️",
@@ -118,22 +108,22 @@ export const launchEvent = {
     {
       question: "Precisa saber usar tecnologia?",
       answer:
-        "Não. O app foi pensado para funcionar no celular básico, com linguagem simples. Quem tiver dificuldade recebe apoio no evento.",
+        "Não. O app foi pensado para funcionar no celular básico, com linguagem simples. Quem tiver dificuldade recebe apoio da organização.",
     },
     {
       question: "Posso só conhecer, sem me comprometer?",
       answer:
-        "Sim. Vir ao evento já é participar. Você decide no seu tempo qual passo quer dar.",
+        "Sim. Você pode entrar no grupo, acompanhar os materiais e decidir no seu tempo qual passo quer dar.",
     },
     {
-      question: "O app já vai funcionar no dia do evento?",
+      question: "O app já está funcionando?",
       answer:
-        "Sim. A demonstração ao vivo vai mostrar o app funcionando e quem quiser já pode fazer o cadastro durante o evento.",
+        "Sim. O App Missão ÉLuta é o ponto de entrada para cadastro, missões, formação e organização da pré-campanha.",
     },
     {
       question: "Como posso ajudar a organizar?",
       answer:
-        "Compartilhe este convite, venha ao evento e, se quiser, converse com a organização. Cada pessoa que chega já é apoio.",
+        "Compartilhe a página, entre no grupo de voluntários, acesse o app e escolha uma ação concreta. Cada pessoa que chega já fortalece a rede.",
     },
   ],
 } as const;

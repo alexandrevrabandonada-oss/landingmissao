@@ -16,12 +16,11 @@ import { buildLaunchUrl } from "@/src/lib/shareLaunch";
 import { LaunchActionStrip } from "@/src/components/launch/LaunchActionStrip";
 import { ShareButtons } from "./ShareButtons";
 import { ViralBlock } from "./ViralBlock";
-import { CopyInfoBtn } from "./CopyInfoBtn";
 
 const pageUrl = canonicalUrl("/lancamento");
-const pageTitle = `Lançamento da pré-campanha Alexandre VR Abandonada`;
+const pageTitle = `Pré-candidatura Alexandre VR Abandonada`;
 const pageDescription =
-  `Evento de lançamento da ${SITE_IDENTITY.fullLabel} em Volta Redonda: sábado, 4 de julho de 2026, às 14h, no Conforto.`;
+  `Conheça a ${SITE_IDENTITY.fullLabel}: organização popular, escuta territorial, App Missão ÉLuta, voluntariado, vaquinha e materiais de apoio.`;
 
 export const metadata: Metadata = {
   title: {
@@ -52,11 +51,6 @@ export const metadata: Metadata = {
   },
 };
 
-const dataPending = (e.dateLabel as string) === "DATA_A_CONFIRMAR";
-const timePending = (e.timeLabel as string) === "HORARIO_A_CONFIRMAR";
-const localPending = (e.locationLabel as string) === "LOCAL_A_CONFIRMAR";
-const addrPending = (e.addressLabel as string) === "ENDERECO_A_CONFIRMAR";
-const hasAddress = !addrPending;
 const praQuemCards = [
   "Nunca participei, mas quero entender",
   "Quero ajudar pelo celular",
@@ -171,32 +165,15 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       SITE_IDENTITY.appName,
     ],
   };
-  const eventJsonLd = {
+  const organizationJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Event",
-    name: "Lançamento da pré-campanha Alexandre VR Abandonada",
+    "@type": "Organization",
+    name: SITE_IDENTITY.fullLabel,
     description: pageDescription,
-    startDate: "2026-07-04T14:00:00-03:00",
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    eventStatus: "https://schema.org/EventScheduled",
     url: pageUrl,
     image: publicAssetUrl(SEO_IMAGES.lancamento),
-    location: {
-      "@type": "Place",
-      name: e.locationLabel,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: e.addressLabel,
-        addressLocality: "Volta Redonda",
-        addressRegion: "RJ",
-        addressCountry: "BR",
-      },
-    },
-    organizer: {
-      "@type": "Organization",
-      name: SITE_IDENTITY.fullLabel,
-      url: SITE_URL,
-    },
+    areaServed: "Volta Redonda",
+    slogan: SITE_IDENTITY.signature,
   };
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -213,7 +190,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 
   return (
     <>
-      <JsonLd data={[personJsonLd, eventJsonLd, faqJsonLd]} />
+      <JsonLd data={[personJsonLd, organizationJsonLd, faqJsonLd]} />
       <nav className="lp-topbar" aria-label="Navegação da pré-candidatura">
         <div className="container lp-topbar__inner">
           <a href="#topo" className="lp-topbar__brand">
@@ -222,7 +199,6 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           <div className="lp-topbar__links" role="list">
             <a href="#acoes">Ações</a>
             <a href="#metodo">Método</a>
-            <a href="#evento">Lançamento</a>
             <a href="#como-funciona">App</a>
             <a href="#sec-viral">Compartilhar</a>
           </div>
@@ -262,13 +238,13 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
                 A landing chama. O app organiza. A rua confirma.
               </p>
 
-              <div className="lp-hero__event-inline" role="status" aria-label="Resumo rápido de data, horário e local">
-                <span><strong>Data:</strong> {dataPending ? "Em breve" : e.dateLabel}</span>
-                <span><strong>Horário:</strong> {timePending ? "Em breve" : e.timeLabel}</span>
-                <span><strong>Local:</strong> {localPending ? "Volta Redonda" : e.locationLabel}</span>
+              <div className="lp-hero__event-inline" role="status" aria-label="Frentes rápidas da pré-campanha">
+                <span><strong>Base:</strong> Volta Redonda</span>
+                <span><strong>App:</strong> Missão ÉLuta</span>
+                <span><strong>Ação:</strong> Voluntariado aberto</span>
               </div>
               <p className="lp-hero__event-note">
-                Entre no grupo, acesse o app, contribua, compartilhe e venha para o lançamento público.
+                Entre no grupo, acesse o app, contribua, compartilhe e escolha uma ação concreta para fortalecer a pré-campanha.
               </p>
 
               <p className="lp-hero__sig">
@@ -379,7 +355,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          2. O QUE VAI ACONTECER
+          2. FRENTES DA PRE-CAMPANHA
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--dark" aria-labelledby="sec-acontecer">
         <div className="container">
@@ -389,12 +365,12 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
               Quatro frentes para transformar escuta em organização.
             </h2>
             <p className="lp-sec-lead">
-              O lançamento é a porta de entrada. A pré-candidatura continua no grupo,
-              no app, nas missões e na circulação pública das ferramentas.
+              A pré-candidatura avança pelo grupo de voluntários,
+              pelo app, pelas missões, pela contribuição e pela circulação pública das ferramentas.
             </p>
           </header>
 
-          <ul className="lp-cards-grid" role="list" aria-label="Momentos do evento">
+          <ul className="lp-cards-grid" role="list" aria-label="Frentes da pré-campanha">
             {e.whatWillHappen.map((item) => (
               <li key={item.title} className="lp-card lp-card--glow">
                 <span className="lp-card__icon" aria-hidden="true">{item.icon}</span>
@@ -431,68 +407,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          4. AGENDA DO LANÇAMENTO
-      ═══════════════════════════════════════════════════════ */}
-      <section className="lp-section" aria-labelledby="sec-evento" id="evento">
-        <div className="container lp-event-wrap">
-          <header className="lp-sec-header">
-            <p className="lp-eyebrow">agenda pública</p>
-            <h2 className="lp-sec-title" id="sec-evento">
-              Lançamento público da pré-candidatura
-            </h2>
-            <p className="lp-sec-lead">
-              O encontro presencial apresenta a pré-candidatura, organiza voluntários
-              e conecta cada pessoa ao App Missão ÉLuta.
-            </p>
-          </header>
-
-          <div className="lp-ticket">
-            <div className="lp-ticket__glow" aria-hidden="true" />
-            <div className="lp-ticket__head">
-              <span className="lp-ticket__label">MISSÃO ÉLUTA</span>
-              <span className="lp-ticket__sublabel">Lançamento · Pré-Campanha</span>
-            </div>
-            <div className="lp-ticket__dots" aria-hidden="true">
-              <div className="lp-ticket__dot lp-ticket__dot--left" />
-              <div className="lp-ticket__dash" />
-              <div className="lp-ticket__dot lp-ticket__dot--right" />
-            </div>
-            <dl className="lp-ticket__fields">
-              <EventField icon="📅" label="Data" value={e.dateLabel} pending={dataPending} />
-              <EventField icon="🕐" label="Horário" value={e.timeLabel} pending={timePending} />
-              <EventField icon="📍" label="Local" value={e.locationLabel} pending={localPending} />
-              {!addrPending && (
-                <EventField icon="🗺️" label="Endereço" value={e.addressLabel} pending={false} />
-              )}
-            </dl>
-            <div className="lp-ticket__actions">
-              <CopyInfoBtn
-                info={`${SITE_IDENTITY.fullLabel}\n${SITE_IDENTITY.appFullLabel}\nData: ${e.dateLabel}\nHorário: ${e.timeLabel}\nLocal: ${e.locationLabel}${!addrPending ? `\nEndereço: ${e.addressLabel}` : ""}`}
-              />
-              {hasAddress && (
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.addressLabel)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary"
-                  aria-label={`Abrir ${e.addressLabel} no Google Maps`}
-                >
-                  <MapIcon /> Abrir no mapa
-                </a>
-              )}
-            </div>
-          </div>
-
-          {(dataPending || timePending || localPending) && (
-            <p className="lp-pending-notice" role="status">
-              📣 Data e horário em breve. Em Volta Redonda, entre para receber o aviso assim que confirmar.
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          5. POR QUE ISSO E DIFERENTE
+          4. POR QUE ISSO E DIFERENTE
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--accent" aria-labelledby="sec-diferente">
         <div className="container lp-why-wrap">
@@ -519,7 +434,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          6. COMO O APP FUNCIONA
+          5. COMO O APP FUNCIONA
       ═══════════════════════════════════════════════════════ */}
       <section
         className="lp-section lp-section--dark"
@@ -606,7 +521,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       <ExternalGamesHubCallout refId={ref} variant="lancamento" />
 
       {/* ═══════════════════════════════════════════════════════
-          7. BLOCO VIRAL
+          6. BLOCO VIRAL
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section lp-section--viral" aria-labelledby="sec-viral">
         <div className="container lp-viral-container">
@@ -622,9 +537,6 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
           </header>
 
           <ViralBlock
-            dateLabel={e.dateLabel}
-            timeLabel={e.timeLabel}
-            locationLabel={e.locationLabel}
             publicUrlLabel={e.publicUrlLabel}
             siteOrigin={SITE_URL}
             sharePath={sharePath}
@@ -646,7 +558,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          8. FAQ
+          7. FAQ
       ═══════════════════════════════════════════════════════ */}
       <section className="lp-section" aria-labelledby="sec-faq">
         <div className="container lp-faq-wrap">
@@ -670,7 +582,7 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          9. RODAPE
+          8. RODAPE
       ═══════════════════════════════════════════════════════ */}
       <footer className="lp-footer" role="contentinfo">
         <div className="container lp-footer__inner">
@@ -708,33 +620,6 @@ export default async function LancamentoPage({ searchParams }: PageProps) {
 /* ════════════════════════════════════════════════════════════
    SUB-COMPONENTES (server-safe)
 ════════════════════════════════════════════════════════════ */
-
-function EventField({
-  icon, label, value, pending,
-}: {
-  icon: string; label: string; value: string; pending: boolean;
-}) {
-  const pendingLabel = label === "Local" ? "Volta Redonda" : "Em breve";
-
-  return (
-    <div className={`lp-ticket__field${pending ? " lp-ticket__field--pending" : ""}`}>
-      <span className="lp-ticket__field-icon" aria-hidden="true">{icon}</span>
-      <div>
-        <dt className="lp-ticket__field-label">{label}</dt>
-        <dd className="lp-ticket__field-value">{pending ? pendingLabel : value}</dd>
-      </div>
-    </div>
-  );
-}
-
-function MapIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
 
 function ChevronIcon() {
   return (
@@ -1279,70 +1164,6 @@ const css = `
   line-height: 1.35;
 }
 
-/* ── TICKET ─────────────────────────────────────────────── */
-.lp-event-wrap { max-width: 620px; }
-.lp-ticket {
-  position: relative; background: var(--surface);
-  border: 1px solid var(--border-accent); border-radius: var(--radius-lg); overflow: hidden;
-}
-.lp-ticket__glow {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,209,0,0.08), transparent 60%);
-}
-.lp-ticket__head {
-  background: linear-gradient(90deg, rgba(255,209,0,0.12), rgba(255,209,0,0.03));
-  border-bottom: 1px solid var(--border-accent);
-  padding: 1rem 1.5rem;
-  display: flex; align-items: baseline; gap: 0.75rem;
-}
-.lp-ticket__label {
-  font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
-  color: var(--yellow); letter-spacing: 0.04em;
-}
-.lp-ticket__sublabel {
-  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--muted);
-}
-.lp-ticket__dots {
-  display: flex; align-items: center; height: 0; position: relative; padding: 0;
-}
-.lp-ticket__dot {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--bg); border: 1px solid var(--border-accent);
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 1;
-}
-.lp-ticket__dot--left  { left: -10px; }
-.lp-ticket__dot--right { right: -10px; }
-.lp-ticket__dash {
-  flex: 1; height: 0; border-top: 2px dashed rgba(255,209,0,0.22); margin: 12px 14px 0;
-}
-.lp-ticket__fields {
-  padding: 1.5rem; display: flex; flex-direction: column; gap: 1.1rem;
-}
-.lp-ticket__field {
-  display: flex; align-items: flex-start; gap: 0.75rem;
-}
-.lp-ticket__field--pending .lp-ticket__field-value { color: rgba(230,140,120,0.9); }
-.lp-ticket__field-icon { font-size: 1.15rem; line-height: 1; padding-top: 0.15rem; flex-shrink: 0; }
-.lp-ticket__field-label {
-  display: block; font-size: 0.62rem; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 0.22rem;
-}
-.lp-ticket__field-value { font-size: 0.98rem; font-weight: 600; color: var(--text); margin: 0; }
-.lp-ticket__actions {
-  display: flex; flex-wrap: wrap; gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-}
-.lp-pending-notice {
-  display: flex; align-items: flex-start; gap: 0.5rem;
-  margin-top: 1.25rem; padding: 0.75rem 1rem;
-  background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.22);
-  border-radius: var(--radius-sm); font-size: 0.88rem;
-  color: rgba(230,140,120,0.9); line-height: 1.5;
-}
-
 /* ── POR QUE É DIFERENTE ────────────────────────────────── */
 .lp-why-wrap { max-width: 780px; }
 .lp-why__title {
@@ -1836,7 +1657,6 @@ details[open] .lp-faq__chevron { transform: rotate(180deg); }
   .hero-ctas { flex-direction: column; align-items: stretch; }
   .hero-ctas .btn { justify-content: center; }
   .lp-section { padding-block: 3.15rem; }
-  .lp-ticket__actions { flex-direction: column; }
   .launch-action-strip__actions { flex-direction: column; }
   .launch-action-strip__actions .btn { width: 100%; }
   .launch-share-card__actions { grid-template-columns: 1fr; }

@@ -82,7 +82,7 @@ export default async function ApoioPage({ searchParams }: PageProps) {
         <div className="container support-page__inner">
           <div className="support-page__header">
             <Link href="/lancamento" className="support-page__back">
-              ← Voltar para o lançamento
+              ← Voltar para a pré-campanha
             </Link>
             <div>
               <p className="support-page__label">Estúdio de imagem · concreto zen</p>

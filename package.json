@@ -2,7 +2,7 @@
   "name": "landing-missao-eluta",
   "version": "0.1.0",
   "private": true,
-  "description": "Página pública de lançamento da pré-campanha e app Missão ÉLuta — Alexandre VR Abandonada.",
+  "description": "Página pública da pré-campanha e app Missão ÉLuta — Alexandre VR Abandonada.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -9,9 +9,6 @@ import {
 import { LaunchShareCard } from "@/src/components/launch/LaunchShareCard";
 
 interface ViralBlockProps {
-  dateLabel: string;
-  timeLabel: string;
-  locationLabel: string;
   publicUrlLabel: string;
   siteOrigin?: string;
   sharePath: string;
@@ -19,9 +16,6 @@ interface ViralBlockProps {
 }
 
 export function ViralBlock({
-  dateLabel,
-  timeLabel,
-  locationLabel,
   publicUrlLabel,
   siteOrigin,
   sharePath,
@@ -61,20 +55,17 @@ export function ViralBlock({
   return (
     <div className="viral-wrap">
       <LaunchShareCard
-        dateLabel={dateLabel}
-        timeLabel={timeLabel}
-        locationLabel={locationLabel}
         messageToCopy={messageToCopy}
         publicUrlLabel={publicUrlLabel}
       />
 
       {/* Ações de compartilhamento */}
-      <div className="viral-actions" role="group" aria-label="Compartilhar convite">
+      <div className="viral-actions" role="group" aria-label="Compartilhar página da pré-campanha">
         <button
           type="button"
           onClick={openWhatsApp}
           className="btn btn-whatsapp btn-lg"
-          aria-label="Compartilhar convite no WhatsApp"
+          aria-label="Compartilhar página da pré-campanha no WhatsApp"
         >
           <WhatsAppIcon />
           Chamar mais 3 pessoas
