@@ -6,6 +6,8 @@ Este documento transforma a fase externa do roadmap em checklist operacional. El
 
 Propriedade recomendada: `https://www.alexandrevrabandonada.online/`
 
+Controle operacional: `docs/controle-indexacao-search-console.csv`
+
 Enviar sitemap:
 
 ```text
@@ -83,6 +85,8 @@ https://www.alexandrevrabandonada.online/?utm_source=apoiador&utm_medium=link&ut
 ```
 
 ## 3. Locais seguros para linkar
+
+Controle operacional: `docs/controle-links-legitimos.csv`
 
 - Bio de Instagram, TikTok e Facebook.
 - Descricao de grupos oficiais de WhatsApp.

@@ -1,0 +1,15 @@
+url,tipo,acao,status,ultima_verificacao,observacoes
+https://www.alexandrevrabandonada.online/,home,Enviar sitemap e solicitar indexacao,pendente,,Home canonica da pre-campanha
+https://www.alexandrevrabandonada.online/quem-e-alexandre-vr-abandonada,pagina estrategica,Solicitar indexacao,pendente,,Busca nominal e perfil institucional
+https://www.alexandrevrabandonada.online/pre-campanha-volta-redonda,pagina estrategica,Solicitar indexacao,pendente,,Busca local em Volta Redonda
+https://www.alexandrevrabandonada.online/missao-eluta,pagina estrategica,Solicitar indexacao,pendente,,App e metodo organizativo
+https://www.alexandrevrabandonada.online/participar,pagina estrategica,Solicitar indexacao,pendente,,Voluntariado e apoio
+https://www.alexandrevrabandonada.online/pautas,pagina estrategica,Solicitar indexacao,pendente,,Temas publicos e escuta
+https://www.alexandrevrabandonada.online/perguntas-frequentes,pagina estrategica,Solicitar indexacao,pendente,,FAQ e duvidas comuns
+https://www.alexandrevrabandonada.online/apoio,pagina de apoio,Solicitar indexacao,pendente,,Foto de apoio
+https://www.alexandrevrabandonada.online/metodo,pagina de apoio,Solicitar indexacao,pendente,,Metodo de organizacao
+https://www.alexandrevrabandonada.online/formacao/campanhas-de-base,pagina de apoio,Solicitar indexacao,pendente,,Conteudo de formacao
+https://www.alexandrevrabandonada.online/lancamento,rota antiga,Nao solicitar indexacao,nao enviar,,Redireciona para /
+https://www.alexandrevrabandonada.online/pre-campanha,rota antiga,Nao solicitar indexacao,nao enviar,,Redireciona para /
+https://www.alexandrevrabandonada.online/jogo,experiencia auxiliar,Nao solicitar indexacao,nao enviar,,Noindex follow
+https://www.alexandrevrabandonada.online/jogo/rua,experiencia auxiliar,Nao solicitar indexacao,nao enviar,,Noindex follow
