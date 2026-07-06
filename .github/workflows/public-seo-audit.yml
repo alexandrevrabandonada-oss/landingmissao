@@ -21,5 +21,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit public SEO
-        run: npm run audit:seo-public
+      - name: Audit weekly SEO
+        run: npm run audit:seo-weekly

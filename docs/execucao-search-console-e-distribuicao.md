@@ -131,13 +131,13 @@ Depois da leitura, ajustar apenas com base em evidencia:
 - Pautas se uma busca territorial aparecer com frequencia.
 - Links internos se uma pagina importante estiver isolada.
 
-Antes da leitura semanal, rodar a auditoria publica:
+Antes da leitura semanal, rodar a auditoria completa:
 
 ```bash
-npm run audit:seo-public
+npm run audit:seo-weekly
 ```
 
-Ela confere producao, redirects antigos, `robots.txt`, `sitemap.xml`, metadados da home, ausencia de schema `Event`, ausencia de sinais publicos de lancamento e `noindex` nas experiencias auxiliares.
+Ela confere os artefatos operacionais, UTMs, controles de indexacao, producao, redirects antigos, `robots.txt`, `sitemap.xml`, metadados da home, ausencia de schema `Event`, ausencia de sinais publicos de lancamento e `noindex` nas experiencias auxiliares.
 
 O mesmo teste roda no GitHub Actions pelo workflow `Public SEO Audit`, toda segunda-feira as 10:15 UTC e tambem manualmente por `workflow_dispatch`.
 
