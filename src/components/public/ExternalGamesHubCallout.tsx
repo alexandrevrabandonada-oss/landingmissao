@@ -2,11 +2,11 @@ import { buildAppBaseUrl, buildGamesHubUrl } from "@/src/content/siteLinks";
 
 interface ExternalGamesHubCalloutProps {
   refId?: string;
-  variant?: "lancamento" | "metodo" | "formacao";
+  variant?: "home" | "metodo" | "formacao";
 }
 
 const copyByVariant = {
-  lancamento: {
+  home: {
     title: "As missões relâmpago agora moram em outro projeto",
     description:
       "A Landing Missão segue como vitrine pública. Os jogos agora ficam centralizados no Abandonada Games.",

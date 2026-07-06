@@ -181,7 +181,7 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={[personJsonLd, organizationJsonLd, breadcrumbJsonLd, faqJsonLd]} />
-      <nav className="lp-topbar" aria-label="Navegação da pré-candidatura">
+      <nav className="lp-topbar" aria-label="Navegação da pré-campanha">
         <div className="container lp-topbar__inner">
           <a href="#topo" className="lp-topbar__brand">
             Alexandre VR Abandonada
@@ -203,7 +203,7 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════
           1. HERO
       ═══════════════════════════════════════════════════════ */}
-      <section className="lp-hero" aria-label="Pré-candidatura Alexandre VR Abandonada" id="topo">
+      <section className="lp-hero" aria-label="Pré-campanha Alexandre VR Abandonada" id="topo">
         <div className="lp-hero__glow" aria-hidden="true" />
         <div className="lp-hero__grid-lines" aria-hidden="true" />
 
@@ -219,7 +219,7 @@ export default function HomePage() {
                 Alexandre VR Abandonada pré-candidato a deputado estadual.
               </h1>
               <p className="lp-hero__subtitle">
-                Uma pré-candidatura organizada por escuta, tecnologia popular e ação de base.
+                Uma pré-campanha organizada por escuta, tecnologia popular e ação de base.
                 A landing chama. O app organiza. A rua confirma.
               </p>
 
@@ -281,7 +281,7 @@ export default function HomePage() {
           <div className="lp-bio__intro">
             <p className="lp-eyebrow">quem é alexandre vr abandonada</p>
             <h2 className="lp-sec-title" id="sec-quem-e">
-              Uma pré-candidatura nascida da escuta de Volta Redonda.
+              Uma pré-campanha nascida da escuta de Volta Redonda.
             </h2>
             <p className="lp-sec-lead">
               Alexandre VR Abandonada se apresenta como pré-candidato a deputado estadual
@@ -313,7 +313,7 @@ export default function HomePage() {
           <header className="lp-sec-header lp-sec-header--wide">
             <p className="lp-eyebrow">central de mobilização</p>
             <h2 className="lp-sec-title" id="sec-acoes">
-              Escolha uma ação concreta para fortalecer a pré-candidatura.
+              Escolha uma ação concreta para fortalecer a pré-campanha.
             </h2>
             <p className="lp-sec-lead">
               Voluntariado, contribuição, app, foto de apoio, jogos e compartilhamento no mesmo lugar.
@@ -321,7 +321,7 @@ export default function HomePage() {
             </p>
           </header>
 
-          <div className="lp-action-grid" role="list" aria-label="Ações para apoiar a pré-candidatura">
+          <div className="lp-action-grid" role="list" aria-label="Ações para apoiar a pré-campanha">
             {actionCards.map((action) => (
               <a
                 key={action.title}
@@ -344,16 +344,16 @@ export default function HomePage() {
       <section className="lp-section lp-section--manifesto" aria-labelledby="sec-metodo" id="metodo">
         <div className="container lp-manifesto">
           <div className="lp-manifesto__copy">
-            <p className="lp-eyebrow">tese da pré-candidatura</p>
+            <p className="lp-eyebrow">tese da pré-campanha</p>
             <h2 className="lp-sec-title" id="sec-metodo">
               Volta Redonda não precisa de espectador. Precisa de povo organizado.
             </h2>
             <p className="lp-sec-lead">
-              A pré-candidatura Alexandre VR Abandonada nasce para transformar denúncia cidadã,
+              A pré-campanha Alexandre VR Abandonada nasce para transformar denúncia cidadã,
               memória do território e escuta popular em organização permanente.
             </p>
           </div>
-          <div className="lp-manifesto__grid" role="list" aria-label="Método da pré-candidatura">
+          <div className="lp-manifesto__grid" role="list" aria-label="Método da pré-campanha">
             <article className="lp-manifesto__item" role="listitem">
               <span>01</span>
               <strong>Escutar</strong>
@@ -379,12 +379,12 @@ export default function HomePage() {
       <section className="lp-section lp-section--dark" aria-labelledby="sec-acontecer">
         <div className="container">
           <header className="lp-sec-header">
-            <p className="lp-eyebrow">pré-candidatura em movimento</p>
+            <p className="lp-eyebrow">pré-campanha em movimento</p>
             <h2 className="lp-sec-title" id="sec-acontecer">
               Quatro frentes para transformar escuta em organização.
             </h2>
             <p className="lp-sec-lead">
-              A pré-candidatura avança pelo grupo de voluntários,
+              A pré-campanha avança pelo grupo de voluntários,
               pelo app, pelas missões, pela contribuição e pela circulação pública das ferramentas.
             </p>
           </header>
@@ -537,7 +537,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <ExternalGamesHubCallout refId={ref} variant="lancamento" />
+      <ExternalGamesHubCallout refId={ref} variant="home" />
 
       {/* ═══════════════════════════════════════════════════════
           6. BLOCO VIRAL
