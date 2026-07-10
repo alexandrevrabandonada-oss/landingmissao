@@ -1,0 +1,1808 @@
+.worldShell {
+  --world-yellow: #ffd100;
+  --world-ink: #090a0c;
+  --zone-accent: #d96542;
+  --zone-soft: rgba(217, 101, 66, 0.16);
+  min-height: 100svh;
+  position: relative;
+  overflow: hidden;
+  background: #090a0c;
+  color: #f5f3ed;
+  isolation: isolate;
+}
+
+.gameplayLayer {
+  min-height: 100svh;
+}
+
+.worldShell[data-zone="transição"] {
+  --zone-accent: #ddb94d;
+  --zone-soft: rgba(221, 185, 77, 0.16);
+}
+
+.worldShell[data-zone="jardim"] {
+  --zone-accent: #83b95e;
+  --zone-soft: rgba(131, 185, 94, 0.16);
+}
+
+.worldShell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 45%, rgba(4, 5, 6, 0.2) 100%),
+    linear-gradient(180deg, rgba(5, 6, 8, 0.08), transparent 26%, transparent 75%, rgba(5, 6, 8, 0.18));
+}
+
+.worldShell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(255, 255, 255, 0.018) 4px);
+  mix-blend-mode: soft-light;
+}
+
+.loadingScreen {
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  background: #090a0c;
+  color: #ffd100;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.loadingScreen span {
+  width: 46px;
+  height: 46px;
+  justify-self: center;
+  border: 2px solid rgba(255, 209, 0, 0.2);
+  border-top-color: #ffd100;
+  border-radius: 50%;
+  animation: world-spin 800ms linear infinite;
+}
+
+.topBar {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(250px, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  padding: 0.42rem clamp(0.75rem, 2.4vw, 2rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--zone-accent) 34%, transparent);
+  background: linear-gradient(180deg, rgba(7, 8, 10, 0.91), rgba(7, 8, 10, 0.66));
+  backdrop-filter: blur(10px);
+}
+
+.backLink,
+.topActions button,
+.lightIntro button,
+.lightJourney button,
+.storyAction,
+.pauseOverlay button,
+.pauseOverlay a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backLink {
+  justify-self: start;
+  gap: 0.55rem;
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.backLink > span[aria-hidden="true"] {
+  color: var(--world-yellow);
+  font-size: 1.25rem;
+}
+
+.brandLabel {
+  white-space: nowrap;
+}
+
+.districtLabel {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.55rem;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.districtLabel span {
+  color: var(--world-yellow);
+  font-weight: 900;
+}
+
+.topActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.topActions button {
+  min-width: 54px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(245, 243, 237, 0.82);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.actionIcon {
+  display: none;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.actionLabel {
+  white-space: nowrap;
+}
+
+.topActions button:hover,
+.topActions button:focus-visible {
+  border-color: var(--world-yellow);
+  color: var(--world-yellow);
+}
+
+.worldShell button:focus-visible,
+.worldShell a:focus-visible,
+.worldShell summary:focus-visible,
+.joystick:focus-visible {
+  outline: 3px solid #f5f3ed;
+  outline-offset: 3px;
+}
+
+.topActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.canvasWrap {
+  width: 100%;
+  height: 100svh;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.sceneBoot {
+  display: grid;
+  grid-template-columns: auto minmax(0, 18rem);
+  place-content: center;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 48%, rgba(221, 185, 77, 0.16), transparent 19rem),
+    linear-gradient(135deg, #29383d, #111518 68%);
+  color: rgba(245, 243, 237, 0.74);
+  opacity: 1;
+  transition: opacity 220ms ease, visibility 0s linear;
+}
+
+.sceneBoot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/game/layer-industrial.svg") center / cover no-repeat;
+  opacity: 0.44;
+  -webkit-mask-image: linear-gradient(90deg, transparent 4%, #000 48%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 4%, #000 48%, #000 100%);
+}
+
+.sceneBoot::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 18%;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 209, 0, 0.52), transparent);
+}
+
+.sceneBoot[data-fullscreen="true"] {
+  min-height: 100svh;
+  position: fixed;
+  z-index: 100;
+}
+
+.sceneBoot[data-hidden="true"] {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease, visibility 0s linear 220ms;
+}
+
+.sceneBoot > * {
+  position: relative;
+  z-index: 1;
+}
+
+.bootMark {
+  width: 34px;
+  height: 34px;
+  transform: rotate(45deg);
+  border: 2px solid #ffd100;
+  background: rgba(255, 209, 0, 0.08);
+  animation: scene-boot 900ms ease-in-out infinite alternate;
+}
+
+.bootCopy {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.bootCopy small {
+  color: #ffd100;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bootCopy strong {
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: clamp(0.9rem, 2.4vw, 1.25rem);
+  letter-spacing: 0.02em;
+}
+
+.bootCopy p {
+  margin: 0;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.bootCopy a {
+  min-height: 44px;
+  width: max-content;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.45rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(255, 209, 0, 0.54);
+  border-radius: 8px;
+  color: #ffd100;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.objectiveCard,
+.mobileControls,
+.keyboardHint,
+.journeyProgress {
+  transition: opacity 180ms ease, visibility 0s linear;
+}
+
+.worldShell[data-scene-phase="booting"] .objectiveCard,
+.worldShell[data-scene-phase="booting"] .mobileControls,
+.worldShell[data-scene-phase="booting"] .keyboardHint,
+.worldShell[data-scene-phase="booting"] .journeyProgress {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.journeyProgress {
+  height: 2px;
+  position: fixed;
+  top: 58px;
+  right: 0;
+  left: 0;
+  z-index: 42;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.journeyProgress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent 0 33.1%,
+    rgba(8, 9, 11, 0.78) 33.1% 33.45%,
+    transparent 33.45% 66.45%,
+    rgba(8, 9, 11, 0.78) 66.45% 66.8%,
+    transparent 66.8%
+  );
+}
+
+.journeyProgress::after {
+  content: "";
+  width: var(--journey-progress);
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, #d96542, #ddb94d 58%, #83b95e);
+  box-shadow: 0 0 12px var(--zone-accent);
+  transition: width 280ms ease;
+}
+
+.objectiveCard {
+  width: min(330px, calc(100vw - 2rem));
+  position: fixed;
+  top: 72px;
+  left: clamp(1rem, 3vw, 2.5rem);
+  z-index: 25;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--zone-accent) 38%, transparent);
+  border-radius: 14px;
+  background:
+    linear-gradient(125deg, var(--zone-soft), transparent 52%),
+    rgba(10, 11, 14, 0.76);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(14px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+}
+
+.objectiveToggle {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px 24px;
+  align-items: center;
+  gap: 0.12rem 0.8rem;
+  padding: 0.72rem 0.85rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.objectiveToggle > span:not(.objectiveCompass) {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--zone-accent);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.objectiveToggle strong {
+  grid-column: 1;
+  margin: 0;
+}
+
+.objectiveToggle i {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 1.2rem;
+  font-style: normal;
+}
+
+.objectiveToggle > .objectiveCompass {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--zone-accent) 46%, transparent);
+  border-radius: 50%;
+  background: var(--zone-soft);
+}
+
+.objectiveCompleteMark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  place-items: center;
+  border: 1px solid rgba(131, 185, 94, 0.62);
+  border-radius: 50%;
+  background: rgba(131, 185, 94, 0.16);
+  color: #9bd276;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.objectiveCard[data-complete="true"] {
+  --zone-accent: #9bd276;
+  --zone-soft: rgba(131, 185, 94, 0.16);
+  border-color: rgba(131, 185, 94, 0.46);
+}
+
+.objectiveCompass b {
+  display: block;
+  transform: rotate(var(--objective-bearing));
+  color: var(--zone-accent);
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: transform 220ms ease;
+}
+
+.objectiveDetails {
+  max-height: 170px;
+  overflow: hidden;
+  padding: 0 0.85rem 0.85rem;
+  opacity: 1;
+  transition: max-height 240ms ease, opacity 180ms ease, padding 240ms ease;
+}
+
+.checkpointTrail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  position: relative;
+  margin-top: 0.65rem;
+}
+
+.checkpointTrail::before {
+  content: "";
+  height: 1px;
+  position: absolute;
+  top: 10px;
+  right: 12%;
+  left: 12%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.checkpointTrail span {
+  width: 21px;
+  height: 21px;
+  display: grid;
+  z-index: 1;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: #151719;
+  color: rgba(245, 243, 237, 0.5);
+  font-size: 0.54rem;
+  font-weight: 900;
+}
+
+.checkpointTrail span[data-current="true"] {
+  border-color: var(--zone-accent);
+  color: var(--zone-accent);
+  box-shadow: 0 0 0 4px var(--zone-soft);
+}
+
+.checkpointTrail span[data-visited="true"] {
+  border-color: var(--zone-accent);
+  background: var(--zone-accent);
+  color: #090a0c;
+}
+
+.objectiveCard[data-expanded="false"] {
+  width: min(275px, calc(100vw - 2rem));
+  border-color: color-mix(in srgb, var(--zone-accent) 26%, transparent);
+}
+
+.objectiveCard[data-expanded="false"] .objectiveDetails {
+  max-height: 0;
+  padding-block: 0;
+  opacity: 0;
+}
+
+.storyPanel > span,
+.lightIntro > div > span,
+.pauseOverlay > div > span {
+  color: var(--world-yellow);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.objectiveCard strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.objectiveCard p {
+  margin: 0;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.objectiveCard button {
+  min-height: 44px;
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--zone-accent) 55%, transparent);
+  border-radius: 8px;
+  background: var(--zone-soft);
+  color: var(--zone-accent);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.objectiveCard .objectiveToggle {
+  min-height: 58px;
+  margin: 0;
+  padding: 0.72rem 0.85rem;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+}
+
+.zoneReveal {
+  width: min(310px, calc(100vw - 2rem));
+  display: grid;
+  gap: 0.2rem;
+  position: fixed;
+  top: 74px;
+  right: 1rem;
+  z-index: 24;
+  padding: 0.72rem 0.9rem;
+  border-left: 3px solid var(--zone-accent);
+  background: linear-gradient(90deg, rgba(7, 8, 10, 0.88), rgba(7, 8, 10, 0.56));
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+  animation: zone-reveal 1.6s both;
+}
+
+.zoneReveal span {
+  color: var(--zone-accent);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.zoneReveal strong {
+  font-family: var(--font-head);
+  font-size: clamp(1rem, 2.3vw, 1.3rem);
+  line-height: 1.05;
+}
+
+.journeyNotice {
+  --notice-accent: var(--zone-accent);
+  width: min(290px, calc(100vw - 2rem));
+  display: grid;
+  gap: 0.18rem;
+  position: fixed;
+  top: 74px;
+  right: 1rem;
+  z-index: 28;
+  padding: 0.68rem 0.82rem;
+  border: 1px solid color-mix(in srgb, var(--notice-accent) 48%, transparent);
+  border-radius: 11px;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--notice-accent) 13%, #0b0c0e), rgba(8, 9, 11, 0.88));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
+  animation: journey-notice 1.8s both;
+}
+
+.journeyNotice[data-tone="route"] {
+  --notice-accent: #ddb94d;
+}
+
+.journeyNotice[data-tone="complete"] {
+  --notice-accent: #8ac86a;
+  animation-duration: 3.6s;
+}
+
+.journeyNotice[data-offset="true"] {
+  top: 150px;
+}
+
+.journeyNotice span {
+  color: var(--notice-accent);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.journeyNotice strong {
+  overflow: hidden;
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: 0.88rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contextHint {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  position: fixed;
+  bottom: max(1.35rem, env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 29;
+  padding: 0.55rem 0.8rem;
+  transform: translate(-50%, 14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(8, 9, 11, 0.72);
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.contextHint[data-visible="true"] {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.contextHint[data-nearby="true"] {
+  border-color: color-mix(in srgb, var(--zone-accent) 48%, transparent);
+  background: color-mix(in srgb, #08090b 86%, var(--zone-accent));
+}
+
+.contextHint[data-mode="route"] {
+  border-color: color-mix(in srgb, var(--zone-accent) 42%, transparent);
+  background: linear-gradient(110deg, var(--zone-soft), rgba(8, 9, 11, 0.76));
+}
+
+.contextHint > span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  flex: 0 0 22px;
+  place-items: center;
+  color: var(--zone-accent);
+  font-size: 1.1rem;
+  transition: transform 220ms ease;
+}
+
+.contextHint p {
+  display: grid;
+  gap: 0.08rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.contextHint small {
+  color: var(--zone-accent);
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contextHint strong {
+  color: rgba(245, 243, 237, 0.9);
+  font-size: 0.68rem;
+}
+
+.mobileControls {
+  width: min(100%, 760px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  position: fixed;
+  right: 0;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  left: 0;
+  z-index: 30;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 5vw, 2.5rem);
+  pointer-events: none;
+}
+
+.joystick {
+  width: 108px;
+  height: 108px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(8, 9, 12, 0.38);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.42), 0 18px 46px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  opacity: 0.64;
+  transition: opacity 180ms ease, border-color 180ms ease;
+}
+
+.joystick[data-active="true"] {
+  border-color: color-mix(in srgb, var(--zone-accent) 65%, transparent);
+  opacity: 1;
+}
+
+.joystick::before {
+  content: "";
+  width: 2px;
+  height: 58%;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.joystick > span {
+  width: 46px;
+  height: 46px;
+  position: relative;
+  z-index: 1;
+  border: 2px solid color-mix(in srgb, var(--zone-accent) 68%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f3efe0, var(--zone-accent) 60%, #35372f);
+  box-shadow: 0 0 28px var(--zone-soft);
+}
+
+.actionButton {
+  width: 78px;
+  min-height: 78px;
+  display: grid;
+  place-content: center;
+  gap: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--zone-accent) 75%, transparent);
+  border-radius: 50%;
+  background: rgba(8, 9, 12, 0.58);
+  color: #f5f3ed;
+  box-shadow: 0 0 0 7px var(--zone-soft), 0 18px 46px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 850;
+  pointer-events: auto;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.actionButton[data-nearby="true"] {
+  background: var(--zone-accent);
+  color: #090a0c;
+  animation: action-ready 560ms ease-out 1;
+}
+
+.actionButton[data-nearby="true"] > span {
+  color: #090a0c;
+}
+
+.actionButton > span {
+  color: var(--zone-accent);
+  font-size: 1.35rem;
+}
+
+.actionButton:active {
+  transform: scale(0.96);
+}
+
+.keyboardHint {
+  position: fixed;
+  right: 1rem;
+  bottom: 0.4rem;
+  z-index: 22;
+  margin: 0;
+  color: rgba(245, 243, 237, 0.64);
+  font-size: 0.64rem;
+}
+
+.storyScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background:
+    linear-gradient(90deg, rgba(5, 6, 8, 0.38), rgba(5, 6, 8, 0.78)),
+    rgba(5, 6, 8, 0.34);
+  backdrop-filter: blur(6px);
+}
+
+.storyPanel {
+  --story-accent: #ffd100;
+  width: min(430px, calc(100vw - 2rem));
+  max-height: calc(100svh - 2rem);
+  position: fixed;
+  top: 50%;
+  right: clamp(1rem, 4vw, 3.5rem);
+  z-index: 55;
+  overflow: auto;
+  padding: 1.5rem;
+  transform: translateY(-50%);
+  border: 1px solid color-mix(in srgb, var(--story-accent) 42%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--story-accent) 9%, transparent), transparent 50%),
+    repeating-linear-gradient(0deg, transparent 0 30px, rgba(255, 255, 255, 0.018) 31px),
+    rgba(9, 10, 12, 0.96);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
+  scrollbar-color: color-mix(in srgb, var(--story-accent) 55%, transparent) transparent;
+}
+
+.storyPanel[data-kind="memória"] {
+  --story-accent: #ef704b;
+}
+
+.storyPanel[data-kind="pauta"] {
+  --story-accent: #8ac86a;
+}
+
+.storyMeta {
+  display: grid;
+  gap: 0.25rem;
+  padding-right: 3rem;
+}
+
+.storyMeta span {
+  color: var(--story-accent);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.storyMeta strong {
+  color: rgba(245, 243, 237, 0.66);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+
+.storyProgress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
+.storyProgress span {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.storyProgress span[data-complete="true"] {
+  background: var(--story-accent);
+}
+
+.storyPanel h2,
+.pauseOverlay h2,
+.lightIntro h1,
+.lightJourney h2 {
+  color: #f5f3ed;
+  font-family: var(--font-head);
+}
+
+.storyPanel h2 {
+  max-width: 12ch;
+  margin: 1rem 0 0;
+  font-size: clamp(1.65rem, 4vw, 2.5rem);
+  line-height: 0.98;
+}
+
+.storyPanel p {
+  margin: 1rem 0 0;
+  color: rgba(245, 243, 237, 0.78);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: #f5f3ed;
+  cursor: pointer;
+  font-size: 1.35rem;
+}
+
+.storyAction {
+  gap: 0.8rem;
+  margin-top: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--story-accent);
+  color: var(--world-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.storyFooter {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.storyNext {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.15rem 0.8rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--story-accent) 40%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--story-accent) 8%, transparent);
+  color: #f5f3ed;
+  cursor: pointer;
+  text-align: left;
+}
+
+.storyNext small,
+.storyNext strong {
+  grid-column: 1;
+}
+
+.storyNext small {
+  color: var(--story-accent);
+  font-size: 0.57rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.storyNext strong {
+  overflow: hidden;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.storyNext > span {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  color: var(--story-accent);
+  font-size: 1.2rem;
+}
+
+.storyPanel .storyComplete {
+  margin: 0;
+  color: var(--story-accent);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.storyMissionButton {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 1.2rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--story-accent) 48%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--story-accent) 8%, transparent);
+  color: var(--story-accent);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.storyMissionButton[aria-pressed="true"] {
+  background: var(--story-accent);
+  color: #090a0c;
+}
+
+.pauseOverlay {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 6, 8, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.mapOverlay {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  z-index: 72;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 6, 8, 0.84);
+  backdrop-filter: blur(14px);
+}
+
+.mapOverlay > div {
+  width: min(820px, 100%);
+  position: relative;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid rgba(255, 209, 0, 0.34);
+  border-radius: 18px;
+  background: #101115;
+}
+
+.spatialMap {
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  margin: -0.25rem 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(156, 77, 54, 0.16) 0 34%, rgba(196, 154, 70, 0.1) 34% 66%, rgba(79, 123, 72, 0.18) 66%),
+    #17191a;
+}
+
+.spatialMap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 39px, rgba(255, 255, 255, 0.025) 40px);
+}
+
+.spatialMap svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.spatialMap path {
+  fill: none;
+  stroke: rgba(255, 209, 0, 0.62);
+  stroke-dasharray: 5 7;
+  stroke-linecap: round;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapZones {
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  position: absolute;
+  inset: 0;
+}
+
+.mapZones span {
+  padding: 0.55rem 0.65rem;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mapPoint,
+.mapPlayer {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.mapPoint {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 209, 0, 0.7);
+  background: #242525;
+  color: #ffd100;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.mapPoint[data-visited="true"] {
+  background: #ffd100;
+  color: #090a0c;
+}
+
+.mapPointLabel {
+  position: absolute;
+  top: 50%;
+  left: 51px;
+  padding: 0.24rem 0.38rem;
+  transform: translateY(-50%);
+  border-radius: 5px;
+  background: rgba(8, 9, 11, 0.78);
+  color: rgba(245, 243, 237, 0.88);
+  font-size: 0.54rem;
+  letter-spacing: 0.045em;
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mapPlayer {
+  width: 16px;
+  height: 16px;
+  top: var(--player-y);
+  left: var(--player-x);
+  border: 3px solid #f7f4e9;
+  background: #d85e3e;
+  box-shadow: 0 0 0 5px rgba(216, 94, 62, 0.22);
+}
+
+.mapPlayer i {
+  width: 3px;
+  height: 9px;
+  position: absolute;
+  bottom: 12px;
+  left: 4px;
+  background: #f7f4e9;
+}
+
+.mapOverlay > div > span {
+  color: #ffd100;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mapOverlay h2 {
+  max-width: 13ch;
+  margin: 0.45rem 0 1.4rem;
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  line-height: 0.98;
+}
+
+.mapOverlay ol {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapOverlay li {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mapOverlay li > span {
+  color: rgba(245, 243, 237, 0.62);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.mapOverlay li[data-visited="true"] > span {
+  color: #ffd100;
+}
+
+.mapOverlay li button {
+  min-height: 58px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #f5f3ed;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mapOverlay li button small {
+  color: rgba(245, 243, 237, 0.68);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mapOverlay li button strong {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+}
+
+.pauseOverlay > div {
+  width: min(390px, 100%);
+  max-height: calc(100svh - 2rem);
+  overflow: auto;
+  padding: 2rem;
+  border: 1px solid rgba(255, 209, 0, 0.34);
+  border-radius: 18px;
+  background: #101115;
+  text-align: center;
+}
+
+.pauseOverlay h2 {
+  margin: 0.4rem 0 1.4rem;
+  font-size: 2rem;
+}
+
+.pauseOverlay button,
+.pauseOverlay a {
+  width: 100%;
+  margin-top: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: transparent;
+  color: #f5f3ed;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.pauseOverlay > div > button:first-of-type {
+  border-color: var(--world-yellow);
+  background: var(--world-yellow);
+  color: #090a0c;
+}
+
+.pauseSettings {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  text-align: left;
+}
+
+.pauseSettings summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.8rem;
+  color: rgba(245, 243, 237, 0.76);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 850;
+  list-style: none;
+}
+
+.pauseSettings summary::after {
+  content: "+";
+  color: var(--world-yellow);
+  font-size: 1rem;
+}
+
+.pauseSettings[open] summary::after {
+  content: "−";
+}
+
+.pauseSettings summary::-webkit-details-marker {
+  display: none;
+}
+
+.pauseSettings > div {
+  padding: 0 0.65rem 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pauseSettings button[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--world-yellow) 58%, transparent);
+  color: var(--world-yellow);
+}
+
+.lightMode {
+  min-height: 100svh;
+  padding: 7.5rem clamp(1rem, 5vw, 4rem) 4rem;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(175, 62, 39, 0.17), transparent 32rem),
+    radial-gradient(circle at 88% 75%, rgba(73, 142, 72, 0.17), transparent 34rem),
+    #0b0c0f;
+}
+
+.lightIntro,
+.lightJourney {
+  width: min(100%, 1060px);
+  margin-inline: auto;
+}
+
+.lightIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.7fr);
+  align-items: center;
+  gap: 3rem;
+}
+
+.lightIntro h1 {
+  max-width: 11ch;
+  margin: 0.65rem 0 0;
+  font-size: clamp(3rem, 7vw, 6.3rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+.lightIntro p {
+  max-width: 57ch;
+  margin: 1.25rem 0 0;
+  color: rgba(245, 243, 237, 0.62);
+  line-height: 1.65;
+}
+
+.lightIntro button,
+.lightJourney button {
+  margin-top: 1.25rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--world-yellow);
+  border-radius: 9px;
+  background: var(--world-yellow);
+  color: #090a0c;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.lightIntro img {
+  width: 100%;
+  border: 1px solid rgba(255, 209, 0, 0.2);
+  border-radius: 24px;
+  filter: saturate(0.78) contrast(1.05);
+}
+
+.lightJourney {
+  display: grid;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lightJourney li {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 190px;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 1.25rem;
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.lightJourney li[data-visited="true"] {
+  border-color: rgba(255, 209, 0, 0.4);
+}
+
+.lightJourney li > span {
+  color: var(--world-yellow);
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 850;
+}
+
+.lightJourney small {
+  color: rgba(245, 243, 237, 0.64);
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lightJourney h2 {
+  margin: 0.35rem 0 0;
+  font-size: 1.45rem;
+}
+
+.lightJourney p {
+  margin: 0.45rem 0 0;
+  color: rgba(245, 243, 237, 0.72);
+}
+
+.lightJourney button {
+  margin-top: 0.85rem;
+  background: transparent;
+  color: var(--world-yellow);
+}
+
+.liveRegion {
+  width: 1px;
+  height: 1px;
+  position: fixed;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 821px) {
+  .mobileControls {
+    width: auto;
+    right: 2rem;
+    left: auto;
+    padding: 0;
+  }
+
+  .joystick {
+    display: none;
+  }
+
+  .actionButton {
+    width: 84px;
+    min-height: 84px;
+  }
+}
+
+@media (max-width: 700px) {
+  .topBar {
+    min-height: 56px;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .backLink {
+    gap: 0.35rem;
+    font-size: 0.62rem;
+  }
+
+  .districtLabel {
+    display: none;
+  }
+
+  .topActions button {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+    border-radius: 11px;
+  }
+
+  .topActions {
+    gap: 0.25rem;
+  }
+
+  .topActions .modeButton,
+  .topActions .cameraButton {
+    display: none;
+  }
+
+  .worldShell[data-scene-phase="booting"] .topActions .modeButton {
+    display: inline-flex;
+  }
+
+  .sceneBoot {
+    grid-template-columns: auto minmax(0, 13.5rem);
+    gap: 0.8rem;
+    padding: 1.25rem;
+  }
+
+  .actionIcon {
+    display: inline;
+  }
+
+  .actionLabel {
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .journeyProgress {
+    top: 56px;
+  }
+
+  .objectiveCard {
+    width: min(310px, calc(100vw - 1.5rem));
+    top: 68px;
+    left: 0.75rem;
+  }
+
+  .worldShell[data-hud-transient="true"] .objectiveCard {
+    transform: translateY(-6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .objectiveCard button {
+    margin-top: 0.45rem;
+    padding-block: 0.35rem;
+  }
+
+  .joystick {
+    width: 96px;
+    height: 96px;
+    background: rgba(8, 9, 12, 0.2);
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.28), 0 12px 30px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(4px);
+    opacity: 0.52;
+  }
+
+  .joystick[data-active="true"],
+  .joystick:focus-visible {
+    background: rgba(8, 9, 12, 0.38);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.42), 0 18px 46px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
+    opacity: 1;
+  }
+
+  .joystick > span {
+    width: 43px;
+    height: 43px;
+  }
+
+  .actionButton {
+    width: 74px;
+    min-height: 74px;
+    font-size: 0.62rem;
+  }
+
+  .actionButton[data-nearby="false"] {
+    width: 58px;
+    min-height: 58px;
+    background: rgba(8, 9, 12, 0.34);
+    box-shadow: 0 0 0 4px var(--zone-soft), 0 12px 30px rgba(0, 0, 0, 0.2);
+    font-size: 0.55rem;
+    opacity: 0.7;
+  }
+
+  .actionButton[data-nearby="false"]:focus-visible {
+    background: rgba(8, 9, 12, 0.58);
+    box-shadow: 0 0 0 7px var(--zone-soft), 0 18px 46px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+  }
+
+  .actionButton[data-nearby="false"] > span {
+    font-size: 1rem;
+  }
+
+  .contextHint {
+    bottom: calc(max(1.25rem, env(safe-area-inset-bottom)) + 102px);
+    max-width: calc(100vw - 9.5rem);
+    padding: 0.48rem 0.62rem;
+  }
+
+  .contextHint[data-nearby="true"] {
+    width: min(9.5rem, calc(100vw - 1.5rem));
+    right: 0.75rem;
+    bottom: calc(max(1.25rem, env(safe-area-inset-bottom)) + 86px);
+    left: auto;
+    max-width: none;
+    transform: translateY(10px);
+  }
+
+  .contextHint[data-nearby="true"][data-visible="true"] {
+    transform: translateY(0);
+  }
+
+  .contextHint p {
+    white-space: normal;
+  }
+
+  .contextHint strong {
+    display: block;
+    line-height: 1.25;
+  }
+
+  .zoneReveal {
+    width: min(260px, calc(100vw - 1.5rem));
+    top: 66px;
+    right: 0.75rem;
+  }
+
+  .journeyNotice {
+    width: min(270px, calc(100vw - 1.5rem));
+    top: 66px;
+    right: 0.75rem;
+  }
+
+  .journeyNotice[data-offset="true"] {
+    top: 140px;
+  }
+
+  .keyboardHint {
+    display: none;
+  }
+
+  .storyPanel {
+    width: calc(100vw - 1.5rem);
+    top: auto;
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    max-height: calc(100svh - 1.5rem - env(safe-area-inset-bottom));
+    padding: 1.25rem;
+    transform: none;
+  }
+
+  .storyPanel h2 {
+    padding-right: 2.5rem;
+    font-size: 1.8rem;
+  }
+
+  .storyPanel p {
+    font-size: 0.84rem;
+  }
+
+  .mapOverlay {
+    align-items: end;
+    padding: 0.75rem;
+  }
+
+  .mapOverlay > div {
+    max-height: calc(100svh - 1.5rem);
+    overflow: auto;
+    padding: 1.2rem;
+  }
+
+  .mapOverlay h2 {
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+    font-size: 1.75rem;
+  }
+
+  .mapOverlay ol {
+    display: none;
+  }
+
+  .spatialMap {
+    height: min(300px, 48svh);
+    margin-bottom: 0;
+  }
+
+  .lightMode {
+    padding: 5.5rem 1rem 3rem;
+  }
+
+  .lightIntro {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .lightIntro h1 {
+    font-size: clamp(2.8rem, 15vw, 4.4rem);
+  }
+
+  .lightIntro img {
+    max-height: 370px;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .lightJourney {
+    margin-top: 2.5rem;
+  }
+
+  .lightJourney li {
+    grid-template-columns: 42px 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .backLink {
+    max-width: 82px;
+    line-height: 1.05;
+  }
+
+  .joystick {
+    width: 88px;
+    height: 88px;
+  }
+
+  .actionButton {
+    width: 70px;
+    min-height: 70px;
+    font-size: 0.65rem;
+  }
+
+  .actionButton[data-nearby="false"] {
+    width: 54px;
+    min-height: 54px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingScreen span,
+  .bootMark,
+  .journeyNotice,
+  .actionButton[data-nearby="true"] {
+    animation: none;
+  }
+
+  .actionButton:active {
+    transform: none;
+  }
+
+  .zoneReveal {
+    animation: none;
+  }
+
+  .journeyProgress::after,
+  .contextHint {
+    transition: none;
+  }
+
+  .sceneBoot,
+  .objectiveCard,
+  .mobileControls,
+  .keyboardHint,
+  .journeyProgress {
+    transition: none;
+  }
+}
+
+.worldShell[data-reduced-motion="true"] .actionButton:active {
+  transform: none;
+}
+
+.worldShell[data-reduced-motion="true"] .bootMark,
+.worldShell[data-reduced-motion="true"] .journeyNotice,
+.worldShell[data-reduced-motion="true"] .actionButton[data-nearby="true"] {
+  animation: none;
+}
+
+.worldShell[data-reduced-motion="true"] .zoneReveal {
+  animation: none;
+}
+
+.worldShell[data-reduced-motion="true"] .journeyProgress::after,
+.worldShell[data-reduced-motion="true"] .contextHint {
+  transition: none;
+}
+
+.worldShell[data-reduced-motion="true"] .sceneBoot,
+.worldShell[data-reduced-motion="true"] .objectiveCard,
+.worldShell[data-reduced-motion="true"] .mobileControls,
+.worldShell[data-reduced-motion="true"] .keyboardHint,
+.worldShell[data-reduced-motion="true"] .journeyProgress {
+  transition: none;
+}
+
+@keyframes world-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scene-boot {
+  from { opacity: 0.45; transform: rotate(45deg) scale(0.82); }
+  to { opacity: 1; transform: rotate(45deg) scale(1); }
+}
+
+@keyframes journey-notice {
+  0% { opacity: 0; transform: translateY(-6px); }
+  12%, 82% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes action-ready {
+  0% { box-shadow: 0 0 0 0 var(--zone-soft), 0 18px 46px rgba(0, 0, 0, 0.3); }
+  55% { box-shadow: 0 0 0 13px transparent, 0 18px 46px rgba(0, 0, 0, 0.3); }
+  100% { box-shadow: 0 0 0 7px var(--zone-soft), 0 18px 46px rgba(0, 0, 0, 0.3); }
+}
+
+@keyframes zone-reveal {
+  0% { opacity: 0; transform: translateY(-7px); }
+  16%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-7px); }
+}

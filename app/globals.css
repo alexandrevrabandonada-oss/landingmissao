@@ -75,6 +75,9 @@ img, svg { display: block; max-width: 100%; }
 
 /* ── Skip link (acessibilidade) ───────────────────────────── */
 .skip-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;

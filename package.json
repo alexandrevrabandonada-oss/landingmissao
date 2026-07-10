@@ -16,14 +16,17 @@
     "verify": "npm run typecheck && npm run lint && npm run build"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
     "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.185.1",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.1.6",
     "typescript": "^5.8.2"
