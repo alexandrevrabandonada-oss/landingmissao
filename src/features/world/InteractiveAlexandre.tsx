@@ -108,7 +108,7 @@ export function InteractiveAlexandre({
   });
 
   return (
-    <group ref={characterRef} name="Alexandre VR Abandonada — avatar interativo">
+    <group ref={characterRef} name="Alexandre VR Abandonada — avatar interativo" scale={0.8}>
       <mesh position={[0, 0.012, 0.08]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.62, 0.9, 1]}>
         <circleGeometry args={[1, 20]} />
         <meshBasicMaterial color="#040506" transparent opacity={0.36} depthWrite={false} />

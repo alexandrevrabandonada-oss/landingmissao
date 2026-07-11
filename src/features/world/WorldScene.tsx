@@ -32,6 +32,7 @@ import {
 } from "react";
 import { InteractiveAlexandre } from "./InteractiveAlexandre";
 import {
+  getTerritoryProgress,
   WORLD_POINTS,
   type PlayerInput,
   type PlayerSimulation,
@@ -42,6 +43,7 @@ const MemorialAsset = lazy(() =>
   import("./MemorialAsset").then((module) => ({ default: module.MemorialAsset })),
 );
 const MEMORIAL_POINT = WORLD_POINTS.find((point) => point.id === "memoria") ?? null;
+const COMMON_POINT = WORLD_POINTS.find((point) => point.id === "comum") ?? null;
 
 export type WorldZone = "fábrica" | "transição" | "jardim";
 export interface SceneStats { calls: number; triangles: number }
@@ -56,6 +58,7 @@ interface WorldSceneProps {
   cameraResetSerial: number;
   reducedMotion: boolean;
   quality: "balanced" | "high";
+  agendaAccent: string | null;
   visitedPoints: WorldPointId[];
   focusPointId: WorldPointId | null;
   onNearbyPoint: (pointId: WorldPointId | null) => void;
@@ -89,6 +92,7 @@ export function WorldScene(props: WorldSceneProps) {
         simulation={props.simulation}
         reducedMotion={props.reducedMotion}
         quality={props.quality}
+        agendaAccent={props.agendaAccent}
       />
       <BeaconMotionController
         registryRef={beaconRegistry}
@@ -103,6 +107,7 @@ export function WorldScene(props: WorldSceneProps) {
           position={[point.x, 0, point.z]}
           visited={props.visitedPoints.includes(point.id)}
           active={props.focusPointId === point.id}
+          agendaAccent={props.agendaAccent}
           beaconRegistryRef={beaconRegistry}
           simulation={props.simulation}
           memorialAssetStatus={memorialAssetStatus}
@@ -141,10 +146,12 @@ const StaticWorld = memo(function StaticWorld({
   simulation,
   reducedMotion,
   quality,
+  agendaAccent,
 }: {
   simulation: PlayerSimulation;
   reducedMotion: boolean;
   quality: "balanced" | "high";
+  agendaAccent: string | null;
 }) {
   return (
     <>
@@ -154,67 +161,69 @@ const StaticWorld = memo(function StaticWorld({
       <IndustrialZone />
       <TransitionZone />
       <GardenZone reducedMotion={reducedMotion} />
+      <ExpansiveDistrictInstances />
       <VegetationInstances />
       <IndustrialDebris />
       <ReflectivePuddles />
       <GroundShadows />
       <UrbanLights />
       <WayfindingTotems />
-      <LandmarkIdentityInstances />
+      <LandmarkIdentityInstances agendaAccent={agendaAccent} />
       <EnvironmentalMotion reducedMotion={reducedMotion} quality={quality} />
     </>
   );
 });
 
-type LandmarkIdentityPart = {
+type WorldInstancePart = {
   position: readonly [number, number, number];
   rotation?: readonly [number, number, number];
   scale: readonly [number, number, number];
   color: string;
 };
 
-function LandmarkIdentityInstances() {
+function LandmarkIdentityInstances({ agendaAccent }: { agendaAccent: string | null }) {
+  const commonAccent = agendaAccent ?? "#729b58";
   const structures = useRef<InstancedMesh>(null);
   const symbols = useRef<InstancedMesh>(null);
   const transform = useMemo(() => new Object3D(), []);
-  const structureParts = useMemo<LandmarkIdentityPart[]>(() => [
+  const structureParts = useMemo<WorldInstancePart[]>(() => [
     // Memorial: fissuras no piso e testemunhos inclinados preservam a ideia de ruptura.
-    { position: [-3.1, 0.035, -2.05], rotation: [0, 0.7, 0], scale: [1.15, 0.045, 0.075], color: "#a34f39" },
-    { position: [-2.55, 0.036, -1.88], rotation: [0, -0.25, 0], scale: [0.82, 0.045, 0.065], color: "#467579" },
-    { position: [-1.68, 0.034, -2.15], rotation: [0, -0.8, 0], scale: [1.02, 0.045, 0.07], color: "#bd704b" },
-    { position: [-3.18, 0.035, -3.25], rotation: [0, -0.55, 0], scale: [0.9, 0.045, 0.065], color: "#744a40" },
-    { position: [-1.63, 0.034, -3.32], rotation: [0, 0.62, 0], scale: [0.86, 0.045, 0.065], color: "#3c6267" },
-    { position: [-3.48, 0.55, -2.72], rotation: [0.08, 0, -0.12], scale: [0.09, 1.1, 0.09], color: "#765047" },
-    { position: [-1.23, 0.42, -2.62], rotation: [-0.05, 0, 0.14], scale: [0.08, 0.84, 0.08], color: "#55706b" },
+    { position: [-3.1, 0.035, -4.85], rotation: [0, 0.7, 0], scale: [1.15, 0.045, 0.075], color: "#a34f39" },
+    { position: [-2.55, 0.036, -4.68], rotation: [0, -0.25, 0], scale: [0.82, 0.045, 0.065], color: "#467579" },
+    { position: [-1.68, 0.034, -4.95], rotation: [0, -0.8, 0], scale: [1.02, 0.045, 0.07], color: "#bd704b" },
+    { position: [-3.18, 0.035, -6.05], rotation: [0, -0.55, 0], scale: [0.9, 0.045, 0.065], color: "#744a40" },
+    { position: [-1.63, 0.034, -6.12], rotation: [0, 0.62, 0], scale: [0.86, 0.045, 0.065], color: "#3c6267" },
+    { position: [-3.48, 0.55, -5.52], rotation: [0.08, 0, -0.12], scale: [0.09, 1.1, 0.09], color: "#765047" },
+    { position: [-1.23, 0.42, -5.42], rotation: [-0.05, 0, 0.14], scale: [0.08, 0.84, 0.08], color: "#55706b" },
 
     // Comum: um pórtico aberto enquadra o espaço de encontro sem fechá-lo.
-    { position: [1.02, 1.05, -7.12], rotation: [0, 0, -0.025], scale: [0.13, 2.1, 0.13], color: "#729b58" },
-    { position: [3.18, 1.05, -7.12], rotation: [0, 0, 0.025], scale: [0.13, 2.1, 0.13], color: "#729b58" },
-    { position: [2.1, 2.08, -7.12], scale: [2.28, 0.13, 0.13], color: "#b49a53" },
-    { position: [2.1, 0.035, -5.38], scale: [0.07, 0.045, 1.15], color: "#638a55" },
-    { position: [1.27, 0.035, -5.68], rotation: [0, -0.7, 0], scale: [0.07, 0.045, 0.92], color: "#8a7345" },
-    { position: [2.93, 0.035, -5.68], rotation: [0, 0.7, 0], scale: [0.07, 0.045, 0.92], color: "#8a7345" },
+    { position: [1.02, 1.05, -17.42], rotation: [0, 0, -0.025], scale: [0.13, 2.1, 0.13], color: commonAccent },
+    { position: [3.18, 1.05, -17.42], rotation: [0, 0, 0.025], scale: [0.13, 2.1, 0.13], color: commonAccent },
+    { position: [2.1, 2.08, -17.42], scale: [2.28, 0.13, 0.13], color: "#b49a53" },
+    { position: [2.1, 0.035, -15.68], scale: [0.07, 0.045, 1.15], color: commonAccent },
+    { position: [1.27, 0.035, -15.98], rotation: [0, -0.7, 0], scale: [0.07, 0.045, 0.92], color: "#8a7345" },
+    { position: [2.93, 0.035, -15.98], rotation: [0, 0.7, 0], scale: [0.07, 0.045, 0.92], color: "#8a7345" },
 
     // Central: moldura cívica forte, reconhecível mesmo atrás do HUD mobile.
-    { position: [-1.18, 1.13, -9.15], scale: [0.12, 2.26, 0.12], color: "#d6a848" },
-    { position: [1.18, 1.13, -9.15], scale: [0.12, 2.26, 0.12], color: "#d6a848" },
-    { position: [0, 2.27, -9.15], scale: [2.48, 0.12, 0.12], color: "#f0bd4f" },
-    { position: [0, 0.08, -9.15], scale: [2.48, 0.08, 0.12], color: "#856f43" },
-  ], []);
-  const symbolParts = useMemo<LandmarkIdentityPart[]>(() => [
-    { position: [-3.05, 0.25, -1.92], rotation: [0, 0, 0.15], scale: [0.17, 0.27, 0.17], color: "#d96542" },
-    { position: [-2.35, 0.2, -1.7], rotation: [0, 0, -0.2], scale: [0.14, 0.22, 0.14], color: "#d8a55a" },
-    { position: [-1.65, 0.24, -1.94], rotation: [0, 0, 0.2], scale: [0.16, 0.25, 0.16], color: "#5e9290" },
-    { position: [1.42, 0.23, -6.58], scale: [0.16, 0.24, 0.16], color: "#83b95e" },
-    { position: [2.1, 0.22, -6.35], rotation: [0, 0, 0.2], scale: [0.15, 0.22, 0.15], color: "#d1af58" },
-    { position: [2.78, 0.23, -6.58], rotation: [0, 0, -0.2], scale: [0.16, 0.24, 0.16], color: "#6fa488" },
-    { position: [-0.48, 2.48, -9.13], scale: [0.16, 0.16, 0.16], color: "#d96542" },
-    { position: [0, 2.48, -9.13], rotation: [0, 0, Math.PI / 4], scale: [0.16, 0.16, 0.16], color: "#ffd15c" },
-    { position: [0.48, 2.48, -9.13], scale: [0.16, 0.16, 0.16], color: "#83b95e" },
-  ], []);
+    { position: [-1.18, 1.13, -27], scale: [0.12, 2.26, 0.12], color: "#d6a848" },
+    { position: [1.18, 1.13, -27], scale: [0.12, 2.26, 0.12], color: "#d6a848" },
+    { position: [0, 2.27, -27], scale: [2.48, 0.12, 0.12], color: "#f0bd4f" },
+    { position: [0, 0.08, -27], scale: [2.48, 0.08, 0.12], color: "#856f43" },
+  ], [commonAccent]);
+  const symbolParts = useMemo<WorldInstancePart[]>(() => [
+    { position: [-3.05, 0.25, -4.72], rotation: [0, 0, 0.15], scale: [0.17, 0.27, 0.17], color: "#d96542" },
+    { position: [-2.35, 0.2, -4.5], rotation: [0, 0, -0.2], scale: [0.14, 0.22, 0.14], color: "#d8a55a" },
+    { position: [-1.65, 0.24, -4.74], rotation: [0, 0, 0.2], scale: [0.16, 0.25, 0.16], color: "#5e9290" },
+    { position: [1.42, 0.23, -16.88], scale: [0.16, 0.24, 0.16], color: commonAccent },
+    { position: [2.1, 0.22, -16.65], rotation: [0, 0, 0.2], scale: [0.15, 0.22, 0.15], color: "#d1af58" },
+    { position: [2.78, 0.23, -16.88], rotation: [0, 0, -0.2], scale: [0.16, 0.24, 0.16], color: commonAccent },
+    { position: [-0.48, 2.48, -26.98], scale: [0.16, 0.16, 0.16], color: "#d96542" },
+    { position: [0, 2.48, -26.98], rotation: [0, 0, Math.PI / 4], scale: [0.16, 0.16, 0.16], color: "#ffd15c" },
+    { position: [0.48, 2.48, -26.98], scale: [0.16, 0.16, 0.16], color: "#83b95e" },
+  ], [commonAccent]);
 
   useLayoutEffect(() => {
-    const applyParts = (mesh: InstancedMesh | null, parts: LandmarkIdentityPart[]) => {
+    const applyParts = (mesh: InstancedMesh | null, parts: WorldInstancePart[]) => {
       if (!mesh) return;
       parts.forEach((part, index) => {
         transform.position.set(...part.position);
@@ -276,7 +285,10 @@ function CameraRig({
       introUntil.current = state.clock.elapsedTime + 1.25;
     }
     const intro = state.clock.elapsedTime < introUntil.current && !simulation.moving;
-    const territoryProgress = MathUtils.clamp((2.25 - simulation.z) / 11.7, 0, 1);
+    const territoryProgress = getTerritoryProgress(simulation.z);
+    const collectiveVista = MathUtils.smoothstep(territoryProgress, 0.36, 0.52)
+      * (1 - MathUtils.smoothstep(territoryProgress, 0.62, 0.72));
+    const gardenVista = MathUtils.smoothstep(territoryProgress, 0.68, 0.92);
     const portrait = camera instanceof PerspectiveCamera && camera.aspect < 0.82;
     const landscape = camera instanceof PerspectiveCamera && camera.aspect > 1.35;
     const lateralScale = portrait ? 0.58 : 1;
@@ -286,9 +298,12 @@ function CameraRig({
     const lateral = intro || !focusPoint
       ? rawLateral
       : shoulderDirection * Math.max(Math.abs(rawLateral), lateralFloor);
-    const cameraHeight = (intro ? 3.75 : MathUtils.lerp(4.05, 4.65, territoryProgress)) + (landscape ? 0.3 : 0);
-    const cameraDistance = (intro ? 7.3 : MathUtils.lerp(8.35, 9.35, territoryProgress)) + (landscape ? 0.7 : 0);
-    const lookAhead = MathUtils.lerp(3.1, 4.15, territoryProgress) + (landscape ? 0.25 : 0);
+    const cameraHeight = (intro ? 3.75 : MathUtils.lerp(4.05, 4.65, territoryProgress))
+      + collectiveVista * 0.28 + gardenVista * 0.5 + (landscape ? 0.3 : 0);
+    const cameraDistance = (intro ? 7.3 : MathUtils.lerp(8.35, 9.35, territoryProgress))
+      + collectiveVista * 0.55 + gardenVista * 1.05 + (landscape ? 0.7 : 0);
+    const lookAhead = MathUtils.lerp(3.1, 4.15, territoryProgress)
+      + collectiveVista * 0.25 + gardenVista * 0.4 + (landscape ? 0.25 : 0);
     const sway = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 1.1) * 0.045;
     const focusDistance = focusPoint
       ? Math.hypot(focusPoint.x - simulation.x, focusPoint.z - simulation.z)
@@ -336,6 +351,8 @@ function CameraRig({
     const targetFov = MathUtils.lerp(49, 46, territoryProgress)
       + (portrait ? 1.5 : 0)
       + (landscape ? 1.5 : 0)
+      + collectiveVista * 0.8
+      + gardenVista * 1.8
       + focusReveal * (portrait ? 1.8 : 0.8);
     if (camera instanceof PerspectiveCamera && Math.abs(camera.fov - targetFov) > 0.01) {
       camera.fov = MathUtils.lerp(camera.fov, targetFov, 1 - Math.exp(-delta * 3.5));
@@ -376,7 +393,7 @@ function SceneTelemetry({
         navigating: simulation.autoNavigating,
         targetId: simulation.navigationTargetId,
       });
-      const zone: WorldZone = simulation.z > -3.8 ? "fábrica" : simulation.z > -7.2 ? "transição" : "jardim";
+      const zone: WorldZone = simulation.z > -9.5 ? "fábrica" : simulation.z > -20 ? "transição" : "jardim";
       if (zone !== lastZone.current) {
         lastZone.current = zone;
         onZoneChange(zone);
@@ -406,48 +423,58 @@ function ZoneAtmosphere({
   const background = useMemo(() => new Color(), []);
   const fogColor = useMemo(() => new Color(), []);
   const coldSky = useMemo(() => new Color("#2c373f"), []);
+  const collectiveSky = useMemo(() => new Color("#665d4d"), []);
   const warmSky = useMemo(() => new Color("#68735d"), []);
   const coldFog = useMemo(() => new Color("#344047"), []);
+  const collectiveFog = useMemo(() => new Color("#645a4c"), []);
   const warmFog = useMemo(() => new Color("#66705b"), []);
   const warmHemisphere = useMemo(() => new Color("#f1d799"), []);
+  const collectiveHemisphere = useMemo(() => new Color("#d6b776"), []);
   const coldDirectional = useMemo(() => new Color("#bfd2d0"), []);
+  const collectiveDirectional = useMemo(() => new Color("#efbf75"), []);
   const warmDirectional = useMemo(() => new Color("#ffe0a1"), []);
   const coldGround = useMemo(() => new Color("#302820"), []);
+  const collectiveGround = useMemo(() => new Color("#4d4131"), []);
   const warmGround = useMemo(() => new Color("#43513b"), []);
   const particlePositions = useMemo(() => {
-    const values = new Float32Array(72 * 3);
-    for (let index = 0; index < 72; index += 1) {
+    const values = new Float32Array(96 * 3);
+    for (let index = 0; index < 96; index += 1) {
       const angle = index * 2.399;
       const radius = 2.4 + (index % 11) * 0.58;
       values[index * 3] = Math.cos(angle) * radius;
       values[index * 3 + 1] = 0.4 + ((index * 7) % 31) * 0.15;
-      values[index * 3 + 2] = 2.4 - ((index * 13) % 70) * 0.2;
+      values[index * 3 + 2] = 2.4 - ((index * 13) % 150) * 0.22;
     }
     return values;
   }, []);
 
   useFrame((state, delta) => {
-    const progress = MathUtils.clamp((2.25 - simulation.z) / 11.7, 0, 1);
-    const zoneMix = MathUtils.smoothstep(progress, 0.45, 0.84);
-    background.lerpColors(coldSky, warmSky, zoneMix);
-    fogColor.lerpColors(coldFog, warmFog, zoneMix);
+    const progress = getTerritoryProgress(simulation.z);
+    const collectiveMix = MathUtils.smoothstep(progress, 0.18, 0.56);
+    const gardenMix = MathUtils.smoothstep(progress, 0.58, 0.9);
+    background.lerpColors(coldSky, collectiveSky, collectiveMix).lerp(warmSky, gardenMix);
+    fogColor.lerpColors(coldFog, collectiveFog, collectiveMix).lerp(warmFog, gardenMix);
     if (scene.background instanceof Color) scene.background.copy(background);
     if (scene.fog instanceof Fog) {
       scene.fog.color.copy(fogColor);
-      scene.fog.near = MathUtils.lerp(12, 17, zoneMix);
-      scene.fog.far = MathUtils.lerp(36, 48, zoneMix);
+      scene.fog.near = MathUtils.lerp(MathUtils.lerp(10, 14, collectiveMix), 19, gardenMix);
+      scene.fog.far = MathUtils.lerp(MathUtils.lerp(31, 41, collectiveMix), 56, gardenMix);
     }
     if (hemisphere.current) {
-      hemisphere.current.intensity = MathUtils.lerp(1.45, 2.05, zoneMix);
-      hemisphere.current.color.lerpColors(coldSky, warmHemisphere, zoneMix);
-      hemisphere.current.groundColor.lerpColors(coldGround, warmGround, zoneMix);
+      hemisphere.current.intensity = MathUtils.lerp(MathUtils.lerp(1.35, 1.72, collectiveMix), 2.12, gardenMix);
+      hemisphere.current.color.lerpColors(coldSky, collectiveHemisphere, collectiveMix).lerp(warmHemisphere, gardenMix);
+      hemisphere.current.groundColor.lerpColors(coldGround, collectiveGround, collectiveMix).lerp(warmGround, gardenMix);
     }
     if (directional.current) {
-      directional.current.intensity = MathUtils.lerp(1.9, 2.35, zoneMix);
-      directional.current.color.lerpColors(coldDirectional, warmDirectional, zoneMix);
+      directional.current.intensity = MathUtils.lerp(MathUtils.lerp(1.82, 2.08, collectiveMix), 2.45, gardenMix);
+      directional.current.color.lerpColors(coldDirectional, collectiveDirectional, collectiveMix).lerp(warmDirectional, gardenMix);
     }
-    if (industrialLight.current) industrialLight.current.intensity = MathUtils.lerp(3.25, 0.75, zoneMix);
-    if (gardenLight.current) gardenLight.current.intensity = MathUtils.lerp(0.55, 4.25, zoneMix);
+    if (industrialLight.current) {
+      industrialLight.current.intensity = MathUtils.lerp(MathUtils.lerp(3.25, 1.7, collectiveMix), 0.65, gardenMix);
+    }
+    if (gardenLight.current) {
+      gardenLight.current.intensity = MathUtils.lerp(MathUtils.lerp(0.45, 1.8, collectiveMix), 4.4, gardenMix);
+    }
     if (!reducedMotion && particles.current) {
       particles.current.rotation.y += delta * 0.012;
       particles.current.position.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.08;
@@ -458,8 +485,8 @@ function ZoneAtmosphere({
     <>
       <hemisphereLight ref={hemisphere} args={["#b9d5d2", "#3a2d22", 1.7]} />
       <directionalLight ref={directional} position={[-7, 12, 9]} intensity={1.9} color="#bfd2d0" />
-      <pointLight ref={industrialLight} position={[-3.4, 3.7, -2]} intensity={3.25} distance={10} color="#bd4e2f" />
-      <pointLight ref={gardenLight} position={[2.1, 4, -8]} intensity={0.55} distance={11} color="#ffd56b" />
+      <pointLight ref={industrialLight} position={[-3.4, 3.7, -5]} intensity={3.25} distance={13} color="#bd4e2f" />
+      <pointLight ref={gardenLight} position={[2.1, 5, -25]} intensity={0.55} distance={16} color="#ffd56b" />
       <points ref={particles}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[particlePositions, 3]} />
@@ -567,28 +594,41 @@ function TerritoryGround() {
   const route = useMemo(
     () => [
       { x: 0, z: 1.5, r: 0 },
-      { x: -0.35, z: -0.7, r: 0.08 },
-      { x: 0.25, z: -3.1, r: -0.12 },
-      { x: 0.65, z: -5.5, r: -0.16 },
-      { x: 0.15, z: -7.8, r: 0.12 },
-      { x: 0, z: -10.1, r: 0 },
+      { x: -0.3, z: -0.8, r: 0.08 },
+      { x: -0.55, z: -3.2, r: 0.04 },
+      { x: -0.35, z: -5.7, r: -0.08 },
+      { x: 0.25, z: -8.2, r: -0.15 },
+      { x: 0.7, z: -10.7, r: -0.08 },
+      { x: 0.55, z: -13.2, r: 0.1 },
+      { x: 0.18, z: -15.7, r: 0.12 },
+      { x: -0.25, z: -18.2, r: 0.08 },
+      { x: -0.45, z: -20.7, r: -0.06 },
+      { x: -0.2, z: -23.2, r: -0.12 },
+      { x: 0.15, z: -25.7, r: -0.08 },
+      { x: 0, z: -28.2, r: 0 },
     ],
     [],
   );
   const baseSurfaces = useMemo(
     () => [
-      { color: "#25282a", position: [0, -0.2, -4.2] as const, scale: [24, 22, 1] as const },
-      { color: "#333234", position: [-5, -0.11, -1.4] as const, scale: [10, 9, 1] as const },
-      { color: "#304434", position: [4.7, -0.1, -8] as const, scale: [11, 9, 1] as const },
+      { color: "#25282a", position: [0, -0.2, -13.5] as const, scale: [24, 40, 1] as const },
+      { color: "#333234", position: [-5, -0.11, -4.5] as const, scale: [10, 18, 1] as const },
+      { color: "#3d3a35", position: [-4.5, -0.105, -15] as const, scale: [10, 16, 1] as const },
+      { color: "#304434", position: [4.7, -0.1, -24] as const, scale: [11, 20, 1] as const },
     ],
     [],
   );
   const groundMarks = useMemo(
     () => [
       { color: "#765847", position: [-2.1, -0.035, -4.35] as const, rotation: 0, scale: 0.34 },
-      { color: "#765847", position: [2.6, -0.035, -5.3] as const, rotation: 0.55, scale: 0.42 },
-      { color: "#566b43", position: [-1.8, -0.035, -6.5] as const, rotation: 1.1, scale: 0.5 },
-      { color: "#566b43", position: [2.2, -0.035, -8.2] as const, rotation: 1.65, scale: 0.58 },
+      { color: "#765847", position: [2.6, -0.035, -7.2] as const, rotation: 0.55, scale: 0.42 },
+      { color: "#94704a", position: [-1.8, -0.035, -10.5] as const, rotation: 1.1, scale: 0.5 },
+      { color: "#9a804e", position: [2.2, -0.035, -13.4] as const, rotation: 1.65, scale: 0.58 },
+      { color: "#68724d", position: [-2.4, -0.035, -16.5] as const, rotation: 0.8, scale: 0.54 },
+      { color: "#566b43", position: [2.5, -0.035, -19.2] as const, rotation: 1.35, scale: 0.62 },
+      { color: "#4c775d", position: [-2.1, -0.035, -22.3] as const, rotation: 0.3, scale: 0.58 },
+      { color: "#4c806a", position: [2.35, -0.035, -25.2] as const, rotation: 1.8, scale: 0.66 },
+      { color: "#75a064", position: [-1.7, -0.035, -28.1] as const, rotation: 0.95, scale: 0.6 },
     ],
     [],
   );
@@ -607,12 +647,12 @@ function TerritoryGround() {
       const surfaceIndex = baseSurfaces.length + index;
       temp.position.set(part.x, -0.055 + index * 0.002, part.z);
       temp.rotation.set(-Math.PI / 2, part.r, 0, "YXZ");
-      temp.scale.set(4.3 - index * 0.12, 2.65, 1);
+      temp.scale.set(4.6 - index * 0.08, 2.8, 1);
       temp.updateMatrix();
       surfaces.current?.setMatrixAt(surfaceIndex, temp.matrix);
       surfaces.current?.setColorAt(
         surfaceIndex,
-        new Color(index < 2 ? "#292728" : index < 4 ? "#34312d" : "#3b3a2e"),
+        new Color(index < 4 ? "#292728" : index < 9 ? "#38342d" : "#3b4735"),
       );
 
       temp.position.set(part.x, -0.043 + index * 0.002, part.z);
@@ -620,7 +660,10 @@ function TerritoryGround() {
       temp.scale.set(0.07, 1.1, 1);
       temp.updateMatrix();
       centerLines.current?.setMatrixAt(index, temp.matrix);
-      centerLines.current?.setColorAt(index, new Color(index < 3 ? "#9d7350" : "#d5b85d"));
+      centerLines.current?.setColorAt(
+        index,
+        new Color(index < 4 ? "#9d5b45" : index < 9 ? "#d5a957" : "#8ec174"),
+      );
     });
 
     groundMarks.forEach((mark, index) => {
@@ -654,6 +697,199 @@ function TerritoryGround() {
       <instancedMesh ref={marks} args={[undefined, undefined, groundMarks.length]}>
         <circleGeometry args={[1, 7]} />
         <meshBasicMaterial />
+      </instancedMesh>
+    </group>
+  );
+}
+
+function ExpansiveDistrictInstances() {
+  const architecture = useRef<InstancedMesh>(null);
+  const columns = useRef<InstancedMesh>(null);
+  const crowns = useRef<InstancedMesh>(null);
+  const transform = useMemo(() => new Object3D(), []);
+  const architectureParts = useMemo<WorldInstancePart[]>(() => {
+    const parts: WorldInstancePart[] = [];
+
+    // Cânion brutalista: volumes assimétricos comprimem o começo da travessia.
+    [-3.2, -5.8, -8.2].forEach((z, index) => {
+      const height = 4.2 + index * 0.85;
+      parts.push(
+        { position: [-4.05, height / 2, z], rotation: [0, 0.08 * (index - 1), 0.025], scale: [1.45 + index * 0.16, height, 1.6], color: index === 2 ? "#4d4742" : "#393b3e" },
+        { position: [4.1, (height + 0.7) / 2, z - 0.7], rotation: [0, -0.06 * index, -0.02], scale: [1.2 + index * 0.18, height + 0.7, 1.45], color: index === 0 ? "#474344" : "#34383b" },
+        { position: [-3.3, 1.8 + index * 0.62, z + 0.48], scale: [0.07, 0.55, 0.38], color: index === 0 ? "#28454d" : "#6f493e" },
+        { position: [3.48, 2.35 + index * 0.58, z - 0.25], scale: [0.07, 0.68, 0.42], color: index === 2 ? "#9b6748" : "#263f47" },
+      );
+    });
+    parts.push(
+      { position: [-3.3, 5.7, -7.4], rotation: [0, 0, -0.12], scale: [2.4, 0.32, 0.55], color: "#7f4b3d" },
+      { position: [3.15, 6.1, -8.7], rotation: [0, 0, 0.1], scale: [2.1, 0.28, 0.5], color: "#6e493f" },
+    );
+
+    // Pórticos sucessivos contam a transformação e funcionam como setas arquitetônicas.
+    const gates = [
+      { z: -10.2, height: 3.55, width: 6.25, color: "#765148" },
+      { z: -13.3, height: 3.85, width: 6.45, color: "#9b6846" },
+      { z: -17.8, height: 5.8, width: 6.65, color: "#c19a50" },
+      { z: -19.7, height: 4.45, width: 6.85, color: "#8b9458" },
+      { z: -23.3, height: 4.9, width: 7.1, color: "#62906a" },
+      { z: -27.1, height: 5.35, width: 7.35, color: "#d2af55" },
+    ];
+    gates.forEach((gate, index) => {
+      const lean = index < 3 ? 0.035 : 0.075;
+      parts.push(
+        { position: [-gate.width / 2, gate.height / 2, gate.z], rotation: [0, 0, -lean], scale: [0.16, gate.height, 0.22], color: gate.color },
+        { position: [gate.width / 2, gate.height / 2, gate.z], rotation: [0, 0, lean], scale: [0.16, gate.height, 0.22], color: gate.color },
+        { position: [0, gate.height, gate.z], rotation: [0, 0, index % 2 ? 0.025 : -0.025], scale: [gate.width, 0.16, 0.22], color: gate.color },
+      );
+    });
+
+    // Degraus do mutirão: bases habitáveis nas bordas, mantendo o eixo central livre.
+    [
+      [-3.55, 0.32, -11.8, 2.3, 0.64, 1.25, "#685446"],
+      [3.45, 0.42, -14.7, 2.55, 0.84, 1.45, "#7b6547"],
+      [-3.65, 0.5, -17.6, 2.45, 1, 1.55, "#6f744d"],
+      [3.5, 0.58, -19.5, 2.65, 1.16, 1.7, "#557258"],
+    ].forEach(([x, y, z, sx, sy, sz, color]) => {
+      parts.push({ position: [x as number, y as number, z as number], scale: [sx as number, sy as number, sz as number], color: color as string });
+    });
+    [
+      { x: -3.35, z: -13.8, color: "#9b744a" },
+      { x: 3.3, z: -18.25, color: "#788253" },
+    ].forEach((table, tableIndex) => {
+      parts.push(
+        { position: [table.x, 0.72, table.z], rotation: [0, tableIndex ? -0.16 : 0.18, 0], scale: [1.45, 0.12, 0.72], color: table.color },
+        { position: [table.x, 0.42, table.z - 0.52], rotation: [0, tableIndex ? -0.16 : 0.18, 0], scale: [1.55, 0.12, 0.26], color: "#6b513c" },
+        { position: [table.x - 0.48, 0.35, table.z], scale: [0.12, 0.7, 0.12], color: "#4a4036" },
+        { position: [table.x + 0.48, 0.35, table.z], scale: [0.12, 0.7, 0.12], color: "#4a4036" },
+      );
+    });
+
+    // Coberturas solares abrem a escala no trecho final e apontam para a Central.
+    [-22.1, -25.2, -28.1].forEach((z, index) => {
+      const color = index === 2 ? "#3f7480" : "#315e6d";
+      parts.push(
+        { position: [-2.35, 4.2 + index * 0.32, z], rotation: [0.12, 0.08, -0.14], scale: [2.85, 0.12, 1.55], color },
+        { position: [2.35, 4.45 + index * 0.32, z - 0.45], rotation: [0.12, -0.08, 0.14], scale: [2.85, 0.12, 1.55], color },
+        { position: [0, 0.035, z + 0.85], rotation: [0, index % 2 ? -0.18 : 0.18, 0], scale: [0.12, 0.055, 2.5], color: "#9bc47a" },
+      );
+    });
+    parts.push(
+      { position: [-1.45, 0.025, -22.8], rotation: [0, 0.05, 0], scale: [0.42, 0.035, 3.2], color: "#2f7880" },
+      { position: [1.45, 0.026, -26.4], rotation: [0, -0.05, 0], scale: [0.42, 0.035, 3.4], color: "#3b8b87" },
+      { position: [-0.72, 0.055, -24.7], scale: [0.62, 0.045, 0.18], color: "#d4b95f" },
+      { position: [0.05, 0.056, -25.05], scale: [0.62, 0.045, 0.18], color: "#d4b95f" },
+      { position: [0.82, 0.057, -25.4], scale: [0.62, 0.045, 0.18], color: "#d4b95f" },
+    );
+
+    // Estações cívicas: o cenário também funciona como arquivo, assembleia e central de ação.
+    // Os três módulos coloridos repetem a linguagem de cada marco sem criar novas superfícies de UI.
+    [
+      { x: 3.55, z: -6.15, rotation: -0.12, base: "#433b39", modules: ["#a9573e", "#315d68", "#d2aa58"] },
+      { x: -3.55, z: -16.15, rotation: 0.12, base: "#60563f", modules: ["#c08d4d", "#63815b", "#3c7777"] },
+      { x: 3.55, z: -27.55, rotation: -0.12, base: "#38665c", modules: ["#b85c3e", "#e0ba53", "#72a566"] },
+    ].forEach((station) => {
+      parts.push(
+        { position: [station.x, 0.08, station.z], rotation: [0, station.rotation, 0], scale: [1.45, 0.16, 0.72], color: station.base },
+        { position: [station.x, 1.15, station.z + 0.18], rotation: [0, station.rotation, 0], scale: [0.1, 2.15, 0.1], color: station.base },
+        { position: [station.x, 2.18, station.z + 0.18], rotation: [0, station.rotation, 0], scale: [1.55, 0.1, 0.1], color: station.base },
+        ...station.modules.map((color, index) => ({
+          position: [station.x - 0.5 + index * 0.5, 1.64, station.z + 0.18] as [number, number, number],
+          rotation: [0, station.rotation, 0] as [number, number, number],
+          scale: [0.32, 0.42, 0.14] as [number, number, number],
+          color,
+        })),
+      );
+    });
+
+    return parts;
+  }, []);
+  const columnParts = useMemo<WorldInstancePart[]>(() => {
+    const parts: WorldInstancePart[] = [];
+    [-12.2, -15.7, -18.8].forEach((z, index) => {
+      parts.push(
+        { position: [-3.55, 1.25, z], scale: [0.42, 2.5 + index * 0.25, 0.42], color: index === 0 ? "#825544" : "#77704e" },
+        { position: [3.5, 1.35, z - 0.65], scale: [0.42, 2.7 + index * 0.25, 0.42], color: index === 0 ? "#765047" : "#687853" },
+      );
+    });
+    [-21.8, -24.8, -27.7].forEach((z, index) => {
+      parts.push(
+        { position: [-3.45, 2.35 + index * 0.18, z], scale: [0.12, 4.7 + index * 0.35, 0.12], color: "#9e8d50" },
+        { position: [3.4, 2.55 + index * 0.18, z - 0.55], scale: [0.12, 5.1 + index * 0.35, 0.12], color: "#78a06b" },
+      );
+    });
+    [
+      [-3.2, -14.3], [3.1, -16.9], [-3.25, -19.6], [3.15, -21.2],
+      [-3.25, -23.8], [3.05, -25.6], [-3, -27.7], [3.2, -29],
+    ].forEach(([x, z], index) => {
+      parts.push({ position: [x, 1.05 + (index % 3) * 0.15, z], scale: [0.18, 2.1 + (index % 3) * 0.3, 0.18], color: "#66513a" });
+    });
+    return parts;
+  }, []);
+  const crownParts = useMemo<WorldInstancePart[]>(() => {
+    const parts: WorldInstancePart[] = [];
+    [
+      [-3.2, 2.75, -14.3], [3.1, 3.05, -16.9], [-3.25, 2.9, -19.6], [3.15, 3.15, -21.2],
+      [-3.25, 3.2, -23.8], [3.05, 3.35, -25.6], [-3, 3.15, -27.7], [3.2, 3.45, -29],
+    ].forEach(([x, y, z], index) => {
+      parts.push({ position: [x, y, z], rotation: [0, index * 0.57, 0], scale: [1.05 + (index % 2) * 0.22, 0.8 + (index % 3) * 0.08, 1], color: index < 3 ? "#55784f" : index < 6 ? "#5d8e5a" : "#75a968" });
+    });
+    [-21.8, -24.8, -27.7].forEach((z, index) => {
+      parts.push(
+        { position: [-3.45, 4.85 + index * 0.35, z], rotation: [0, 0, Math.PI / 4], scale: [0.32, 0.32, 0.32], color: "#e2b951" },
+        { position: [3.4, 5.25 + index * 0.35, z - 0.55], rotation: [0, 0, Math.PI / 4], scale: [0.32, 0.32, 0.32], color: "#8dc67a" },
+      );
+    });
+    [
+      { x: 3.55, z: -6.15, colors: ["#a9573e", "#315d68", "#d2aa58"] },
+      { x: -3.55, z: -16.15, colors: ["#c08d4d", "#63815b", "#3c7777"] },
+      { x: 3.55, z: -27.55, colors: ["#b85c3e", "#e0ba53", "#72a566"] },
+    ].forEach((station) => {
+      station.colors.forEach((color, index) => {
+        parts.push({
+          position: [station.x - 0.5 + index * 0.5, 2.42, station.z + 0.18],
+          rotation: [0, index * 0.65, Math.PI / 4],
+          scale: [0.13, 0.13, 0.13],
+          color,
+        });
+      });
+    });
+    return parts;
+  }, []);
+
+  useLayoutEffect(() => {
+    const applyParts = (mesh: InstancedMesh | null, parts: WorldInstancePart[]) => {
+      if (!mesh) return;
+      parts.forEach((part, index) => {
+        transform.position.set(...part.position);
+        transform.rotation.set(...(part.rotation ?? [0, 0, 0]), "XYZ");
+        transform.scale.set(...part.scale);
+        transform.updateMatrix();
+        mesh.setMatrixAt(index, transform.matrix);
+        mesh.setColorAt(index, new Color(part.color));
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      mesh.computeBoundingBox();
+      mesh.computeBoundingSphere();
+    };
+    applyParts(architecture.current, architectureParts);
+    applyParts(columns.current, columnParts);
+    applyParts(crowns.current, crownParts);
+  }, [architectureParts, columnParts, crownParts, transform]);
+
+  return (
+    <group>
+      <instancedMesh ref={architecture} args={[undefined, undefined, architectureParts.length]}>
+        <boxGeometry />
+        <meshStandardMaterial roughness={0.9} metalness={0.08} />
+      </instancedMesh>
+      <instancedMesh ref={columns} args={[undefined, undefined, columnParts.length]}>
+        <cylinderGeometry args={[1, 1, 1, 8]} />
+        <meshStandardMaterial roughness={0.92} flatShading />
+      </instancedMesh>
+      <instancedMesh ref={crowns} args={[undefined, undefined, crownParts.length]}>
+        <icosahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial roughness={0.95} flatShading />
       </instancedMesh>
     </group>
   );
@@ -753,6 +989,9 @@ function GroundShadows() {
       [-4.45, 0.008, 0.2, 2.5, 1.8], [-5.3, 0.008, -3.3, 2.2, 1.65],
       [-4.4, 0.008, -5.7, 2.3, 1.55], [3.9, 0.008, -5.5, 1.8, 1.1],
       [-4.2, 0.008, -9.4, 2.4, 1.7], [4.2, 0.008, -9.2, 2.5, 1.8],
+      [-3.6, 0.008, -13.4, 2.3, 1.45], [3.55, 0.008, -17.2, 2.5, 1.55],
+      [-3.7, 0.008, -20.8, 2.45, 1.6], [3.6, 0.008, -23.8, 2.5, 1.65],
+      [-3.55, 0.008, -26.5, 2.35, 1.55], [3.55, 0.008, -29, 2.4, 1.6],
     ],
     [],
   );
@@ -781,13 +1020,24 @@ function WayfindingTotems() {
   const plaques = useRef<InstancedMesh>(null);
   const temp = useMemo(() => new Object3D(), []);
   const colors = useMemo(
-    () => ["#b95d42", "#d6a94e", "#64786a", "#d6a94e", "#77a45d", "#3f786e"].map((value) => new Color(value)),
+    () => [
+      "#b95d42", "#8d5947", "#64786a",
+      "#c87b47", "#d6a94e", "#64786a",
+      "#d6a94e", "#88a05f", "#4d8069",
+      "#c8b55d", "#77a45d", "#3f786e",
+      "#9ec46f", "#5d9a6a", "#4c8790",
+      "#e0bd58", "#83b95e", "#58a092",
+    ].map((value) => new Color(value)),
     [],
   );
   const totems = useMemo(
     () => [
       { x: -2.65, z: -3.85, rotation: 0.22 },
-      { x: 2.65, z: -7.2, rotation: -0.22 },
+      { x: 2.65, z: -8.4, rotation: -0.22 },
+      { x: -2.7, z: -12.7, rotation: 0.2 },
+      { x: 2.75, z: -17.8, rotation: -0.2 },
+      { x: -2.7, z: -22.7, rotation: 0.18 },
+      { x: 2.65, z: -27.5, rotation: -0.18 },
     ],
     [],
   );
@@ -810,10 +1060,16 @@ function WayfindingTotems() {
         plaques.current?.setColorAt(plaqueIndex, colors[plaqueIndex]);
       }
     });
-    if (posts.current) posts.current.instanceMatrix.needsUpdate = true;
+    if (posts.current) {
+      posts.current.instanceMatrix.needsUpdate = true;
+      posts.current.computeBoundingBox();
+      posts.current.computeBoundingSphere();
+    }
     if (plaques.current) {
       plaques.current.instanceMatrix.needsUpdate = true;
       if (plaques.current.instanceColor) plaques.current.instanceColor.needsUpdate = true;
+      plaques.current.computeBoundingBox();
+      plaques.current.computeBoundingSphere();
     }
   }, [colors, temp, totems]);
 
@@ -823,7 +1079,7 @@ function WayfindingTotems() {
         <boxGeometry />
         <meshBasicMaterial color="#3d3934" />
       </instancedMesh>
-      <instancedMesh ref={plaques} args={[undefined, undefined, 6]}>
+      <instancedMesh ref={plaques} args={[undefined, undefined, totems.length * 3]}>
         <boxGeometry />
         <meshBasicMaterial />
       </instancedMesh>
@@ -853,7 +1109,11 @@ function StreetLamps() {
   const lamps = useMemo(
     () => [
       { color: "#d86942", position: [-2.65, 0, -4.45] as const, rotation: 0.2 },
-      { color: "#e6bd58", position: [2.85, 0, -7.25] as const, rotation: -0.32 },
+      { color: "#c87948", position: [2.85, 0, -8.25] as const, rotation: -0.32 },
+      { color: "#e6bd58", position: [-2.8, 0, -12.5] as const, rotation: 0.28 },
+      { color: "#d8c365", position: [2.9, 0, -17.7] as const, rotation: -0.25 },
+      { color: "#8fc276", position: [-2.85, 0, -22.6] as const, rotation: 0.22 },
+      { color: "#78c1a8", position: [2.8, 0, -27.4] as const, rotation: -0.22 },
     ],
     [],
   );
@@ -1020,7 +1280,7 @@ function WindRotor({ rotorRef }: { rotorRef: MutableRefObject<Group | null> }) {
   }, [temp]);
 
   return (
-    <group position={[-2.2, 0, -10.1]} rotation={[0, -0.15, 0]}>
+    <group position={[-2.2, 0, -24.1]} rotation={[0, -0.15, 0]}>
       <mesh position={[0, 2.1, 0.08]}><cylinderGeometry args={[0.06, 0.11, 4.2, 8]} /><meshBasicMaterial color="#a48750" /></mesh>
       <group ref={rotorRef} position={[0, 4.15, 0]}>
         <instancedMesh ref={blades} args={[undefined, undefined, 3]}>
@@ -1046,7 +1306,7 @@ function WaterGlints({
 
   useEffect(() => {
     for (let index = 0; index < count; index += 1) {
-      temp.position.set(0.5 + (index % 2 ? 0.12 : -0.1), 0.018, -7.75 - index * (3.3 / Math.max(1, count - 1)));
+      temp.position.set(0.35 + (index % 2 ? 0.14 : -0.12), 0.018, -21.2 - index * (7.1 / Math.max(1, count - 1)));
       temp.rotation.set(-Math.PI / 2, 0, index % 2 ? 0.22 : -0.16);
       temp.scale.set(0.2 + (index % 3) * 0.05, 0.025, 1);
       temp.updateMatrix();
@@ -1394,7 +1654,7 @@ function GardenZone({ reducedMotion }: { reducedMotion: boolean }) {
         <meshStandardMaterial color="#447582" metalness={0.15} roughness={0.4} />
       </mesh>
       <GardenAnimatedInstances reducedMotion={reducedMotion} />
-      <group position={[3.2, 0, -11.2]}>
+      <group position={[3.2, 0, -19.3]}>
         <CommunityGatewayPosts />
         <mesh position={[0, 4.9, 0]} rotation={[0, 0, 0.03]}><boxGeometry args={[4.2, 0.08, 0.08]} /><meshStandardMaterial color="#cba24f" /></mesh>
       </group>
@@ -1477,12 +1737,23 @@ function VegetationInstances() {
     for (let index = 0; index < 6; index += 1) {
       const angle = (index / 6) * Math.PI * 2;
       values.push({
-        x: 2.1 + Math.cos(angle) * 0.56,
+        x: (COMMON_POINT?.x ?? 2.1) + Math.cos(angle) * 0.56,
         y: 0.58,
-        z: -7.15 + Math.sin(angle) * 0.56,
+        z: (COMMON_POINT?.z ?? -16.4) - 1.05 + Math.sin(angle) * 0.56,
         color: index % 2 ? "#83b95e" : "#4f7c4c",
       });
     }
+
+    [-21.5, -24.5, -27.5].forEach((z, row) => {
+      [-3.75, -3.2, 3.2, 3.75].forEach((x, index) => {
+        values.push({
+          x,
+          y: 0.58,
+          z: z + (index % 2 ? 0.35 : -0.35),
+          color: (index + row) % 2 ? "#78a85f" : "#4f8460",
+        });
+      });
+    });
 
     return values;
   }, []);
@@ -1534,14 +1805,22 @@ function GardenAnimatedInstances({ reducedMotion }: { reducedMotion: boolean }) 
       { color: "#3f7048", x: -3.1, z: -7.3 },
       { color: "#527d4d", x: 4.45, z: -7.05 },
       { color: "#3f7048", x: 5.4, z: -10.4 },
+      { color: "#4d7950", x: -4.1, z: -14.7 },
+      { color: "#5b8955", x: 4.15, z: -18.4 },
+      { color: "#5f925c", x: -4, z: -22.5 },
+      { color: "#6b9f62", x: 4.05, z: -26.2 },
+      { color: "#75aa69", x: -3.8, z: -29.1 },
     ],
     [],
   );
   const flagPlacements = useMemo(
     () => [
-      { color: "#d56542", delay: 0, x: 1.65 },
-      { color: "#e2ba51", delay: 1.2, x: 3.2 },
-      { color: "#5f8b58", delay: 2.4, x: 4.75 },
+      { color: "#d56542", delay: 0, x: 1.65, z: -19.3 },
+      { color: "#e2ba51", delay: 1.2, x: 3.2, z: -19.3 },
+      { color: "#5f8b58", delay: 2.4, x: 4.75, z: -19.3 },
+      { color: "#d49f4e", delay: 0.6, x: -3.35, z: -18.9 },
+      { color: "#6e9c62", delay: 1.8, x: 3.45, z: -23.1 },
+      { color: "#77aa78", delay: 3, x: -3.2, z: -27.3 },
     ],
     [],
   );
@@ -1571,7 +1850,7 @@ function GardenAnimatedInstances({ reducedMotion }: { reducedMotion: boolean }) 
       const rotationY = reducedMotion ? 0 : Math.sin(elapsed * 0.8 + placement.delay) * 0.1;
       const rotationZ = reducedMotion ? 0 : Math.sin(elapsed * 1.25 + placement.delay) * 0.06;
       const { pivot, detail } = flagTransforms;
-      pivot.position.set(placement.x, 4.42, -11.2);
+      pivot.position.set(placement.x, 4.42, placement.z);
       pivot.rotation.set(0, rotationY, rotationZ, "XYZ");
       pivot.scale.set(1, 1, 1);
 
@@ -1666,8 +1945,8 @@ function SolarCanopies() {
   }, []);
   const placements = useMemo(
     () => [
-      [2.1, 0, -10.4] as const,
-      [3.8, 0, -7.9] as const,
+      [-3.05, 0, -25.4] as const,
+      [3.1, 0, -28.4] as const,
     ],
     [],
   );
@@ -1733,6 +2012,7 @@ function NarrativeLandmark({
   position,
   visited,
   active,
+  agendaAccent,
   beaconRegistryRef,
   simulation,
   memorialAssetStatus,
@@ -1744,6 +2024,7 @@ function NarrativeLandmark({
   position: [number, number, number];
   visited: boolean;
   active: boolean;
+  agendaAccent: string | null;
   beaconRegistryRef: BeaconRegistryRef;
   simulation: PlayerSimulation;
   memorialAssetStatus: MemorialAssetStatus;
@@ -1751,7 +2032,11 @@ function NarrativeLandmark({
   onMemorialReady: () => void;
   onMemorialError: () => void;
 }) {
-  const accent = pointId === "memoria" ? "#d96542" : pointId === "comum" ? "#83b95e" : "#ffd15c";
+  const accent = pointId === "memoria"
+    ? "#d96542"
+    : pointId === "comum"
+      ? agendaAccent ?? "#83b95e"
+      : "#ffd15c";
   if (pointId === "memoria") {
     return (
       <group position={position}>

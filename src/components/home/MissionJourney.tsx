@@ -17,6 +17,7 @@ import {
   type MissionPhaseId,
 } from "@/src/content/missions";
 import {
+  MISSION_JOURNEY_UPDATED_EVENT,
   MISSION_JOURNEY_STORAGE_KEY,
   readMissionJourney,
   writeMissionJourney,
@@ -132,6 +133,7 @@ export function MissionJourneyProvider({ children }: { children: ReactNode }) {
     setVisitedPhaseIds(["conhecer"]);
     completionTracked.current = false;
     window.localStorage.removeItem(MISSION_JOURNEY_STORAGE_KEY);
+    window.dispatchEvent(new Event(MISSION_JOURNEY_UPDATED_EVENT));
     trackEventIfAvailable("mission_journey_reset");
     document.getElementById("conhecer")?.scrollIntoView({ behavior: "smooth" });
   }, []);

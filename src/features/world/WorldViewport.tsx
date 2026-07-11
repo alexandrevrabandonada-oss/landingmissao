@@ -16,6 +16,7 @@ interface WorldViewportProps {
   cameraResetSerial: number;
   reducedMotion: boolean;
   quality: "balanced" | "high";
+  agendaAccent: string | null;
   visitedPoints: WorldPointId[];
   focusPointId: WorldPointId | null;
   onNearbyPoint: (pointId: WorldPointId | null) => void;
@@ -56,6 +57,7 @@ export const WorldViewport = memo(function WorldViewport({
   cameraResetSerial,
   reducedMotion,
   quality,
+  agendaAccent,
   visitedPoints,
   focusPointId,
   onNearbyPoint,
@@ -80,6 +82,7 @@ export const WorldViewport = memo(function WorldViewport({
         cameraResetSerial={cameraResetSerial}
         reducedMotion={reducedMotion}
         quality={quality}
+        agendaAccent={agendaAccent}
         visitedPoints={visitedPoints}
         focusPointId={focusPointId}
         onNearbyPoint={onNearbyPoint}

@@ -1,0 +1,218 @@
+.selector {
+  display: grid;
+  gap: 1rem;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: end;
+  padding: clamp(0.8rem, 2vw, 1.4rem) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.intro span,
+.nextStep span {
+  color: var(--yellow);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.intro h2 {
+  max-width: 15ch;
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.8rem, 4.2vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.intro > p {
+  margin: 0;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--agenda-accent) 7%, transparent), transparent 44%),
+    rgba(255, 255, 255, 0.022);
+  transition: border-color 170ms ease, background 170ms ease, transform 170ms ease;
+}
+
+.list li:hover {
+  border-color: color-mix(in srgb, var(--agenda-accent) 46%, transparent);
+  transform: translateY(-1px);
+}
+
+.list li[data-selected="true"] {
+  border-color: var(--agenda-accent);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--agenda-accent) 15%, transparent), transparent 58%),
+    rgba(255, 255, 255, 0.03);
+  box-shadow: inset 4px 0 var(--agenda-accent), 0 16px 44px rgba(0, 0, 0, 0.2);
+}
+
+.list button {
+  width: 100%;
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 0;
+  background: transparent;
+  color: #f5f3ed;
+  cursor: pointer;
+  text-align: left;
+}
+
+.number {
+  align-self: start;
+  color: var(--agenda-accent);
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.copy > strong {
+  color: #f5f3ed;
+  font-family: var(--font-head);
+  font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+  line-height: 1.08;
+}
+
+.copy > small {
+  max-width: 74ch;
+  color: rgba(245, 243, 237, 0.6);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.focus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  margin-top: 0.1rem;
+}
+
+.focus i {
+  color: color-mix(in srgb, var(--agenda-accent) 82%, white);
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.focus i::before {
+  content: "◆";
+  margin-right: 0.35rem;
+  color: var(--agenda-accent);
+  font-size: 0.48rem;
+}
+
+.selection {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  color: rgba(245, 243, 237, 0.48);
+}
+
+.selection svg,
+.nextStep a svg {
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.list li[data-selected="true"] .selection {
+  border-color: var(--agenda-accent);
+  background: var(--agenda-accent);
+  color: #090a0c;
+}
+
+.nextStep {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.45rem;
+  padding: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--agenda-accent) 42%, transparent);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--agenda-accent) 8%, #111216);
+}
+
+.nextStep span { color: var(--agenda-accent); }
+
+.nextStep strong {
+  display: block;
+  margin-top: 0.22rem;
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+}
+
+.nextStep p {
+  margin: 0.35rem 0 0;
+  color: rgba(245, 243, 237, 0.58);
+  font-size: 0.8rem;
+}
+
+.nextStep a {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.68rem 0.85rem;
+  border-radius: 9px;
+  background: var(--agenda-accent);
+  color: #090a0c;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.hint {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: rgba(245, 243, 237, 0.5);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 720px) {
+  .intro { grid-template-columns: 1fr; gap: 0.8rem; }
+  .list button { grid-template-columns: 42px minmax(0, 1fr) 32px; gap: 0.7rem; padding: 0.9rem; }
+  .focus { display: grid; }
+  .nextStep { grid-template-columns: 1fr; }
+  .nextStep a { justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list li { transition: none; }
+}

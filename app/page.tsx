@@ -6,12 +6,11 @@ import { MissionJourneyProvider } from "@/src/components/home/MissionJourney";
 import { MissionProgress } from "@/src/components/home/MissionProgress";
 import { MissionSelector } from "@/src/components/home/MissionSelector";
 import { ShareMissionActions } from "@/src/components/home/ShareMissionActions";
-import type { MissionOption } from "@/src/content/missions";
+import { buildMissionOptions } from "@/src/content/missions";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 import { canonicalUrl, publicAssetUrl, SEO_IMAGES, SITE_URL } from "@/src/content/siteSeo";
 import {
   buildAppBaseUrl,
-  buildAppMissoesUrl,
   buildDonationUrl,
   buildGamesHubUrl,
   buildVolunteerGroupUrl,
@@ -20,9 +19,9 @@ import { buildLaunchUrl } from "@/src/lib/shareLaunch";
 import styles from "@/src/components/home/mission-home.module.css";
 
 const pageUrl = canonicalUrl("/");
-const pageTitle = "Alexandre VR Abandonada | Pré-candidato a deputado estadual por Volta Redonda";
+const pageTitle = "Alexandre VR Abandonada | Pré-candidato a deputado estadual pelo Rio de Janeiro";
 const pageDescription =
-  `Conheça a ${SITE_IDENTITY.fullLabel}: organização popular, escuta territorial, App Missão ÉLuta, voluntariado e ações em Volta Redonda.`;
+  `Conheça a ${SITE_IDENTITY.fullLabel}: uma construção nascida em Volta Redonda para organizar escuta, missões e participação popular em todo o estado do Rio de Janeiro.`;
 
 export const metadata: Metadata = {
   title: { absolute: pageTitle },
@@ -76,7 +75,6 @@ export default function HomePage() {
   const ref = "";
   const participateUrl = buildVolunteerGroupUrl(ref);
   const appUrl = buildAppBaseUrl(ref);
-  const missionUrl = buildAppMissoesUrl(ref);
   const donationUrl = buildDonationUrl(ref);
   const gamesUrl = buildGamesHubUrl(ref);
   const supportUrl = "/apoio";
@@ -85,48 +83,7 @@ export default function HomePage() {
     ref,
   );
 
-  const missions: MissionOption[] = [
-    {
-      id: "celular",
-      title: "Ajudar pelo celular",
-      description: "Entre no app, conheça as missões e participe de onde estiver.",
-      nextStep: "conhecer as missões disponíveis no App Missão ÉLuta.",
-      cta: "Conhecer as missões no app",
-      href: missionUrl,
-      external: true,
-      icon: "phone",
-    },
-    {
-      id: "rua",
-      title: "Participar na rua",
-      description: "Aproxime-se do grupo e encontre uma ação possível no território.",
-      nextStep: "ver as formas de participar com o grupo de voluntários.",
-      cta: "Entrar no grupo de voluntários",
-      href: participateUrl,
-      external: true,
-      icon: "people",
-    },
-    {
-      id: "contribuir",
-      title: "Contribuir",
-      description: "Ajude a sustentar comunicação, materiais e mobilização de base.",
-      nextStep: "conhecer a página segura de contribuição.",
-      cta: "Contribuir com a mobilização",
-      href: donationUrl,
-      external: true,
-      icon: "heart",
-    },
-    {
-      id: "compartilhar",
-      title: "Compartilhar",
-      description: "Leve a proposta para sua rede e convide mais pessoas a conhecer.",
-      nextStep: "escolher um canal e compartilhar a página.",
-      cta: "Ir para as ações de compartilhamento",
-      href: "#agir",
-      external: false,
-      icon: "send",
-    },
-  ];
+  const missions = buildMissionOptions(ref);
 
   const personJsonLd = {
     "@context": "https://schema.org",
@@ -135,8 +92,9 @@ export default function HomePage() {
     url: pageUrl,
     image: publicAssetUrl("/alexandre-retrato-hero.webp"),
     description:
-      "Pré-candidato a deputado estadual ligado à organização popular, escuta territorial e participação de base em Volta Redonda.",
+      "Pré-candidato a deputado estadual ligado à organização popular, com origem em Volta Redonda e escuta territorial em todo o estado do Rio de Janeiro.",
     knowsAbout: [
+      "Estado do Rio de Janeiro",
       "Volta Redonda",
       "organização popular",
       "escuta territorial",
@@ -152,7 +110,7 @@ export default function HomePage() {
     description: pageDescription,
     url: pageUrl,
     image: publicAssetUrl(SEO_IMAGES.preCampanha),
-    areaServed: "Volta Redonda",
+    areaServed: "Estado do Rio de Janeiro",
     slogan: SITE_IDENTITY.signature,
   };
   const breadcrumbJsonLd = {
@@ -188,7 +146,7 @@ export default function HomePage() {
           <div className={styles.heroContainer}>
             <div className={styles.heroCopy}>
               <h1 id="hero-title">
-                Alexandre VR Abandonada pré-candidato a deputado estadual.
+                Alexandre VR Abandonada pré-candidato a deputado estadual pelo Rio de Janeiro.
               </h1>
               <p className={styles.heroLead}>
                 Uma pré-campanha organizada por escuta, tecnologia popular e ação de base.
@@ -207,7 +165,7 @@ export default function HomePage() {
                 <span aria-hidden="true" />
                 <strong>Missão aberta</strong>
                 <i aria-hidden="true">·</i>
-                Organizar Volta Redonda
+                Conectar as lutas do estado a partir dos territórios
               </p>
             </div>
 
@@ -235,14 +193,14 @@ export default function HomePage() {
           <div className={styles.container}>
             <div className={styles.sectionHeading}>
               <p className={styles.sectionIndex}>Quem é Alexandre</p>
-              <h2 id="identity-title">Uma pré-campanha nascida da escuta de Volta Redonda.</h2>
+              <h2 id="identity-title">Nascida em Volta Redonda, conectada às lutas de todo o estado.</h2>
             </div>
             <div className={styles.identityGrid}>
               <div className={styles.identityCopy}>
                 <p>
                   Alexandre VR Abandonada se apresenta como pré-candidato a deputado estadual a
-                  partir de uma construção pública ligada à cidade, aos bairros e às pessoas que
-                  vivem os problemas concretos do território.
+                  partir de uma construção pública ligada à cidade e aberta às pessoas, regiões e
+                  movimentos que vivem os problemas concretos do estado do Rio de Janeiro.
                 </p>
                 <p>
                   A proposta aproxima quem quer participar de tarefas possíveis, sem exigir
@@ -331,7 +289,7 @@ export default function HomePage() {
                 <span>03</span><strong>Foto de apoio</strong><p>Ferramenta local, sem envio da foto.</p><ArrowIcon />
               </a>
               <a href="/pautas">
-                <span>04</span><strong>Pautas em escuta</strong><p>Temas públicos ligados à cidade.</p><ArrowIcon />
+                <span>04</span><strong>Pautas estaduais em escuta</strong><p>Prioridades conectadas aos diferentes territórios do Rio.</p><ArrowIcon />
               </a>
               <a href={gamesUrl} target="_blank" rel="noopener noreferrer">
                 <span>05</span><strong>Abandonada Games</strong><p>Experiências interativas no hub externo.</p><ArrowIcon />

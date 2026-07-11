@@ -6,6 +6,7 @@ import {
 } from "@/src/content/missions";
 
 export const MISSION_JOURNEY_STORAGE_KEY = "missao-eluta:landing-journey:v1";
+export const MISSION_JOURNEY_UPDATED_EVENT = "missao-eluta:mission-journey-updated";
 
 const DEFAULT_JOURNEY: Pick<MissionJourneyState, "selectedMissionId" | "visitedPhaseIds"> = {
   selectedMissionId: null,
@@ -22,7 +23,7 @@ export function readMissionJourney(
     const parsed = JSON.parse(rawValue) as Partial<MissionJourneyState>;
     const selectedMissionId = isMissionId(parsed.selectedMissionId) ? parsed.selectedMissionId : null;
     const visitedPhaseIds = Array.isArray(parsed.visitedPhaseIds)
-      ? parsed.visitedPhaseIds.filter(isPhaseId)
+      ? Array.from(new Set(parsed.visitedPhaseIds.filter(isPhaseId)))
       : [];
 
     return {
@@ -45,6 +46,9 @@ export function writeMissionJourney(
     updatedAt: new Date().toISOString(),
   };
   storage.setItem(MISSION_JOURNEY_STORAGE_KEY, JSON.stringify(nextState));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(MISSION_JOURNEY_UPDATED_EVENT));
+  }
 }
 
 export function selectStoredMission(

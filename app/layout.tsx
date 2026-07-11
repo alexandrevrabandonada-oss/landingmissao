@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { CivicJourneyDock } from "@/src/components/civic/CivicJourneyDock";
+import { ExternalJourneyReturn } from "@/src/components/civic/ExternalJourneyReturn";
 import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 import { canonicalUrl, publicAssetUrl, SEO_IMAGES, SITE_URL } from "@/src/content/siteSeo";
@@ -11,11 +13,13 @@ export const metadata: Metadata = {
     template: `%s · ${SITE_IDENTITY.appName}`,
   },
   description:
-    `Conheça a ${SITE_IDENTITY.fullLabel}: organização popular, escuta territorial, App ${SITE_IDENTITY.appName}, voluntariado, vaquinha e materiais de apoio.`,
+    `Conheça a ${SITE_IDENTITY.fullLabel}: uma construção nascida em Volta Redonda para organizar escuta, missões e participação em todo o estado do Rio de Janeiro.`,
   keywords: [
     SITE_IDENTITY.appName,
     SITE_IDENTITY.contextLabel,
     SITE_IDENTITY.publicName,
+    "Rio de Janeiro",
+    "deputado estadual",
     "Volta Redonda",
     "organização popular",
     SITE_IDENTITY.signature,
@@ -75,6 +79,8 @@ export default function RootLayout({
           Ir para o conteúdo
         </a>
         <main id="conteudo-principal">{children}</main>
+        <CivicJourneyDock />
+        <ExternalJourneyReturn />
       </body>
     </html>
   );

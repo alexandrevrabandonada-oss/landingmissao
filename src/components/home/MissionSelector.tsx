@@ -1,6 +1,12 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MissionShareCardLazy } from "@/src/components/civic/MissionShareCardLazy";
 import type { MissionOption } from "@/src/content/missions";
+import { getStateAgenda, type StateAgenda } from "@/src/content/stateAgendas";
+import { readStateAgenda } from "@/src/lib/stateAgendaStorage";
+import { trackEventIfAvailable } from "@/src/lib/trackEvent";
+import { recordExternalJourney } from "@/src/lib/externalJourneyStorage";
 import { MissionCard } from "./MissionCard";
 import { useMissionJourney } from "./MissionJourney";
 import styles from "./mission-home.module.css";
@@ -11,15 +17,31 @@ export function MissionSelector({ missions }: { missions: MissionOption[] }) {
     selectMission,
     resetJourney,
     trackMissionCta,
+    visitedPhaseIds,
   } = useMissionJourney();
+  const [shareOpen, setShareOpen] = useState(false);
+  const [selectedAgenda, setSelectedAgenda] = useState<StateAgenda | null>(null);
+  const shareButtonRef = useRef<HTMLButtonElement>(null);
   const selectedMission = missions.find((mission) => mission.id === selectedMissionId) ?? null;
 
+  useEffect(() => {
+    setSelectedAgenda(getStateAgenda(readStateAgenda(window.localStorage)));
+  }, []);
+
+  const closeShareCard = useCallback(() => {
+    setShareOpen(false);
+    window.requestAnimationFrame(() => shareButtonRef.current?.focus());
+  }, []);
+
   return (
+    <>
     <section
       className={`${styles.section} ${styles.selectorSection}`}
       id="escolher-missao"
       data-journey-phase="escolher"
       aria-labelledby="mission-selector-title"
+      aria-hidden={shareOpen || undefined}
+      inert={shareOpen ? true : undefined}
     >
       <div className={styles.narrowContainer}>
         <div className={styles.sectionHeading}>
@@ -47,11 +69,39 @@ export function MissionSelector({ missions }: { missions: MissionOption[] }) {
                 target={selectedMission.external ? "_blank" : undefined}
                 rel={selectedMission.external ? "noopener noreferrer" : undefined}
                 className={styles.primaryButton}
-                onClick={() => trackMissionCta(selectedMission)}
+                onClick={() => {
+                  if (selectedMission.external) recordExternalJourney({
+                    channel: selectedMission.id,
+                    title: selectedMission.title,
+                    returnHref: "/participar",
+                  });
+                  trackMissionCta(selectedMission);
+                }}
               >
                 <span>{selectedMission.cta}</span>
                 <ArrowIcon />
               </a>
+              <button
+                ref={shareButtonRef}
+                type="button"
+                className={styles.shareMissionButton}
+                onClick={() => {
+                  setShareOpen(true);
+                  trackEventIfAvailable("mission_card_opened", {
+                    mission: selectedMission.id,
+                    source: "mission_selector",
+                  });
+                }}
+              >
+                <span><SparkIcon /> Criar meu cartão de missão</span>
+                <ArrowIcon />
+              </button>
+              {selectedAgenda ? (
+                <p className={styles.selectedAgendaContext}>
+                  <span>Pauta estadual conectada</span>
+                  <strong>{selectedAgenda.shortTitle}</strong>
+                </p>
+              ) : null}
               <div className={styles.missionFeedback} role="status" aria-live="polite">
                 <CheckBadge />
                 <p>
@@ -84,6 +134,15 @@ export function MissionSelector({ missions }: { missions: MissionOption[] }) {
         </noscript>
       </div>
     </section>
+    {shareOpen && selectedMission ? (
+      <MissionShareCardLazy
+        mission={selectedMission}
+        agenda={selectedAgenda}
+        signalCount={visitedPhaseIds.length}
+        onClose={closeShareCard}
+      />
+    ) : null}
+    </>
   );
 }
 function ArrowIcon() {
@@ -101,5 +160,13 @@ function CheckBadge() {
         <path d="m4 10.5 3.3 3.2L16 5.8" />
       </svg>
     </span>
+  );
+}
+
+function SparkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3.5 14.2 9l5.3 2.2-5.3 2.2L12 19l-2.2-5.6-5.3-2.2L9.8 9 12 3.5Z" />
+    </svg>
   );
 }

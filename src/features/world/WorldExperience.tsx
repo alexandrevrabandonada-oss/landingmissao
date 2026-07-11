@@ -11,15 +11,25 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { buildMissionOptions, type MissionIcon, type MissionOption } from "@/src/content/missions";
+import { getStateAgenda, type StateAgenda } from "@/src/content/stateAgendas";
 import { trackEventIfAvailable } from "@/src/lib/trackEvent";
-import { selectStoredMission } from "@/src/lib/missionJourneyStorage";
+import { readMissionJourney, selectStoredMission } from "@/src/lib/missionJourneyStorage";
+import { readStateAgenda } from "@/src/lib/stateAgendaStorage";
+import {
+  readWorldJourney,
+  writeWorldJourney,
+} from "@/src/lib/worldJourneyStorage";
 import type { SceneStats, WorldZone } from "./WorldScene";
 import { WorldBootShell } from "./WorldBootShell";
 import { WorldRuntimeBoundary } from "./WorldRuntimeBoundary";
 import {
   PlayerSimulation,
+  WORLD_DEPTH,
   WORLD_POINTS,
+  WORLD_START_Z,
   createPlayerInput,
+  getTerritoryProgress,
   type WorldPoint,
   type WorldPointId,
 } from "./worldSimulation";
@@ -33,15 +43,30 @@ const WorldViewport = dynamic(
   },
 );
 
-const STORAGE_KEY = "missao-eluta:world-journey:v1";
 const CONTROLS_HINT_KEY = "missao-eluta:world-controls-seen:v1";
 const QUALITY_KEY = "missao-eluta:world-quality:v1";
 const MOTION_KEY = "missao-eluta:world-motion:v1";
+const WORLD_MISSIONS = buildMissionOptions("distrito-01");
 
-const ZONE_COPY: Record<WorldZone, { eyebrow: string; title: string }> = {
-  fábrica: { eyebrow: "Zona 01", title: "A cidade que herdamos" },
-  transição: { eyebrow: "Zona 02", title: "O comum em construção" },
-  jardim: { eyebrow: "Zona 03", title: "O futuro que cultivamos" },
+const ZONE_COPY: Record<WorldZone, { eyebrow: string; title: string; short: string; instruction: string }> = {
+  fábrica: {
+    eyebrow: "Zona 01",
+    title: "A cidade que herdamos",
+    short: "Núcleo brutalista",
+    instruction: "Atravesse as estruturas e encontre a memória.",
+  },
+  transição: {
+    eyebrow: "Zona 02",
+    title: "O comum em construção",
+    short: "Corredor do mutirão",
+    instruction: "Siga os pórticos até o espaço comum.",
+  },
+  jardim: {
+    eyebrow: "Zona 03",
+    title: "O futuro que cultivamos",
+    short: "Jardim solar",
+    instruction: "Acompanhe a linha verde até a Central.",
+  },
 };
 
 type ExperienceMode = "loading" | "3d" | "light";
@@ -74,12 +99,13 @@ export default function WorldExperience() {
   const [actionSerial, setActionSerial] = useState(0);
   const [joystick, setJoystick] = useState({ x: 0, y: 0 });
   const [hasHydrated, setHasHydrated] = useState(false);
-  const [missionSelectedInWorld, setMissionSelectedInWorld] = useState(false);
+  const [selectedMissionIdInWorld, setSelectedMissionIdInWorld] = useState<MissionOption["id"] | null>(null);
+  const [selectedAgenda, setSelectedAgenda] = useState<StateAgenda | null>(null);
   const [objectiveExpanded, setObjectiveExpanded] = useState(true);
   const [cameraResetSerial, setCameraResetSerial] = useState(0);
   const [playerPosition, setPlayerPosition] = useState({
     x: 0,
-    z: 2.25,
+    z: WORLD_START_Z,
     heading: Math.PI,
     moving: false,
     navigating: false,
@@ -198,12 +224,12 @@ export default function WorldExperience() {
     let hasStoredMotionPreference = false;
 
     try {
-      const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null") as {
-        visitedPointIds?: unknown;
-      } | null;
-      if (Array.isArray(stored?.visitedPointIds)) {
-        setVisitedPoints(stored.visitedPointIds.filter(isWorldPointId));
-      }
+      const stored = readWorldJourney(window.localStorage);
+      const storedMission = readMissionJourney(window.localStorage);
+      const storedAgendaId = readStateAgenda(window.localStorage);
+      setVisitedPoints(stored.visitedPointIds.filter(isWorldPointId));
+      setSelectedMissionIdInWorld(storedMission.selectedMissionId);
+      setSelectedAgenda(getStateAgenda(storedAgendaId));
       setControlsHintVisible(window.localStorage.getItem(CONTROLS_HINT_KEY) !== "1");
       const storedMotion = window.localStorage.getItem(MOTION_KEY);
       if (storedMotion === "reduced" || storedMotion === "full") {
@@ -337,15 +363,7 @@ export default function WorldExperience() {
 
   useEffect(() => {
     if (!hasHydrated) return;
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        version: 1,
-        visitedPointIds: visitedPoints,
-        mode,
-        updatedAt: new Date().toISOString(),
-      }),
-    );
+    writeWorldJourney(window.localStorage, { visitedPointIds: visitedPoints, mode });
   }, [hasHydrated, mode, visitedPoints]);
 
   useEffect(() => {
@@ -433,8 +451,9 @@ export default function WorldExperience() {
   }, [mode, nearbyPointId, paused]);
 
   const openPoint = useCallback((pointId: WorldPointId) => {
-    const point = WORLD_POINTS.find((candidate) => candidate.id === pointId) ?? null;
-    if (!point) return;
+    const basePoint = WORLD_POINTS.find((candidate) => candidate.id === pointId) ?? null;
+    if (!basePoint) return;
+    const point = personalizeWorldPoint(basePoint, selectedAgenda);
     rememberSurfaceOpener();
     setMapOpen(false);
     setPaused(false);
@@ -443,7 +462,17 @@ export default function WorldExperience() {
     trackEventIfAvailable("point_of_interest_opened", { point_id: pointId, point_kind: point.kind });
     if (point.kind === "memória") trackEventIfAvailable("history_opened", { point_id: pointId });
     if (point.kind === "pauta") trackEventIfAvailable("agenda_opened", { point_id: pointId });
-  }, [rememberSurfaceOpener]);
+  }, [rememberSurfaceOpener, selectedAgenda]);
+
+  const selectWorldMission = useCallback((missionId: MissionOption["id"]) => {
+    selectStoredMission(window.localStorage, missionId);
+    setSelectedMissionIdInWorld(missionId);
+    const selectedMission = WORLD_MISSIONS.find((mission) => mission.id === missionId);
+    if (selectedMission) {
+      showJourneyNotice("Missão registrada", selectedMission.title, "complete", 2600);
+    }
+    trackEventIfAvailable("mission_selected_from_world", { mission: missionId });
+  }, [showJourneyNotice]);
 
   const updatePlayerPosition = useCallback((position: {
     x: number;
@@ -584,29 +613,52 @@ export default function WorldExperience() {
 
   const nearbyPoint = WORLD_POINTS.find((point) => point.id === nearbyPointId) ?? null;
   const journeyComplete = visitedPoints.length >= WORLD_POINTS.length;
+  const selectedWorldMission = WORLD_MISSIONS.find((mission) => mission.id === selectedMissionIdInWorld) ?? null;
   const nextUnvisitedPoint = WORLD_POINTS.find((point) => !visitedPoints.includes(point.id)) ?? null;
   const navigationTarget = WORLD_POINTS.find((point) => point.id === playerPosition.targetId) ?? null;
   const objectiveTarget = navigationTarget ?? (journeyComplete ? null : nearbyPoint ?? nextUnvisitedPoint);
+  const objectiveDisplay = objectiveTarget ? personalizeWorldPoint(objectiveTarget, selectedAgenda) : null;
   const objectiveDistance = objectiveTarget
     ? Math.max(0, Math.round(Math.hypot(objectiveTarget.x - playerPosition.x, objectiveTarget.z - playerPosition.z)))
     : null;
-  const objectiveTitle = objectiveTarget ? getWorldPointShortTitle(objectiveTarget) : "Travessia registrada";
-  const objectiveSummary = objectiveTarget?.summary
-    ?? "Os três marcos foram registrados. Agora escolha como levar essa transformação para fora da tela.";
+  const objectiveTitle = objectiveDisplay
+    ? selectedAgenda && objectiveDisplay.id === "comum"
+      ? `Assembleia: ${selectedAgenda.shortTitle}`
+      : getWorldPointShortTitle(objectiveDisplay)
+    : selectedWorldMission?.title ?? "Travessia registrada";
+  const objectiveSummary = objectiveDisplay
+    ? selectedAgenda && objectiveDisplay.id === "memoria" && !visitedPoints.includes("comum")
+      ? `Registre a memória local. Depois, a rota leva ${selectedAgenda.shortTitle.toLowerCase()} à Assembleia do Comum.`
+      : selectedAgenda && objectiveDisplay.id === "comum"
+        ? selectedAgenda.description
+        : selectedAgenda && objectiveDisplay.id === "missao"
+          ? `Escolha como transformar ${selectedAgenda.shortTitle.toLowerCase()} em uma ação possível.`
+          : objectiveDisplay.summary
+    : selectedWorldMission
+      ? `Próximo passo: ${selectedWorldMission.nextStep}`
+      : "Os três marcos foram registrados. Agora escolha como levar essa transformação para fora da tela.";
   const objectiveMeta = objectiveTarget
-    ? `${currentZone} · ${visitedPoints.length}/${WORLD_POINTS.length} · ${objectiveDistance} m`
-    : `Travessia concluída · ${visitedPoints.length}/${WORLD_POINTS.length}`;
+    ? `${selectedAgenda ? objectiveTarget.id === "comum" ? "Pauta estadual" : "Rota estadual" : ZONE_COPY[currentZone].short} · ${visitedPoints.length}/${WORLD_POINTS.length} · ${objectiveDistance} m`
+    : selectedWorldMission
+      ? `Plano de ação · ${visitedPoints.length}/${WORLD_POINTS.length}`
+      : `Travessia concluída · ${visitedPoints.length}/${WORLD_POINTS.length}`;
   const targetHeading = objectiveTarget
     ? Math.atan2(-(objectiveTarget.x - playerPosition.x), -(objectiveTarget.z - playerPosition.z))
     : playerPosition.heading;
   const objectiveBearing = normalizeAngle(targetHeading - playerPosition.heading);
   const journeyProgress = visitedPoints.length / WORLD_POINTS.length;
+  const territoryProgress = getTerritoryProgress(playerPosition.z);
   const showMovementHint = controlsHintForced || (controlsHintVisible && !nearbyPoint);
   const showRouteHint = playerPosition.navigating && !nearbyPoint && !showMovementHint;
   const hintMode = showMovementHint ? "controls" : nearbyPoint ? "nearby" : showRouteHint ? "route" : null;
-  const shellStyle = { "--journey-progress": `${journeyProgress * 100}%` } as CSSProperties;
+  const shellStyle = {
+    "--journey-progress": `${journeyProgress * 100}%`,
+    "--territory-progress": `${territoryProgress * 100}%`,
+    "--agenda-accent": selectedAgenda?.accent ?? "#83b95e",
+  } as CSSProperties;
   const activePointIndex = activePoint ? WORLD_POINTS.findIndex((point) => point.id === activePoint.id) : -1;
-  const nextStoryPoint = activePointIndex >= 0 ? WORLD_POINTS[activePointIndex + 1] ?? null : null;
+  const nextStoryBasePoint = activePointIndex >= 0 ? WORLD_POINTS[activePointIndex + 1] ?? null : null;
+  const nextStoryPoint = nextStoryBasePoint ? personalizeWorldPoint(nextStoryBasePoint, selectedAgenda) : null;
   const surfaceOpen = Boolean(activePoint || mapOpen || paused);
   const sceneReady = mode !== "3d" || scenePhase === "ready";
 
@@ -616,6 +668,7 @@ export default function WorldExperience() {
       className={styles.worldShell}
       data-mode={mode}
       data-zone={currentZone}
+      data-agenda={selectedAgenda?.id ?? "none"}
       data-reduced-motion={reducedMotion}
       data-scene-phase={mode === "3d" ? scenePhase : "ready"}
       data-hud-transient={Boolean(zoneReveal || journeyNotice)}
@@ -642,8 +695,9 @@ export default function WorldExperience() {
           <span className={styles.brandLabel}>Missão ÉLuta</span>
         </Link>
         <div className={styles.districtLabel}>
-          <span>Distrito 01</span>
-          Entre a Fábrica e o Jardim
+          <span>{ZONE_COPY[currentZone].eyebrow}</span>
+          {ZONE_COPY[currentZone].short}
+          <small>{Math.round(territoryProgress * 100)}%</small>
         </div>
         <div className={styles.topActions}>
           <button
@@ -704,7 +758,9 @@ export default function WorldExperience() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(journeyProgress * 100)}
-        />
+        >
+          <span aria-hidden="true" />
+        </div>
       ) : null}
 
       {mode === "3d" ? (
@@ -723,6 +779,7 @@ export default function WorldExperience() {
                 cameraResetSerial={cameraResetSerial}
                 reducedMotion={reducedMotion}
                 quality={performanceTier}
+                agendaAccent={selectedAgenda?.accent ?? null}
                 visitedPoints={visitedPoints}
                 focusPointId={objectiveTarget?.id ?? null}
                 onNearbyPoint={setNearbyPointId}
@@ -742,6 +799,7 @@ export default function WorldExperience() {
             className={styles.objectiveCard}
             data-expanded={objectiveExpanded}
             data-complete={journeyComplete && !objectiveTarget}
+            data-agenda-focus={Boolean(selectedAgenda && objectiveTarget?.id === "comum")}
             aria-label="Objetivo atual"
             aria-hidden={!sceneReady || undefined}
             inert={!sceneReady ? true : undefined}
@@ -817,6 +875,36 @@ export default function WorldExperience() {
               >
                 {playerPosition.navigating ? "Cancelar rota assistida" : "Ir até o próximo marco"}
               </button>
+            ) : journeyComplete && selectedWorldMission ? (
+              selectedWorldMission.external ? (
+                <a
+                  href={selectedWorldMission.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.objectiveMissionAction}
+                  tabIndex={objectiveExpanded ? 0 : -1}
+                  onClick={() => trackEventIfAvailable("mission_cta_clicked_from_world_hud", {
+                    mission: selectedWorldMission.id,
+                    destination: selectedWorldMission.href,
+                  })}
+                >
+                  {selectedWorldMission.cta}
+                  <ArrowIcon />
+                </a>
+              ) : (
+                <Link
+                  href={selectedWorldMission.href}
+                  className={styles.objectiveMissionAction}
+                  tabIndex={objectiveExpanded ? 0 : -1}
+                  onClick={() => trackEventIfAvailable("mission_cta_clicked_from_world_hud", {
+                    mission: selectedWorldMission.id,
+                    destination: selectedWorldMission.href,
+                  })}
+                >
+                  {selectedWorldMission.cta}
+                  <ArrowIcon />
+                </Link>
+              )
             ) : journeyComplete && !nearbyPoint ? (
               <button
                 type="button"
@@ -833,6 +921,7 @@ export default function WorldExperience() {
             <div className={styles.zoneReveal} role="status">
               <span>{ZONE_COPY[zoneReveal].eyebrow}</span>
               <strong>{ZONE_COPY[zoneReveal].title}</strong>
+              <small>{ZONE_COPY[zoneReveal].instruction}</small>
             </div>
           ) : null}
 
@@ -913,6 +1002,7 @@ export default function WorldExperience() {
       ) : (
         <LightMode
           visitedPoints={visitedPoints}
+          selectedAgenda={selectedAgenda}
           onOpenPoint={openPoint}
           onEnable3d={() => switchMode("3d")}
           canEnable3d={webglAvailable}
@@ -927,6 +1017,9 @@ export default function WorldExperience() {
             ref={storyDialogRef}
             className={styles.storyPanel}
             data-kind={activePoint.kind}
+            style={activePoint.kind === "pauta" && selectedAgenda
+              ? ({ "--story-accent": selectedAgenda.accent } as CSSProperties)
+              : undefined}
             role="dialog"
             aria-modal="true"
             aria-labelledby="story-panel-title"
@@ -952,22 +1045,23 @@ export default function WorldExperience() {
             </div>
             <h2 id="story-panel-title">{activePoint.title}</h2>
             <p id="story-panel-body">{activePoint.body}</p>
+            {activePoint.id !== "missao" ? (
+              <section className={styles.utilityPanel} aria-labelledby="story-utility-title">
+                <strong id="story-utility-title">{activePoint.utilityTitle}</strong>
+                <ul>
+                  {activePoint.utilityItems.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </section>
+            ) : null}
             {activePoint.id === "missao" ? (
-              <button
-                type="button"
-                className={styles.storyMissionButton}
-                aria-pressed={missionSelectedInWorld}
-                onClick={() => {
-                  selectStoredMission(window.localStorage, "celular");
-                  setMissionSelectedInWorld(true);
-                  trackEventIfAvailable("mission_selected_from_world", { mission: "celular" });
-                }}
-              >
-                {missionSelectedInWorld ? "Missão celular selecionada ✓" : "Selecionar: ajudar pelo celular"}
-              </button>
+              <WorldMissionHub
+                missions={WORLD_MISSIONS}
+                selectedMissionId={selectedMissionIdInWorld}
+                onSelect={selectWorldMission}
+              />
             ) : null}
             <div className={styles.storyFooter}>
-              {activePoint.actionHref && activePoint.actionLabel ? (
+              {activePoint.id !== "missao" && activePoint.actionHref && activePoint.actionLabel ? (
                 activePoint.external ? (
                   <a
                     href={activePoint.actionHref}
@@ -1113,29 +1207,35 @@ export default function WorldExperience() {
               ×
             </button>
             <span>Mapa narrativo</span>
-            <h2 id="map-title">Do portão à Central de Missões</h2>
+            <h2 id="map-title">
+              {selectedAgenda ? `Rota estadual: ${selectedAgenda.shortTitle}` : "Do portão à Central de Missões"}
+            </h2>
             <SpatialMap
               position={playerPosition}
               visitedPoints={visitedPoints}
               onSelectPoint={selectMapPoint}
             />
             <ol>
-              {WORLD_POINTS.map((point, index) => (
+              {WORLD_POINTS.map((point, index) => {
+                const displayPoint = personalizeWorldPoint(point, selectedAgenda);
+                return (
                 <li key={point.id} data-visited={visitedPoints.includes(point.id)}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <button
                     type="button"
                     onClick={() => selectMapPoint(point)}
-                    aria-label={`${point.title}. ${visitedPoints.includes(point.id) ? "Visitado" : "Não visitado"}. ${mode === "3d" ? "Traçar rota" : "Abrir ponto"}.`}
+                    aria-label={`${displayPoint.title}. ${visitedPoints.includes(point.id) ? "Visitado" : "Não visitado"}. ${mode === "3d" ? "Traçar rota" : "Abrir ponto"}.`}
                   >
-                    <small>{point.kind}</small>
-                    <strong>{point.title}</strong>
+                    <small>{displayPoint.kind}</small>
+                    <strong>{displayPoint.title}</strong>
+                    <em>{displayPoint.utilityTitle}</em>
                     <span className={styles.srOnly}>
                       {visitedPoints.includes(point.id) ? "Visitado" : "Não visitado"}
                     </span>
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ol>
           </div>
         </div>
@@ -1145,11 +1245,118 @@ export default function WorldExperience() {
         {journeyNotice
           ? `${journeyNotice.eyebrow}: ${journeyNotice.title}.`
           : nearbyPoint
-            ? `Ponto próximo: ${nearbyPoint.title}. Use o botão Interagir.`
+            ? `Ponto próximo: ${personalizeWorldPoint(nearbyPoint, selectedAgenda).title}. Use o botão Interagir.`
             : ""}
       </div>
     </div>
   );
+}
+
+function WorldMissionHub({
+  missions,
+  selectedMissionId,
+  onSelect,
+}: {
+  missions: MissionOption[];
+  selectedMissionId: MissionOption["id"] | null;
+  onSelect: (missionId: MissionOption["id"]) => void;
+}) {
+  const selectedMission = missions.find((mission) => mission.id === selectedMissionId) ?? null;
+
+  return (
+    <section className={styles.storyMissionHub} aria-labelledby="world-mission-hub-title">
+      <div className={styles.storyMissionHeading}>
+        <span>Central de Missões</span>
+        <strong id="world-mission-hub-title">Como você pode entrar?</strong>
+      </div>
+      <div className={styles.storyMissionChoices} role="group" aria-label="Escolha uma forma de participar">
+        {missions.map((mission) => {
+          const selected = mission.id === selectedMissionId;
+          return (
+            <button
+              type="button"
+              key={mission.id}
+              aria-pressed={selected}
+              onClick={() => onSelect(mission.id)}
+            >
+              <span aria-hidden="true"><MissionGlyph icon={mission.icon} /></span>
+              <strong>{mission.title}</strong>
+              <i aria-hidden="true">{selected ? "✓" : "+"}</i>
+            </button>
+          );
+        })}
+      </div>
+      {selectedMission ? (
+        <div className={styles.storyMissionNext}>
+          <p role="status">
+            <span>Missão escolhida</span>
+            <strong>{selectedMission.title}</strong>
+            <small>Próximo passo: {selectedMission.nextStep}</small>
+          </p>
+          {selectedMission.external ? (
+            <a
+              href={selectedMission.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEventIfAvailable("mission_cta_clicked_from_world", {
+                mission: selectedMission.id,
+                destination: selectedMission.href,
+              })}
+            >
+              {selectedMission.cta}
+              <ArrowIcon />
+            </a>
+          ) : (
+            <Link
+              href={selectedMission.href}
+              onClick={() => trackEventIfAvailable("mission_cta_clicked_from_world", {
+                mission: selectedMission.id,
+                destination: selectedMission.href,
+              })}
+            >
+              {selectedMission.cta}
+              <ArrowIcon />
+            </Link>
+          )}
+        </div>
+      ) : (
+        <p className={styles.storyMissionPrompt}>Escolha uma opção para abrir um próximo passo real.</p>
+      )}
+    </section>
+  );
+}
+
+function MissionGlyph({ icon }: { icon: MissionIcon }) {
+  if (icon === "phone") {
+    return (
+      <svg viewBox="0 0 24 24">
+        <rect x="6.8" y="2.5" width="10.4" height="19" rx="2.2" />
+        <path d="M10 5h4M11 18.5h2" />
+      </svg>
+    );
+  }
+  if (icon === "people") {
+    return (
+      <svg viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3.2" />
+        <circle cx="17" cy="10" r="2.5" />
+        <path d="M3.5 20v-2.2A5.5 5.5 0 0 1 9 12.3a5.5 5.5 0 0 1 5.5 5.5V20M14.5 14.2a4.7 4.7 0 0 1 6 4.5V20" />
+      </svg>
+    );
+  }
+  if (icon === "heart") {
+    return <svg viewBox="0 0 24 24"><path d="M20.2 5.6a4.6 4.6 0 0 0-6.5 0L12 7.3l-1.7-1.7a4.6 4.6 0 0 0-6.5 6.5L12 20.3l8.2-8.2a4.6 4.6 0 0 0 0-6.5Z" /></svg>;
+  }
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="m21 3-7.3 18-4.1-7.8L3 9.7 21 3Z" />
+      <path d="m9.6 13.2 5.3-4.5" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
 }
 
 function SpatialMap({
@@ -1163,7 +1370,7 @@ function SpatialMap({
 }) {
   const playerStyle = {
     "--player-x": `${MathUtilsClamp((position.x + 5) / 10, 0.04, 0.96) * 100}%`,
-    "--player-y": `${MathUtilsClamp((2.5 - position.z) / 13, 0.03, 0.97) * 100}%`,
+    "--player-y": `${MathUtilsClamp((WORLD_START_Z - position.z) / WORLD_DEPTH, 0.03, 0.97) * 100}%`,
   } as CSSProperties;
 
   return (
@@ -1174,15 +1381,16 @@ function SpatialMap({
         <span>Jardim</span>
       </div>
       <svg viewBox="0 0 320 260" role="img" aria-label="Caminho curvo entre os três marcos">
-        <path d="M160 10 C128 54 202 80 173 126 C141 174 181 194 160 250" />
+        <path d="M160 10 C126 48 116 74 145 96 C190 130 207 153 168 178 C128 204 138 226 160 250" />
       </svg>
       {WORLD_POINTS.map((point, index) => (
         <button
           type="button"
           key={point.id}
           className={styles.mapPoint}
+          data-point={point.id}
           data-visited={visitedPoints.includes(point.id)}
-          style={{ left: `${MathUtilsClamp((point.x + 5) / 10, 0.04, 0.96) * 100}%`, top: `${MathUtilsClamp((2.5 - point.z) / 13, 0.03, 0.97) * 100}%` }}
+          style={{ left: `${MathUtilsClamp((point.x + 5) / 10, 0.04, 0.96) * 100}%`, top: `${MathUtilsClamp((WORLD_START_Z - point.z) / WORLD_DEPTH, 0.03, 0.97) * 100}%` }}
           aria-label={`${index + 1}. ${point.title}. ${visitedPoints.includes(point.id) ? "Visitado" : "Não visitado"}. Selecionar marco.`}
           title={point.title}
           onClick={() => onSelectPoint(point)}
@@ -1212,13 +1420,41 @@ function getWorldPointShortTitle(point: WorldPoint) {
   return "Central de Missões";
 }
 
+function personalizeWorldPoint(point: WorldPoint, agenda: StateAgenda | null): WorldPoint {
+  if (!agenda) return point;
+
+  if (point.id === "comum") {
+    return {
+      ...point,
+      title: `Assembleia do Comum: ${agenda.title}`,
+      summary: agenda.description,
+      body: `${agenda.description} No distrito, esta pauta entra como uma assembleia estadual: a experiência local de Volta Redonda encontra relatos e prioridades de outros territórios do Rio de Janeiro.`,
+      utilityTitle: `Esta assembleia organiza ${agenda.shortTitle.toLowerCase()}`,
+      utilityItems: agenda.focus,
+    };
+  }
+
+  if (point.id === "missao") {
+    return {
+      ...point,
+      summary: `Escolha uma forma possível de fortalecer ${agenda.shortTitle.toLowerCase()}.`,
+      body: `A Central de Missões transforma a pauta ${agenda.title.toLowerCase()} em uma ação possível: celular, rua, contribuição ou compartilhamento.`,
+      utilityTitle: `Esta central transforma ${agenda.shortTitle.toLowerCase()} em ação`,
+    };
+  }
+
+  return point;
+}
+
 function LightMode({
   visitedPoints,
+  selectedAgenda,
   onOpenPoint,
   onEnable3d,
   canEnable3d,
 }: {
   visitedPoints: WorldPointId[];
+  selectedAgenda: StateAgenda | null;
   onOpenPoint: (pointId: WorldPointId) => void;
   onEnable3d: () => void;
   canEnable3d: boolean;
@@ -1243,17 +1479,23 @@ function LightMode({
         />
       </div>
       <ol className={styles.lightJourney}>
-        {WORLD_POINTS.map((point, index) => (
+        {WORLD_POINTS.map((point, index) => {
+          const displayPoint = personalizeWorldPoint(point, selectedAgenda);
+          return (
           <li key={point.id} data-visited={visitedPoints.includes(point.id)}>
             <span>{String(index + 1).padStart(2, "0")}</span>
             <div>
-              <small>{point.kind}</small>
-              <h2>{point.title}</h2>
-              <p>{point.summary}</p>
+              <small>{displayPoint.kind}</small>
+              <h2>{displayPoint.title}</h2>
+              <p>{displayPoint.summary}</p>
+              <ul className={styles.lightUtility}>
+                {displayPoint.utilityItems.map((item) => <li key={item}>{item}</li>)}
+              </ul>
               <button type="button" onClick={() => onOpenPoint(point.id)}>Abrir ponto</button>
             </div>
           </li>
-        ))}
+          );
+        })}
       </ol>
     </section>
   );
