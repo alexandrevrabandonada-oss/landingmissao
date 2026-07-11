@@ -152,12 +152,12 @@ export default function HomePage() {
                 Uma pré-campanha organizada por escuta, tecnologia popular e ação de base.
               </p>
               <div className={styles.heroActions} role="group" aria-label="Ações iniciais">
-                <a href="#escolher-missao" className={styles.primaryButton}>
-                  <span>Escolher minha missão</span>
+                <a href="/explorar" className={styles.primaryButton}>
+                  <span>Explorar o mundo 3D</span>
                   <ArrowIcon />
                 </a>
-                <a href="#quem-e" className={styles.secondaryButton}>
-                  <span>Conhecer Alexandre</span>
+                <a href="#escolher-missao" className={styles.secondaryButton}>
+                  <span>Escolher minha missão</span>
                   <ArrowIcon />
                 </a>
               </div>

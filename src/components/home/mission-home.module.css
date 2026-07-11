@@ -72,6 +72,23 @@
   color: #ffd100;
 }
 
+.desktopNav .exploreNav {
+  color: #ffd100;
+}
+
+.headerExplore {
+  min-height: 44px;
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  padding-inline: 0.7rem;
+  border: 1px solid rgba(255, 209, 0, 0.42);
+  border-radius: 10px;
+  color: #ffd100;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
 .headerCta {
   min-height: 44px;
   display: inline-flex;
@@ -1151,6 +1168,10 @@ button.secondaryButton {
 
   .desktopNav {
     display: none;
+  }
+
+  .headerExplore {
+    display: inline-flex;
   }
 
   .headerCta {

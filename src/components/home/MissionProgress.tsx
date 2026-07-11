@@ -19,11 +19,15 @@ export function MissionProgress({ participateUrl }: MissionProgressProps) {
           Alexandre VR Abandonada
         </a>
         <nav className={styles.desktopNav} aria-label="Navegação principal">
+          <a href="/explorar" className={styles.exploreNav}>Explorar 3D</a>
           <a href="#quem-e">Quem é</a>
           <a href="#metodo">Método</a>
           <a href="#como-funciona">App</a>
           <a href="#agir">Participar</a>
         </nav>
+        <a href="/explorar" className={styles.headerExplore} aria-label="Explorar o mundo 3D">
+          <span aria-hidden="true">✦</span> Explorar
+        </a>
         <a
           href={participateUrl}
           target="_blank"
