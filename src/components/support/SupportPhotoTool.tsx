@@ -11,12 +11,20 @@ type ToolState = {
   offsetY: number;
 };
 
-type FrameVariant = "forte" | "limpo" | "circular";
-type SupportMessage = "dupla" | "alexandre";
+type FrameVariant = "cartaz" | "forte" | "limpo" | "circular";
+type SupportMessage = "voto" | "dupla" | "alexandre";
 
 const CIRCLE_CENTER = CANVAS_SIZE / 2;
 const CIRCLE_OUTER_RADIUS = 520;
 const CIRCLE_INNER_RADIUS = 342;
+const POSTER_PHOTO = { x: 72, y: 278, width: 936, height: 470 } as const;
+const CAMPAIGN_COLORS = {
+  charcoal: "#101214",
+  paper: "#F2EFE5",
+  teal: "#0E6473",
+  yellow: "#F2C230",
+  red: "#D64330",
+} as const;
 
 function setFont(
   context: CanvasRenderingContext2D,
@@ -139,6 +147,169 @@ function drawCoverImage(
   context.drawImage(image, x, y, width, height);
 }
 
+function drawCoverImageInRect(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  { zoom, offsetX, offsetY }: ToolState,
+  rect: { x: number; y: number; width: number; height: number },
+) {
+  const baseScale = Math.max(rect.width / image.naturalWidth, rect.height / image.naturalHeight);
+  const scale = baseScale * zoom;
+  const width = image.naturalWidth * scale;
+  const height = image.naturalHeight * scale;
+  const x = rect.x + (rect.width - width) / 2 + offsetX;
+  const y = rect.y + (rect.height - height) / 2 + offsetY;
+
+  context.save();
+  context.beginPath();
+  context.roundRect(rect.x, rect.y, rect.width, rect.height, 4);
+  context.clip();
+  context.drawImage(image, x, y, width, height);
+  context.restore();
+}
+
+function drawDiagonalStripe(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  color: string,
+  slant = 56,
+) {
+  context.save();
+  context.fillStyle = color;
+  context.beginPath();
+  context.moveTo(x + slant, y);
+  context.lineTo(x + width, y);
+  context.lineTo(x + width - slant, y + height);
+  context.lineTo(x, y + height);
+  context.closePath();
+  context.fill();
+  context.restore();
+}
+
+function drawPosterUploadPlaceholder(context: CanvasRenderingContext2D) {
+  const centerX = POSTER_PHOTO.x + POSTER_PHOTO.width / 2;
+  const centerY = POSTER_PHOTO.y + POSTER_PHOTO.height / 2;
+
+  context.save();
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  context.fillRect(POSTER_PHOTO.x, POSTER_PHOTO.y, POSTER_PHOTO.width, POSTER_PHOTO.height);
+  context.strokeStyle = CAMPAIGN_COLORS.teal;
+  context.lineWidth = 13;
+  context.lineCap = "round";
+  context.beginPath();
+  context.moveTo(centerX, centerY - 112);
+  context.lineTo(centerX, centerY - 42);
+  context.moveTo(centerX - 34, centerY - 80);
+  context.lineTo(centerX, centerY - 114);
+  context.lineTo(centerX + 34, centerY - 80);
+  context.moveTo(centerX - 58, centerY - 30);
+  context.lineTo(centerX - 58, centerY + 10);
+  context.quadraticCurveTo(centerX - 58, centerY + 30, centerX - 38, centerY + 30);
+  context.lineTo(centerX + 38, centerY + 30);
+  context.quadraticCurveTo(centerX + 58, centerY + 30, centerX + 58, centerY + 10);
+  context.lineTo(centerX + 58, centerY - 30);
+  context.stroke();
+
+  context.textAlign = "center";
+  context.fillStyle = CAMPAIGN_COLORS.charcoal;
+  setFont(context, 900, 39, "Arial Black, Arial");
+  context.fillText("CLIQUE AQUI E ENVIE SUA FOTO", centerX, centerY + 96);
+  setFont(context, 700, 23);
+  context.fillStyle = "rgba(16, 18, 20, 0.58)";
+  context.fillText("PNG, JPG OU JPEG  |  MÁX. 5 MB", centerX, centerY + 137);
+  context.restore();
+}
+
+function drawCampaignPosterFrame(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement | null,
+  state: ToolState,
+) {
+  context.save();
+  context.fillStyle = CAMPAIGN_COLORS.charcoal;
+  context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+  // Editorial rails: the blue anchors the campaign, while yellow acts only as alert.
+  context.fillStyle = CAMPAIGN_COLORS.yellow;
+  context.fillRect(0, 0, CANVAS_SIZE, 12);
+  context.fillStyle = CAMPAIGN_COLORS.teal;
+  context.fillRect(0, 12, 22, 1056);
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  context.fillRect(22, 12, 5, 1056);
+
+  context.textAlign = "left";
+  context.fillStyle = CAMPAIGN_COLORS.yellow;
+  setFont(context, 800, 18, "Inter, Arial");
+  context.fillText("ARQUIVO VIVO  •  PARTICIPAÇÃO POPULAR", 72, 50);
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  setFont(context, 900, 72, "Inter, Arial Black, Arial");
+  context.fillText("FAÇA PARTE", 72, 132, 710);
+  context.fillText("DESSA LUTA", 72, 216, 710);
+  context.textAlign = "right";
+  context.fillStyle = "rgba(242, 239, 229, 0.76)";
+  setFont(context, 800, 25, "Inter, Arial");
+  context.fillText("DEPUTADO", 1008, 132);
+  context.fillText("ESTADUAL", 1008, 165);
+  context.fillStyle = CAMPAIGN_COLORS.teal;
+  context.fillRect(866, 90, 142, 8);
+
+  // A thin paper mount keeps the real photo direct and avoids a plastic treatment.
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  context.fillRect(56, 262, 968, 502);
+
+  if (image) {
+    drawCoverImageInRect(context, image, state, POSTER_PHOTO);
+  } else {
+    drawPosterUploadPlaceholder(context);
+  }
+
+  context.fillStyle = CAMPAIGN_COLORS.teal;
+  context.fillRect(27, 780, 1053, 300);
+  context.fillStyle = CAMPAIGN_COLORS.charcoal;
+  context.fillRect(56, 780, 615, 300);
+  context.fillStyle = CAMPAIGN_COLORS.yellow;
+  context.fillRect(56, 780, 615, 10);
+
+  context.fillStyle = CAMPAIGN_COLORS.red;
+  context.fillRect(82, 816, 154, 42);
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  setFont(context, 900, 24, "Inter, Arial Black, Arial");
+  context.textAlign = "center";
+  context.fillText("EU VOTO", 159, 845, 132);
+
+  context.textAlign = "left";
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  setFont(context, 900, 79, "Inter, Arial Black, Arial");
+  context.fillText("ALEXANDRE", 82, 939, 552);
+
+  context.fillStyle = CAMPAIGN_COLORS.teal;
+  context.fillRect(82, 987, 60, 7);
+  context.fillRect(574, 987, 60, 7);
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  setFont(context, 900, 32, "Inter, Arial Black, Arial");
+  context.textAlign = "center";
+  context.fillText("VR ABANDONADA", 358, 1002, 404);
+
+  context.fillStyle = CAMPAIGN_COLORS.yellow;
+  setFont(context, 900, 134, "Inter, Arial Black, Arial");
+  context.textAlign = "left";
+  context.fillText("50800", 691, 934, 350);
+  context.fillStyle = CAMPAIGN_COLORS.paper;
+  setFont(context, 800, 21, "Inter, Arial");
+  context.fillText("DEPUTADO ESTADUAL", 697, 979, 322);
+  context.fillStyle = CAMPAIGN_COLORS.red;
+  context.fillRect(697, 1004, 84, 8);
+  context.fillStyle = "rgba(242, 239, 229, 0.72)";
+  setFont(context, 700, 17, "Inter, Arial");
+  context.fillText("NOSSA VOZ  •  NOSSO FUTURO", 697, 1045, 324);
+
+  drawGrain(context, 0.028);
+  context.restore();
+}
+
 function drawCircularImage(
   context: CanvasRenderingContext2D,
   image: HTMLImageElement,
@@ -201,7 +372,8 @@ function drawArcText(
 
 function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
   const bottomY = 794;
-  const isAlexandreOnly = message === "alexandre";
+  const isVote = message === "voto";
+  const isAlexandreOnly = message !== "dupla";
   const alexandrePanelY = 722;
 
   const shade = context.createLinearGradient(0, 0, 0, CANVAS_SIZE);
@@ -224,7 +396,15 @@ function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMess
   context.fillRect(76, 56, 9, 106);
 
   context.textAlign = "left";
-  drawStencilText(context, "EU APOIO", 112, 122, isAlexandreOnly ? 248 : 218, isAlexandreOnly ? 40 : 34, "#ffffff");
+  drawStencilText(
+    context,
+    isVote ? "EU VOTO" : "EU APOIO",
+    112,
+    122,
+    isAlexandreOnly ? 248 : 218,
+    isAlexandreOnly ? 40 : 34,
+    "#ffffff",
+  );
 
   if (isAlexandreOnly) {
     const sideWash = context.createLinearGradient(0, 0, 260, 0);
@@ -269,7 +449,14 @@ function drawStrongFrame(context: CanvasRenderingContext2D, message: SupportMess
     context.fillText("PRÉ-CANDIDATO A DEPUTADO ESTADUAL", 102, 991, 550);
     context.fillStyle = "rgba(243, 240, 232, 0.82)";
     setFont(context, 800, 25);
-    context.fillText(SITE_IDENTITY.signature, 76, 1046);
+    context.fillText(isVote ? "50800" : SITE_IDENTITY.signature, 76, 1046);
+    if (isVote) {
+      context.fillStyle = "#c0392b";
+      setFont(context, 900, 92, "Arial Black, Arial");
+      context.textAlign = "right";
+      context.fillText("50800", 1010, 1048, 310);
+      context.textAlign = "left";
+    }
   } else {
     context.fillStyle = "rgba(243, 240, 232, 0.82)";
     setFont(context, 700, 28);
@@ -301,6 +488,11 @@ function renderSupportCanvas(
   canvas.height = CANVAS_SIZE;
   context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
+  if (variant === "cartaz") {
+    drawCampaignPosterFrame(context, image, state);
+    return;
+  }
+
   if (image) {
     if (variant === "circular") {
       drawCircularImage(context, image, state);
@@ -315,7 +507,8 @@ function renderSupportCanvas(
 }
 
 function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessage) {
-  const isAlexandreOnly = message === "alexandre";
+  const isVote = message === "voto";
+  const isAlexandreOnly = message !== "dupla";
   const topFade = context.createLinearGradient(0, 0, 0, 180);
   topFade.addColorStop(0, "rgba(11, 11, 14, 0.48)");
   topFade.addColorStop(1, "rgba(11, 11, 14, 0)");
@@ -338,7 +531,7 @@ function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessa
   context.textAlign = "left";
   context.fillStyle = "rgba(243, 240, 232, 0.94)";
   setFont(context, 900, 38, "Arial Black, Arial");
-  context.fillText("EU APOIO", 62, 92);
+  context.fillText(isVote ? "EU VOTO" : "EU APOIO", 62, 92);
 
   context.fillStyle = "#ffd100";
   setFont(context, 900, isAlexandreOnly ? 64 : 64, "Arial Black, Arial");
@@ -351,7 +544,9 @@ function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessa
   context.fillStyle = "rgba(242,242,242,0.82)";
   setFont(context, 700, isAlexandreOnly ? 25 : 27);
   context.fillText(
-    isAlexandreOnly
+    isVote
+      ? "50800"
+      : isAlexandreOnly
       ? `Pré-candidato a deputado estadual • ${SITE_IDENTITY.signature}`
       : `${SITE_IDENTITY.contextLabel} • ${SITE_IDENTITY.signature}`,
     62,
@@ -365,7 +560,8 @@ function drawCleanFrame(context: CanvasRenderingContext2D, message: SupportMessa
 }
 
 function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean, message: SupportMessage) {
-  const isAlexandreOnly = message === "alexandre";
+  const isVote = message === "voto";
+  const isAlexandreOnly = message !== "dupla";
   if (!hasPhoto) {
     context.fillStyle = "#0b0b0e";
     context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -415,7 +611,11 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean,
 
   drawArcText(
     context,
-    isAlexandreOnly ? "EU APOIO  *  ALEXANDRE VR  *" : "EU APOIO  *  GLAUBER BRAGA  *",
+    isVote
+      ? "EU VOTO  *  ALEXANDRE VR  *"
+      : isAlexandreOnly
+        ? "EU APOIO  *  ALEXANDRE VR  *"
+        : "EU APOIO  *  GLAUBER BRAGA  *",
     CIRCLE_CENTER,
     CIRCLE_CENTER,
     444,
@@ -440,7 +640,7 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean,
   context.textAlign = "center";
   context.fillStyle = "#ffd100";
   setFont(context, 900, 34);
-  context.fillText("EU APOIO", CIRCLE_CENTER, 174);
+  context.fillText(isVote ? "EU VOTO" : "EU APOIO", CIRCLE_CENTER, 174);
 
   context.fillStyle = "rgba(11, 11, 14, 0.78)";
   context.fillRect(isAlexandreOnly ? 210 : 274, 842, isAlexandreOnly ? 660 : 532, 82);
@@ -449,8 +649,8 @@ function drawCircularFrame(context: CanvasRenderingContext2D, hasPhoto: boolean,
   context.fillText(isAlexandreOnly ? "ALEXANDRE VR ABANDONADA" : "ALEXANDRE VR ABANDONADA", CIRCLE_CENTER, 886);
   if (isAlexandreOnly) {
     context.fillStyle = "#ffd100";
-    setFont(context, 800, 20);
-    context.fillText("PRÉ-CANDIDATO A DEPUTADO ESTADUAL", CIRCLE_CENTER, 914);
+    setFont(context, 800, isVote ? 30 : 20);
+    context.fillText(isVote ? "50800" : "PRÉ-CANDIDATO A DEPUTADO ESTADUAL", CIRCLE_CENTER, 914);
   }
 }
 
@@ -497,8 +697,8 @@ export function SupportPhotoTool() {
   const [fileName, setFileName] = useState("");
   const [status, setStatus] = useState("A foto fica no seu navegador. Nada é enviado para servidor.");
   const [state, setState] = useState<ToolState>({ zoom: 1, offsetX: 0, offsetY: 0 });
-  const [variant, setVariant] = useState<FrameVariant>("forte");
-  const [message, setMessage] = useState<SupportMessage>("alexandre");
+  const [variant, setVariant] = useState<FrameVariant>("cartaz");
+  const [message, setMessage] = useState<SupportMessage>("voto");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -510,8 +710,17 @@ export function SupportPhotoTool() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      setStatus("Envie um arquivo de imagem.");
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      setFileName("");
+      setStatus("Envie uma imagem PNG, JPG ou JPEG.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFileName("");
+      setStatus("A imagem precisa ter no máximo 5 MB.");
+      event.target.value = "";
       return;
     }
 
@@ -538,6 +747,14 @@ export function SupportPhotoTool() {
   }
 
   function portraitFrame() {
+    if (variant === "cartaz") {
+      const isPortraitPhoto = image
+        ? image.naturalHeight / image.naturalWidth > 1.15
+        : false;
+      setState({ zoom: 1.08, offsetX: 0, offsetY: isPortraitPhoto ? 360 : 36 });
+      return;
+    }
+
     if (variant === "circular") {
       setState({ zoom: 1.04, offsetX: 0, offsetY: 80 });
       return;
@@ -569,11 +786,16 @@ export function SupportPhotoTool() {
     const link = document.createElement("a");
     link.href = url;
     link.download =
-      message === "alexandre"
+      message === "voto"
+        ? "eu-voto-alexandre-vr-abandonada-50800.png"
+        : message === "alexandre"
         ? "eu-apoio-alexandre-vr-abandonada.png"
         : "eu-apoio-glauber-braga-alexandre-vr-abandonada.png";
+    document.body.append(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    setStatus("Imagem pronta. O download foi iniciado.");
   }
 
   async function shareImage() {
@@ -587,7 +809,9 @@ export function SupportPhotoTool() {
 
     const file = new File(
       [blob],
-      message === "alexandre"
+      message === "voto"
+        ? "eu-voto-alexandre-vr-abandonada-50800.png"
+        : message === "alexandre"
         ? "eu-apoio-alexandre-vr-abandonada.png"
         : "eu-apoio-glauber-braga-alexandre-vr-abandonada.png",
       {
@@ -603,7 +827,9 @@ export function SupportPhotoTool() {
       await nav.share({
         files: [file],
         title:
-          message === "alexandre"
+          message === "voto"
+            ? "Eu voto Alexandre VR Abandonada 50800"
+            : message === "alexandre"
             ? "Eu apoio Alexandre VR Abandonada"
             : "Eu apoio Glauber Braga e Alexandre VR Abandonada",
       });
@@ -615,14 +841,56 @@ export function SupportPhotoTool() {
 
   return (
     <div className="support-tool">
-      <div className="support-tool__stage">
+      <header className="support-tool__masthead">
+        <div className="support-tool__brand" aria-label="Alexandre 50800, deputado estadual">
+          <strong>50800</strong>
+          <span>Deputado estadual</span>
+        </div>
+        <div className="support-tool__intro">
+          <h1>Faça parte dessa luta.</h1>
+          <p>Envie sua foto e gere a arte “Eu voto Alexandre VR Abandonada 50800”.</p>
+        </div>
+        <div className="support-tool__actions support-tool__actions--top">
+          <button type="button" className="btn btn-primary btn-lg" onClick={downloadImage} disabled={!image}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18v2h14v-2" />
+            </svg>
+            Baixar imagem
+          </button>
+          <button type="button" className="btn btn-secondary btn-lg" onClick={shareImage} disabled={!image}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="18" cy="5" r="2.5" />
+              <circle cx="6" cy="12" r="2.5" />
+              <circle cx="18" cy="19" r="2.5" />
+              <path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5" />
+            </svg>
+            Compartilhar
+          </button>
+        </div>
+      </header>
+
+      <div className="support-tool__workspace">
+        <div className="support-tool__stage">
         <div className="support-tool__stage-head">
           <span>Preview 1080 × 1080</span>
-          <strong>{variant === "circular" ? "Perfil circular" : variant === "limpo" ? "Perfil limpo" : "Perfil forte"}</strong>
+          <strong>
+            {variant === "cartaz"
+              ? "Cartaz 50800"
+              : variant === "circular"
+                ? "Perfil circular"
+                : variant === "limpo"
+                  ? "Perfil limpo"
+                  : "Perfil forte"}
+          </strong>
         </div>
         <div className="support-tool__preview" aria-label="Prévia da montagem">
           <canvas ref={canvasRef} className="support-tool__canvas" />
-          {image ? <div className="support-tool__guide" aria-hidden="true" /> : null}
+          {image ? (
+            <div
+              className={`support-tool__guide ${variant === "cartaz" ? "support-tool__guide--poster" : ""}`}
+              aria-hidden="true"
+            />
+          ) : null}
         </div>
         <div className="support-tool__mobile-adjust" aria-label="Ajuste rápido da foto">
           <div className="support-tool__mobile-actions" role="group" aria-label="Ajustes rápidos">
@@ -667,9 +935,9 @@ export function SupportPhotoTool() {
             />
           </label>
         </div>
-      </div>
+        </div>
 
-      <div className="support-tool__controls">
+        <div className="support-tool__controls">
         <div className="support-tool__controls-head">
           <span>01</span>
           <div>
@@ -679,16 +947,34 @@ export function SupportPhotoTool() {
         </div>
 
         <label className="support-tool__upload">
-          <span>Escolher foto</span>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h10l4 4v10H4z" />
+            <path d="M14 5v4h4M8 15l2.2-2.2L13 15.5l1.5-1.5L18 17.5M8 9h2" />
+          </svg>
+          <span>
+            <strong>Escolher foto</strong>
+            <small>PNG ou JPEG · máximo 5 MB</small>
+          </span>
+          <input type="file" accept="image/png,image/jpeg" onChange={handleImageUpload} />
         </label>
 
         <p className="support-tool__status" role="status">
-          {fileName ? `Arquivo: ${fileName}` : status}
+          {fileName ? `Arquivo: ${fileName}. ${status}` : status}
         </p>
 
         <fieldset className="support-tool__variant">
           <legend>Mensagem da arte</legend>
+          <label>
+            <input
+              type="radio"
+              name="support-message"
+              value="voto"
+              checked={message === "voto"}
+              onChange={() => setMessage("voto")}
+            />
+            Voto 50800
+            <span>Eu voto Alexandre VR Abandonada 50800</span>
+          </label>
           <label>
             <input
               type="radio"
@@ -715,6 +1001,20 @@ export function SupportPhotoTool() {
 
         <fieldset className="support-tool__variant">
           <legend>Modelo</legend>
+          <label>
+            <input
+              type="radio"
+              name="support-frame"
+              value="cartaz"
+              checked={variant === "cartaz"}
+              onChange={() => {
+                setVariant("cartaz");
+                setMessage("voto");
+              }}
+            />
+            Cartaz 50800
+            <span>identidade da campanha, sem foto do candidato</span>
+          </label>
           <label>
             <input
               type="radio"
@@ -760,7 +1060,10 @@ export function SupportPhotoTool() {
         </div>
 
         <label className="support-tool__field">
-          Zoom
+          <span className="support-tool__field-meta">
+            <span>Zoom</span>
+            <output>{Math.round(state.zoom * 100)}%</output>
+          </span>
           <input
             type="range"
             min="1"
@@ -772,7 +1075,10 @@ export function SupportPhotoTool() {
         </label>
 
         <label className="support-tool__field">
-          Mover na horizontal
+          <span className="support-tool__field-meta">
+            <span>Mover na horizontal</span>
+            <output>{state.offsetX}</output>
+          </span>
           <input
             type="range"
             min="-260"
@@ -784,7 +1090,10 @@ export function SupportPhotoTool() {
         </label>
 
         <label className="support-tool__field">
-          Mover na vertical
+          <span className="support-tool__field-meta">
+            <span>Mover na vertical</span>
+            <output>{state.offsetY}</output>
+          </span>
           <input
             type="range"
             min="-420"
@@ -795,7 +1104,7 @@ export function SupportPhotoTool() {
           />
         </label>
 
-        <div className="support-tool__actions">
+        <div className="support-tool__actions support-tool__actions--mobile">
           <button type="button" className="btn btn-primary btn-lg" onClick={downloadImage} disabled={!image}>
             Baixar imagem
           </button>
@@ -803,30 +1112,89 @@ export function SupportPhotoTool() {
             Compartilhar
           </button>
         </div>
+        </div>
       </div>
 
       <style>{`
         .support-tool {
+          --studio-charcoal: #101214;
+          --studio-paper: #f2efe5;
+          --studio-teal: #0e6473;
+          --studio-yellow: #f2c230;
+          --studio-red: #d64330;
+          display: block;
+        }
+
+        .support-tool__masthead {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 370px;
-          gap: 1.35rem;
+          grid-template-columns: auto minmax(0, 1fr) auto;
+          gap: clamp(1.2rem, 2.5vw, 2.5rem);
+          align-items: center;
+          min-height: 104px;
+          padding: 1rem 0 1.35rem;
+          border-bottom: 1px solid rgba(242, 239, 229, 0.14);
+        }
+
+        .support-tool__brand {
+          display: grid;
+          align-content: center;
+          min-width: 138px;
+          padding-right: 1.4rem;
+          border-right: 1px solid rgba(242, 239, 229, 0.24);
+          text-transform: uppercase;
+        }
+
+        .support-tool__brand strong {
+          color: var(--studio-teal);
+          font-family: var(--font-head);
+          font-size: clamp(2.35rem, 4vw, 3.4rem);
+          line-height: 0.82;
+          letter-spacing: -0.055em;
+        }
+
+        .support-tool__brand span {
+          margin-top: 0.42rem;
+          color: var(--studio-paper);
+          font-size: 0.62rem;
+          font-weight: 850;
+          letter-spacing: 0.12em;
+        }
+
+        .support-tool__intro h1 {
+          margin: 0;
+          color: var(--studio-paper);
+          font-family: var(--font-head);
+          font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+          line-height: 1;
+          letter-spacing: -0.035em;
+        }
+
+        .support-tool__intro p {
+          margin: 0.52rem 0 0;
+          color: rgba(242, 239, 229, 0.62);
+          font-size: 0.94rem;
+          line-height: 1.45;
+        }
+
+        .support-tool__workspace {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 390px;
+          gap: 1rem;
           align-items: start;
+          padding-top: 1rem;
         }
 
         .support-tool__stage,
         .support-tool__controls {
-          border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 28px;
-          background:
-            radial-gradient(circle at 18% 0%, rgba(255, 209, 0, 0.1), transparent 18rem),
-            linear-gradient(180deg, rgba(226, 219, 199, 0.08), rgba(226, 219, 199, 0.025)),
-            rgba(20, 20, 18, 0.92);
-          box-shadow: 0 34px 110px rgba(0, 0, 0, 0.36);
-          backdrop-filter: blur(16px);
+          border: 1px solid rgba(242, 239, 229, 0.16);
+          border-radius: 4px;
+          background: #101214;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
         }
 
         .support-tool__stage {
-          padding: clamp(0.85rem, 1.4vw, 1.25rem);
+          min-width: 0;
+          overflow: hidden;
         }
 
         .support-tool__stage-head {
@@ -834,8 +1202,9 @@ export function SupportPhotoTool() {
           align-items: center;
           justify-content: space-between;
           gap: 1rem;
-          padding: 0.2rem 0.35rem 1rem;
-          color: var(--muted);
+          padding: 1rem 1.15rem;
+          color: var(--studio-paper);
+          background: #0b4e59;
           font-size: 0.74rem;
           font-weight: 800;
           letter-spacing: 0.13em;
@@ -843,18 +1212,20 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__stage-head strong {
-          color: var(--yellow);
+          color: var(--studio-paper);
           font-size: 0.78rem;
         }
 
         .support-tool__preview {
           position: relative;
-          padding: clamp(0.6rem, 1.6vw, 1rem);
-          border: 1px solid rgba(226, 219, 199, 0.12);
-          border-radius: 22px;
+          padding: clamp(1rem, 3vw, 2.25rem);
+          border: 0;
+          border-radius: 0;
           background:
-            linear-gradient(135deg, rgba(226, 219, 199, 0.16), rgba(255, 209, 0, 0.075)),
-            #12110f;
+            linear-gradient(rgba(14, 100, 115, 0.09) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14, 100, 115, 0.09) 1px, transparent 1px),
+            #11171a;
+          background-size: 32px 32px;
           overflow: hidden;
         }
 
@@ -862,7 +1233,7 @@ export function SupportPhotoTool() {
           width: 100%;
           aspect-ratio: 1;
           height: auto;
-          border-radius: 16px;
+          border-radius: 2px;
           background: var(--bg);
           box-shadow:
             0 22px 58px rgba(0,0,0,0.48),
@@ -878,6 +1249,13 @@ export function SupportPhotoTool() {
           box-shadow: 0 0 0 999px rgba(11, 11, 14, 0.05);
         }
 
+        .support-tool__guide--poster {
+          inset: 25.75% 6.65% 30.75%;
+          border-radius: 2px;
+          border-color: rgba(242, 239, 229, 0.78);
+          box-shadow: inset 0 0 0 1px rgba(16, 18, 20, 0.24);
+        }
+
         .support-tool__mobile-adjust {
           display: none;
         }
@@ -885,35 +1263,28 @@ export function SupportPhotoTool() {
         .support-tool__controls {
           position: sticky;
           top: 1rem;
-          padding: 1.1rem;
+          padding: 1.15rem;
           display: grid;
-          gap: 0.95rem;
+          gap: 1rem;
+          max-height: calc(100vh - 2rem);
+          overflow-y: auto;
+          scrollbar-color: rgba(14, 100, 115, 0.7) transparent;
         }
 
         .support-tool__controls-head {
-          display: grid;
-          grid-template-columns: auto 1fr;
-          gap: 0.75rem;
-          align-items: start;
-          padding: 0.15rem 0 0.35rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(242, 239, 229, 0.12);
         }
 
         .support-tool__controls-head > span {
-          display: grid;
-          place-items: center;
-          width: 38px;
-          height: 38px;
-          border-radius: 12px;
-          background:
-            linear-gradient(135deg, #ffe262, var(--yellow));
-          color: var(--bg);
-          font-weight: 900;
+          display: none;
         }
 
         .support-tool__controls-head strong {
           display: block;
           color: var(--text);
-          font-size: 1.02rem;
+          color: #58aebb;
+          font-size: 1.08rem;
           line-height: 1.2;
         }
 
@@ -925,18 +1296,48 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__upload {
-          display: inline-flex;
+          display: flex;
           justify-content: center;
           align-items: center;
-          min-height: 52px;
-          padding: 0.8rem 1rem;
-          border-radius: 14px;
-          background:
-            linear-gradient(135deg, #f7d64a, var(--yellow));
-          color: var(--bg);
-          font-weight: 900;
+          gap: 0.85rem;
+          min-height: 104px;
+          padding: 1rem;
+          border: 1px dashed rgba(242, 239, 229, 0.28);
+          border-radius: 3px;
+          background: rgba(242, 239, 229, 0.025);
+          color: var(--studio-paper);
           cursor: pointer;
-          box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
+          transition: border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .support-tool__upload:hover {
+          border-color: #58aebb;
+          background: rgba(14, 100, 115, 0.12);
+        }
+
+        .support-tool__upload svg {
+          width: 30px;
+          height: 30px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.5;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        .support-tool__upload span {
+          display: grid;
+          gap: 0.18rem;
+        }
+
+        .support-tool__upload strong {
+          font-size: 0.94rem;
+        }
+
+        .support-tool__upload small {
+          color: var(--muted);
+          font-size: 0.72rem;
+          font-weight: 600;
         }
 
         .support-tool__upload input {
@@ -982,12 +1383,11 @@ export function SupportPhotoTool() {
           display: grid;
           grid-template-columns: auto 1fr;
           gap: 0.1rem 0.55rem;
-          min-height: 62px;
-          padding: 0.72rem 0.82rem;
-          border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 14px;
-          background:
-            linear-gradient(180deg, rgba(226, 219, 199, 0.055), rgba(226, 219, 199, 0.025));
+          min-height: 58px;
+          padding: 0.68rem 0.78rem;
+          border: 1px solid rgba(242, 239, 229, 0.14);
+          border-radius: 3px;
+          background: rgba(242, 239, 229, 0.035);
           color: var(--text);
           font-weight: 800;
           cursor: pointer;
@@ -995,15 +1395,13 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__variant label:has(input:checked) {
-          border-color: rgba(255, 209, 0, 0.58);
-          background:
-            radial-gradient(circle at 92% 22%, rgba(255, 209, 0, 0.18), transparent 5rem),
-            rgba(255, 209, 0, 0.085);
+          border-color: rgba(14, 100, 115, 0.92);
+          background: rgba(14, 100, 115, 0.22);
         }
 
         .support-tool__variant label:hover {
           transform: translateY(-1px);
-          border-color: rgba(255, 209, 0, 0.34);
+          border-color: rgba(242, 194, 48, 0.5);
         }
 
         .support-tool__variant label span {
@@ -1015,27 +1413,27 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__variant input {
-          accent-color: var(--yellow);
+          accent-color: #f2c230;
         }
 
         .support-tool__chip {
           min-height: 42px;
           border: 1px solid rgba(226, 219, 199, 0.14);
-          border-radius: 999px;
-          background: rgba(226, 219, 199, 0.04);
+          border-radius: 3px;
+          background: rgba(242, 239, 229, 0.04);
           color: var(--text);
           cursor: pointer;
           font-weight: 700;
         }
 
         .support-tool__chip:hover {
-          border-color: var(--yellow);
-          color: var(--yellow);
+          border-color: #f2c230;
+          color: #f2c230;
         }
 
         .support-tool__field {
           display: grid;
-          gap: 0.45rem;
+          gap: 0.55rem;
           color: var(--text);
           font-weight: 600;
           font-size: 0.92rem;
@@ -1043,31 +1441,81 @@ export function SupportPhotoTool() {
 
         .support-tool__field input {
           width: 100%;
-          accent-color: var(--yellow);
+          accent-color: #f2c230;
           cursor: pointer;
+        }
+
+        .support-tool__field-meta {
+          display: flex;
+          justify-content: space-between;
+          gap: 1rem;
+        }
+
+        .support-tool__field-meta output {
+          color: #58aebb;
+          font-size: 0.78rem;
+          font-variant-numeric: tabular-nums;
         }
 
         .support-tool__actions {
           display: grid;
-          gap: 0.75rem;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.65rem;
         }
 
         .support-tool__actions .btn {
           justify-content: center;
-          border-radius: 14px;
+          border-radius: 3px;
           min-height: 50px;
+          padding-inline: 1rem;
+          white-space: nowrap;
+        }
+
+        .support-tool__actions .btn svg {
+          width: 19px;
+          height: 19px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        .support-tool__actions--mobile {
+          display: none;
         }
 
         @media (max-width: 860px) {
-          .support-tool {
+          .support-tool__masthead {
             grid-template-columns: 1fr;
-            gap: 0.85rem;
+            gap: 1rem;
+            padding-top: 0.75rem;
+          }
+
+          .support-tool__brand {
+            width: fit-content;
+            min-width: 0;
+            padding: 0 0 0.75rem;
+            border-right: 0;
+            border-bottom: 1px solid rgba(242, 239, 229, 0.18);
+          }
+
+          .support-tool__brand strong {
+            font-size: 2.75rem;
+          }
+
+          .support-tool__actions--top {
+            display: none;
+          }
+
+          .support-tool__workspace {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
           }
 
           .support-tool__stage {
             position: relative;
-            padding: 0.72rem;
-            border-radius: 24px;
+            border-radius: 6px;
           }
 
           .support-tool__stage-head {
@@ -1082,11 +1530,11 @@ export function SupportPhotoTool() {
 
           .support-tool__preview {
             padding: 0.5rem;
-            border-radius: 18px;
+            border-radius: 3px;
           }
 
           .support-tool__canvas {
-            border-radius: 12px;
+            border-radius: 2px;
           }
 
           .support-tool__mobile-adjust {
@@ -1094,11 +1542,9 @@ export function SupportPhotoTool() {
             gap: 0.62rem;
             margin-top: 0.72rem;
             padding: 0.72rem;
-            border: 1px solid rgba(255, 209, 0, 0.18);
-            border-radius: 18px;
-            background:
-              radial-gradient(circle at 0% 0%, rgba(255, 209, 0, 0.12), transparent 9rem),
-              rgba(7, 7, 8, 0.54);
+            border: 1px solid rgba(14, 100, 115, 0.58);
+            border-radius: 4px;
+            background: rgba(14, 100, 115, 0.12);
           }
 
           .support-tool__mobile-actions {
@@ -1124,11 +1570,22 @@ export function SupportPhotoTool() {
 
           .support-tool__mobile-adjust input {
             width: 100%;
-            accent-color: var(--yellow);
+            accent-color: #f2c230;
           }
 
           .support-tool__controls {
             position: static;
+            max-height: none;
+            overflow: visible;
+          }
+
+          .support-tool__controls > .support-tool__quick-actions,
+          .support-tool__controls > .support-tool__field {
+            display: none;
+          }
+
+          .support-tool__actions--mobile {
+            display: grid;
           }
         }
 
