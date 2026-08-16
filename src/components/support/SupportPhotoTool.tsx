@@ -885,6 +885,17 @@ export function SupportPhotoTool() {
         </div>
         <div className="support-tool__preview" aria-label="Prévia da montagem">
           <canvas ref={canvasRef} className="support-tool__canvas" />
+          <input
+            id="support-photo-input"
+            className="support-tool__preview-upload"
+            type="file"
+            accept="image/png,image/jpeg"
+            aria-label={image ? "Trocar foto da montagem" : "Escolher foto para a montagem"}
+            onClick={(event) => {
+              event.currentTarget.value = "";
+            }}
+            onChange={handleImageUpload}
+          />
           {image ? (
             <div
               className={`support-tool__guide ${variant === "cartaz" ? "support-tool__guide--poster" : ""}`}
@@ -946,7 +957,7 @@ export function SupportPhotoTool() {
           </div>
         </div>
 
-        <label className="support-tool__upload">
+        <label className="support-tool__upload" htmlFor="support-photo-input">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 5h10l4 4v10H4z" />
             <path d="M14 5v4h4M8 15l2.2-2.2L13 15.5l1.5-1.5L18 17.5M8 9h2" />
@@ -955,7 +966,6 @@ export function SupportPhotoTool() {
             <strong>Escolher foto</strong>
             <small>PNG ou JPEG · máximo 5 MB</small>
           </span>
-          <input type="file" accept="image/png,image/jpeg" onChange={handleImageUpload} />
         </label>
 
         <p className="support-tool__status" role="status">
@@ -1217,8 +1227,9 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__preview {
+          --preview-padding: clamp(1rem, 3vw, 2.25rem);
           position: relative;
-          padding: clamp(1rem, 3vw, 2.25rem);
+          padding: var(--preview-padding);
           border: 0;
           border-radius: 0;
           background:
@@ -1230,6 +1241,7 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__canvas {
+          display: block;
           width: 100%;
           aspect-ratio: 1;
           height: auto;
@@ -1238,6 +1250,24 @@ export function SupportPhotoTool() {
           box-shadow:
             0 22px 58px rgba(0,0,0,0.48),
             0 0 0 1px rgba(255,255,255,0.045);
+        }
+
+        .support-tool__preview-upload {
+          position: absolute;
+          z-index: 2;
+          inset: var(--preview-padding);
+          width: auto;
+          height: auto;
+          border: 0;
+          border-radius: 2px;
+          opacity: 0;
+          cursor: pointer;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: rgba(242, 194, 48, 0.2);
+        }
+
+        .support-tool__preview:has(.support-tool__preview-upload:focus-visible) {
+          box-shadow: inset 0 0 0 4px #f2c230;
         }
 
         .support-tool__guide {
@@ -1338,14 +1368,6 @@ export function SupportPhotoTool() {
           color: var(--muted);
           font-size: 0.72rem;
           font-weight: 600;
-        }
-
-        .support-tool__upload input {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          opacity: 0;
-          pointer-events: none;
         }
 
         .support-tool__status {
@@ -1529,7 +1551,7 @@ export function SupportPhotoTool() {
           }
 
           .support-tool__preview {
-            padding: 0.5rem;
+            --preview-padding: 0.5rem;
             border-radius: 3px;
           }
 
