@@ -17,7 +17,7 @@ type SupportMessage = "voto" | "dupla" | "alexandre";
 const CIRCLE_CENTER = CANVAS_SIZE / 2;
 const CIRCLE_OUTER_RADIUS = 520;
 const CIRCLE_INNER_RADIUS = 342;
-const POSTER_PHOTO = { x: 72, y: 278, width: 936, height: 470 } as const;
+const POSTER_PHOTO = { x: 72, y: 84, width: 936, height: 664 } as const;
 const CAMPAIGN_COLORS = {
   charcoal: "#101214",
   paper: "#F2EFE5",
@@ -240,25 +240,9 @@ function drawCampaignPosterFrame(
   context.fillStyle = CAMPAIGN_COLORS.paper;
   context.fillRect(22, 12, 5, 1056);
 
-  context.textAlign = "left";
-  context.fillStyle = CAMPAIGN_COLORS.yellow;
-  setFont(context, 800, 18, "Inter, Arial");
-  context.fillText("ARQUIVO VIVO  •  PARTICIPAÇÃO POPULAR", 72, 50);
-  context.fillStyle = CAMPAIGN_COLORS.paper;
-  setFont(context, 900, 72, "Inter, Arial Black, Arial");
-  context.fillText("FAÇA PARTE", 72, 132, 710);
-  context.fillText("DESSA LUTA", 72, 216, 710);
-  context.textAlign = "right";
-  context.fillStyle = "rgba(242, 239, 229, 0.76)";
-  setFont(context, 800, 25, "Inter, Arial");
-  context.fillText("DEPUTADO", 1008, 132);
-  context.fillText("ESTADUAL", 1008, 165);
-  context.fillStyle = CAMPAIGN_COLORS.teal;
-  context.fillRect(866, 90, 142, 8);
-
   // A thin paper mount keeps the real photo direct and avoids a plastic treatment.
   context.fillStyle = CAMPAIGN_COLORS.paper;
-  context.fillRect(56, 262, 968, 502);
+  context.fillRect(56, 68, 968, 694);
 
   if (image) {
     drawCoverImageInRect(context, image, state, POSTER_PHOTO);
@@ -303,8 +287,9 @@ function drawCampaignPosterFrame(
   context.fillStyle = CAMPAIGN_COLORS.red;
   context.fillRect(697, 1004, 84, 8);
   context.fillStyle = "rgba(242, 239, 229, 0.72)";
-  setFont(context, 700, 17, "Inter, Arial");
-  context.fillText("NOSSA VOZ  •  NOSSO FUTURO", 697, 1045, 324);
+  setFont(context, 700, 15, "Inter, Arial");
+  context.fillText("CONTRA O ABANDONO", 697, 1037, 324);
+  context.fillText("A FORÇA DO POVO", 697, 1058, 324);
 
   drawGrain(context, 0.028);
   context.restore();
@@ -847,7 +832,7 @@ export function SupportPhotoTool() {
           <span>Deputado estadual</span>
         </div>
         <div className="support-tool__intro">
-          <h1>Faça parte dessa luta.</h1>
+          <h1>Monte sua arte de apoio.</h1>
           <p>Envie sua foto e gere a arte “Eu voto Alexandre VR Abandonada 50800”.</p>
         </div>
         <div className="support-tool__actions support-tool__actions--top">
@@ -1280,7 +1265,7 @@ export function SupportPhotoTool() {
         }
 
         .support-tool__guide--poster {
-          inset: 25.75% 6.65% 30.75%;
+          inset: 7.78% 6.65% 30.75%;
           border-radius: 2px;
           border-color: rgba(242, 239, 229, 0.78);
           box-shadow: inset 0 0 0 1px rgba(16, 18, 20, 0.24);
