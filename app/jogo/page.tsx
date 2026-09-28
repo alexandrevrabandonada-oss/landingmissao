@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { JsonLd } from "@/src/components/seo/JsonLd";
 import { SITE_IDENTITY } from "@/src/content/siteIdentity";
 import { canonicalUrl, SEO_IMAGES } from "@/src/content/siteSeo";
@@ -101,6 +102,9 @@ export default async function JogoPage({ searchParams }: PageProps) {
             <p className="game-page__lead">
               Corra por uma cidade travada, reúna relatos, provas, memória e apoio popular.
               No fim, a cidade responde melhor porque a escuta virou organização.
+            </p>
+            <p className="game-page__lead">
+              Quer uma disputa rápida? <Link href="/jogos/fuga-da-burocracia">Jogue o Desafio dos Processos: 45 segundos para bater a marca de um amigo.</Link>
             </p>
           </div>
 

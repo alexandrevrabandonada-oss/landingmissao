@@ -1,0 +1,24 @@
+.page { position: fixed; inset: 0; z-index: 120; background: #10151c; overflow: hidden; font-family: Arial, sans-serif; }
+.game { display: block; width: 100%; height: 100%; border: 0; }
+.loading, .resultShade { position: absolute; inset: 0; display: grid; place-items: center; padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+.loading { background-size: cover; background-position: center; z-index: 2; }
+.loadingCard, .resultPanel { width: min(100%, 540px); padding: clamp(22px, 6vw, 40px); border-top: 5px solid #f5c438; border-bottom: 5px solid #f5c438; background: rgba(9, 15, 24, .93); color: white; box-shadow: 0 20px 80px rgba(0, 0, 0, .45); text-align: center; }
+.loadingCard h1 { color: #f5c438; font-size: clamp(28px, 7vw, 48px); line-height: 1.03; text-transform: uppercase; margin: 16px 0; }
+.loadingCard p, .resultPanel p { line-height: 1.4; }
+.eyebrow { color: #f5c438; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 800; }
+.target { color: #f5c438; font-weight: bold; }
+.progress { height: 12px; background: #39404d; margin: 24px 0 8px; overflow: hidden; }
+.progress span { display: block; height: 100%; background: #f5c438; transition: width .2s ease; }
+.loadingCard small { display: block; color: #d7d9dc; }
+.loadingCard a { display: inline-block; margin-top: 25px; text-decoration: underline; }
+.resultShade { z-index: 3; background: rgba(3, 8, 15, .78); overflow-y: auto; }
+.resultPanel { max-height: calc(100dvh - 30px); overflow-y: auto; }
+.resultPanel h2 { color: #f5c438; font-size: clamp(58px, 16vw, 112px); line-height: 1; margin: 15px 0; }
+.resultPanel h2 span { display: block; font-size: 21px; text-transform: uppercase; letter-spacing: .14em; }
+.actions { display: grid; gap: 9px; margin-top: 22px; }
+.actions button, .actions a { display: grid; place-items: center; min-height: 50px; width: 100%; padding: 10px 16px; border: 1px solid #f5c438; color: white; background: #1c2632; border-radius: 3px; font-size: 16px; font-weight: bold; cursor: pointer; }
+.actions .primary { background: #f5c438; color: #10151c; }
+.actions button:disabled { opacity: .45; cursor: not-allowed; }
+.feedback { color: #f5c438; }
+.link { display: block; margin-top: 15px; font-size: 11px; color: #cdd4dc; overflow-wrap: anywhere; text-decoration: underline; }
+@media (max-height: 700px) { .resultPanel { padding: 15px; } .resultPanel h2 { font-size: 60px; } .actions { grid-template-columns: 1fr 1fr; } .actions button, .actions a { min-height: 42px; font-size: 13px; } }
