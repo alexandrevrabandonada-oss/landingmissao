@@ -19,6 +19,9 @@
 .actions button, .actions a { display: grid; place-items: center; min-height: 50px; width: 100%; padding: 10px 16px; border: 1px solid #f5c438; color: white; background: #1c2632; border-radius: 3px; font-size: 16px; font-weight: bold; cursor: pointer; }
 .actions .primary { background: #f5c438; color: #10151c; }
 .actions button:disabled { opacity: .45; cursor: not-allowed; }
+.secondaryLinks { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 24px; margin-top: 14px; }
+.secondaryLinks a { color: #e9eff2; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
 .feedback { color: #f5c438; }
 .link { display: block; margin-top: 15px; font-size: 11px; color: #cdd4dc; overflow-wrap: anywhere; text-decoration: underline; }
 @media (max-height: 700px) { .resultPanel { padding: 15px; } .resultPanel h2 { font-size: 60px; } .actions { grid-template-columns: 1fr 1fr; } .actions button, .actions a { min-height: 42px; font-size: 13px; } }
+@media (max-height: 800px) { .resultPanel { padding-block: 18px; } .resultPanel h2 { font-size: clamp(58px, 11vw, 88px); margin: 8px 0; } .resultPanel p { margin-block: 8px; } .actions { margin-top: 14px; gap: 7px; } .actions button, .actions a { min-height: 44px; } }

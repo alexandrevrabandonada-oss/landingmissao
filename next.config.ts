@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       { source: "/unity/fuga/v2/Build/WebGL.wasm.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/wasm" }] },
       { source: "/unity/fuga/v2/Build/WebGL.framework.js.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/javascript" }] },
       { source: "/unity/fuga/v2/Build/WebGL.data.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/octet-stream" }] },
+      { source: "/unity/fuga/v3/Build/WebGL.wasm.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/wasm" }] },
+      { source: "/unity/fuga/v3/Build/WebGL.framework.js.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/javascript" }] },
+      { source: "/unity/fuga/v3/Build/WebGL.data.gz", headers: [{ key: "Content-Encoding", value: "gzip" }, { key: "Content-Type", value: "application/octet-stream" }] },
     ];
   },
   reactStrictMode: true,
