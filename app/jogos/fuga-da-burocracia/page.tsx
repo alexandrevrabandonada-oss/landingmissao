@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: canonicalUrl(path),
-    images: [{ url: "/unity/fuga/challenge-og.png", width: 1731, height: 909, alt: "Alexandre no Desafio dos Processos" }],
+    images: [{ url: "/unity/fuga/challenge-og-v2.png", width: 1672, height: 941, alt: "Alexandre salta sobre processos na cidade industrial fictícia" }],
   },
-  twitter: { card: "summary_large_image", title, description, images: ["/unity/fuga/challenge-og.png"] },
+  twitter: { card: "summary_large_image", title, description, images: ["/unity/fuga/challenge-og-v2.png"] },
   robots: { index: true, follow: true },
 };
 
@@ -44,5 +44,6 @@ export default async function ChallengePage({ searchParams }: Props) {
   const day = validDay(suppliedDay) ? suppliedDay : todayInBrazil();
   const rawTarget = Number(one(params?.target));
   const target = Number.isSafeInteger(rawTarget) && rawTarget > 0 ? Math.min(rawTarget, 100000) : 0;
-  return <ChallengeExperience day={day} target={target} />;
+  const version = one(params?.v) === "1" ? 1 : 2;
+  return <ChallengeExperience day={day} target={target} version={version} />;
 }
