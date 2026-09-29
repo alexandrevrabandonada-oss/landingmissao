@@ -10,7 +10,7 @@
 .progress { height: 12px; background: #39404d; margin: 24px 0 8px; overflow: hidden; }
 .progress span { display: block; height: 100%; background: #f5c438; transition: width .2s ease; }
 .loadingCard small { display: block; color: #d7d9dc; }
-.loadingCard a { display: inline-block; margin-top: 25px; text-decoration: underline; }
+.loadingCard a { display: inline-block; margin: 25px 10px 0; text-decoration: underline; }
 .resultShade { z-index: 3; background: rgba(3, 8, 15, .78); overflow-y: auto; }
 .resultPanel { max-height: calc(100dvh - 30px); overflow-y: auto; }
 .resultPanel h2 { color: #f5c438; font-size: clamp(58px, 16vw, 112px); line-height: 1; margin: 15px 0; }
