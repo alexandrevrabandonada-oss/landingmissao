@@ -15,11 +15,13 @@ type ChallengeMessage = {
   target?: number;
   progress?: number;
   version?: number;
+  survived?: boolean;
 };
-type Result = { score: number; best: number };
+type Result = { score: number; best: number; survived: boolean };
 
 const route = "/jogos/fuga-da-burocracia";
-const poster = "/unity/fuga/IndustrialValley.png";
+const originalPoster = "/unity/fuga/IndustrialValley.png";
+const v2Poster = "/unity/fuga/challenge-og-v2.png";
 const portrait = "/unity/fuga/AlexandreReference.png";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -31,7 +33,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function createResultCard(score: number, best: number, day: string): Promise<File> {
+async function createResultCard(score: number, best: number, day: string, version: 1 | 2): Promise<File> {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1920;
@@ -41,7 +43,7 @@ async function createResultCard(score: number, best: number, day: string): Promi
   context.fillStyle = "#0e1720";
   context.fillRect(0, 0, 1080, 1920);
   try {
-    const landscape = await loadImage(poster);
+    const landscape = await loadImage(version === 2 ? v2Poster : originalPoster);
     const scale = Math.max(1080 / landscape.width, 1920 / landscape.height);
     const width = landscape.width * scale;
     const height = landscape.height * scale;
@@ -54,22 +56,44 @@ async function createResultCard(score: number, best: number, day: string): Promi
   shade.addColorStop(1, "rgba(4,9,16,.94)");
   context.fillStyle = shade;
   context.fillRect(0, 0, 1080, 1920);
-  try {
-    const alexandre = await loadImage(portrait);
-    const scale = Math.min(680 / alexandre.width, 870 / alexandre.height);
-    context.drawImage(alexandre, 540 - alexandre.width * scale / 2, 490, alexandre.width * scale, alexandre.height * scale);
-  } catch { /* the score remains the focal point */ }
+  if (version === 1) {
+    try {
+      const alexandre = await loadImage(portrait);
+      const scale = Math.min(680 / alexandre.width, 870 / alexandre.height);
+      context.drawImage(alexandre, 540 - alexandre.width * scale / 2, 490, alexandre.width * scale, alexandre.height * scale);
+    } catch { /* the score remains the focal point */ }
+  }
 
   context.fillStyle = "#f5c438";
   context.fillRect(72, 85, 936, 10);
   context.fillRect(72, 1825, 936, 10);
+  if (version === 2) {
+    context.fillStyle = "#ff6455";
+    context.fillRect(72, 1190, 590, 92);
+    context.textAlign = "center";
+    context.fillStyle = "#0e1720";
+    context.font = "bold 44px Arial, sans-serif";
+    context.fillText("URGENTE PRA ONTEM!", 367, 1250, 548);
+  }
+  if (version === 2) {
+    context.textAlign = "left";
+    context.fillStyle = "#f5c438";
+    context.font = "bold 76px Arial, sans-serif";
+    context.fillText("DESAFIO DOS", 72, 185, 640);
+    context.fillText("PROCESSOS", 72, 265, 640);
+    context.fillStyle = "#fff";
+    context.font = "bold 43px Arial, sans-serif";
+    context.fillText("45 SEGUNDOS. FALTA UMA VIA!", 72, 340, 850);
+  } else {
+    context.textAlign = "center";
+    context.fillStyle = "#f5c438";
+    context.font = "bold 72px Arial, sans-serif";
+    context.fillText("DESAFIO DOS PROCESSOS", 540, 208);
+    context.fillStyle = "#fff";
+    context.font = "bold 58px Arial, sans-serif";
+    context.fillText("45 SEGUNDOS. DEZ ADVOGADOS.", 540, 310);
+  }
   context.textAlign = "center";
-  context.fillStyle = "#f5c438";
-  context.font = "bold 72px Arial, sans-serif";
-  context.fillText("DESAFIO DOS PROCESSOS", 540, 208);
-  context.fillStyle = "#fff";
-  context.font = "bold 58px Arial, sans-serif";
-  context.fillText("45 SEGUNDOS. DEZ ADVOGADOS.", 540, 310);
   context.fillStyle = "rgba(8,15,24,.90)";
   context.fillRect(68, 1320, 944, 430);
   context.fillStyle = "#f5c438";
@@ -85,10 +109,11 @@ async function createResultCard(score: number, best: number, day: string): Promi
   context.fillText("/jogos/fuga-da-burocracia", 540, 1810);
   const blob = await new Promise<Blob>((resolve, reject) =>
     canvas.toBlob((value) => value ? resolve(value) : reject(new Error("Falha ao criar card")), "image/png"));
-  return new File([blob], `desafio-dos-processos-${day}.png`, { type: "image/png" });
+  return new File([blob], `desafio-dos-processos-v${version}-${day}.png`, { type: "image/png" });
 }
 
-export function ChallengeExperience({ day, target }: { day: string; target: number }) {
+export function ChallengeExperience({ day, target, version }: { day: string; target: number; version: 1 | 2 }) {
+  const poster = version === 2 ? v2Poster : originalPoster;
   const iframe = useRef<HTMLIFrameElement>(null);
   const [runKey, setRunKey] = useState(0);
   const [autoRun, setAutoRun] = useState(false);
@@ -99,60 +124,60 @@ export function ChallengeExperience({ day, target }: { day: string; target: numb
   const [feedback, setFeedback] = useState("");
 
   const challengeUrl = useMemo(() => {
-    const params = new URLSearchParams({ day, target: String(result?.score ?? target), v: "1" });
+    const params = new URLSearchParams({ day, target: String(result?.score ?? target), v: String(version) });
     return `${typeof window === "undefined" ? "https://alexandrevrabandonada.online" : window.location.origin}${route}?${params}`;
-  }, [day, target, result]);
+  }, [day, target, result, version]);
   const iframeSrc = useMemo(() => {
     const params = new URLSearchParams({ mode: "challenge", day, target: String(target) });
     if (autoRun) params.set("auto", "1");
-    return `/unity/fuga/v1/index.html?${params}`;
-  }, [day, target, autoRun]);
+    return `/unity/fuga/v${version}/index.html?${params}`;
+  }, [day, target, autoRun, version]);
 
   useEffect(() => {
-    trackEventIfAvailable("challenge_opened", { version: 1, invited: target > 0 });
-    if (target > 0) trackEventIfAvailable("challenge_link_opened", { version: 1 });
-  }, [target]);
+    trackEventIfAvailable("challenge_opened", { version, invited: target > 0 });
+    if (target > 0) trackEventIfAvailable("challenge_link_opened", { version });
+  }, [target, version]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent<ChallengeMessage>) => {
       if (event.origin !== window.location.origin || event.source !== iframe.current?.contentWindow) return;
       const message = event.data;
-      if (!message || message.type !== "alexandre.challenge" || message.version !== 1 && message.kind !== "loading") return;
+      if (!message || message.type !== "alexandre.challenge" || message.version !== version && message.kind !== "loading") return;
       if (message.kind === "loading") { setProgress(Math.max(0, Math.min(100, Number(message.progress) || 0))); return; }
       if (message.day !== day) return;
       if (message.kind === "ready") { setReady(true); return; }
-      if (message.kind === "start") { trackEventIfAvailable("challenge_started", { version: 1, invited: target > 0 }); return; }
-      if (message.kind === "retry") { trackEventIfAvailable("challenge_replayed", { version: 1 }); return; }
-      if (message.kind === "share") { trackEventIfAvailable("challenge_share_clicked", { version: 1, surface: "unity" }); return; }
+      if (message.kind === "start") { trackEventIfAvailable("challenge_started", { version, invited: target > 0 }); return; }
+      if (message.kind === "retry") { trackEventIfAvailable("challenge_replayed", { version }); return; }
+      if (message.kind === "share") { trackEventIfAvailable("challenge_share_clicked", { version, surface: "unity" }); return; }
       if (message.kind === "result") {
         const score = Math.max(0, Math.min(100000, Math.trunc(Number(message.score) || 0)));
         const best = Math.max(score, Math.min(100000, Math.trunc(Number(message.best) || 0)));
-        setResult({ score, best });
-        trackEventIfAvailable("challenge_finished", { version: 1, score, invited: target > 0 });
+        setResult({ score, best, survived: message.survived === true });
+        trackEventIfAvailable("challenge_finished", { version, score, invited: target > 0 });
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [day, target, runKey]);
+  }, [day, target, runKey, version]);
 
   useEffect(() => {
     if (!result) { setCard(null); return; }
     let active = true;
-    void createResultCard(result.score, result.best, day)
+    void createResultCard(result.score, result.best, day, version)
       .then((file) => { if (active) setCard(file); })
       .catch(() => { if (active) setCard(null); });
     return () => { active = false; };
-  }, [result, day]);
+  }, [result, day, version]);
 
   const replay = useCallback(() => {
-    trackEventIfAvailable("challenge_replayed", { version: 1, surface: "result" });
+    trackEventIfAvailable("challenge_replayed", { version, surface: "result" });
     setResult(null); setCard(null); setFeedback(""); setReady(false); setProgress(0);
     setAutoRun(true); setRunKey((current) => current + 1);
-  }, []);
+  }, [version]);
 
   const share = useCallback(async () => {
     if (!result) return;
-    trackEventIfAvailable("challenge_share_clicked", { version: 1, surface: "result" });
+    trackEventIfAvailable("challenge_share_clicked", { version, surface: "result" });
     const text = `Fiz ${result.score} pontos no Desafio dos Processos. Você consegue passar?`;
     try {
       if (navigator.share) {
@@ -166,7 +191,7 @@ export function ChallengeExperience({ day, target }: { day: string; target: numb
     }
     const copied = await copyToClipboardSafe(`${text} ${challengeUrl}`);
     setFeedback(copied ? "Convite copiado. Envie para um amigo!" : "Copie o endereço do desafio abaixo.");
-  }, [result, card, challengeUrl]);
+  }, [result, card, challengeUrl, version]);
 
   const downloadCard = useCallback(() => {
     if (!card) return;
@@ -176,8 +201,8 @@ export function ChallengeExperience({ day, target }: { day: string; target: numb
     link.download = card.name;
     link.click();
     setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-    trackEventIfAvailable("challenge_card_downloaded", { version: 1 });
-  }, [card]);
+    trackEventIfAvailable("challenge_card_downloaded", { version });
+  }, [card, version]);
 
   return (
     <section className={styles.page} aria-label="Desafio dos Processos">
@@ -200,11 +225,11 @@ export function ChallengeExperience({ day, target }: { day: string; target: numb
 
       {result && <div className={styles.resultShade}>
         <div className={styles.resultPanel}>
-          <p className={styles.eyebrow}>Expediente encerrado</p>
+          <p className={styles.eyebrow}>{version === 2 ? result.survived ? "Carimbo: sobreviveu!" : "Falta uma via!" : "Expediente encerrado"}</p>
           <h2>{result.score} <span>pontos</span></h2>
           <p>Melhor marca neste aparelho: <strong>{result.best}</strong></p>
           {target > 0 && <p className={styles.target}>Alvo recebido: {target} · {result.score > target ? "Você passou!" : result.score === target ? "Empate!" : "Tente de novo!"}</p>}
-          <p>Você consegue chamar alguém para superar sua marca?</p>
+          <p>{version === 2 ? "O próximo formulário é do seu amigo. Ele passa sua marca?" : "Você consegue chamar alguém para superar sua marca?"}</p>
           <div className={styles.actions}>
             <button className={styles.primary} onClick={() => void share()}>Desafiar um amigo</button>
             <button onClick={replay}>Jogar de novo</button>
