@@ -4,9 +4,13 @@ import { ChallengeExperience } from "./ChallengeExperience";
 
 const path = "/jogos/fuga-da-burocracia";
 const title = "Desafio dos Processos | Alexandre";
-const description = "45 segundos, dez advogados e uma cidade industrial. Faça sua marca e desafie um amigo a superá-la.";
+const description = "Protocole sua marca em 45 segundos. Uma cidade inteira faz perguntas; dez advogados tentam atrasar a resposta.";
 
-export const metadata: Metadata = {
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const params = await searchParams;
+  const version = one(params?.v);
+  const preview = version === "1" ? "/unity/fuga/challenge-og.png" : version === "2" ? "/unity/fuga/challenge-og-v2.png" : "/unity/fuga/challenge-og-v3.png";
+  return {
   title: { absolute: title },
   description,
   alternates: { canonical: canonicalUrl(path) },
@@ -16,11 +20,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: canonicalUrl(path),
-    images: [{ url: "/unity/fuga/challenge-og-v2.png", width: 1672, height: 941, alt: "Alexandre salta sobre processos na cidade industrial fictícia" }],
+    images: [{ url: preview, width: 1672, height: 941, alt: "Alexandre no Desafio dos Processos, em uma cidade industrial fictícia" }],
   },
-  twitter: { card: "summary_large_image", title, description, images: ["/unity/fuga/challenge-og-v2.png"] },
+  twitter: { card: "summary_large_image", title, description, images: [preview] },
   robots: { index: true, follow: true },
-};
+  };
+}
 
 type Props = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
 
@@ -44,6 +49,6 @@ export default async function ChallengePage({ searchParams }: Props) {
   const day = validDay(suppliedDay) ? suppliedDay : todayInBrazil();
   const rawTarget = Number(one(params?.target));
   const target = Number.isSafeInteger(rawTarget) && rawTarget > 0 ? Math.min(rawTarget, 100000) : 0;
-  const version = one(params?.v) === "1" ? 1 : 2;
+  const version = one(params?.v) === "1" ? 1 : one(params?.v) === "2" ? 2 : 3;
   return <ChallengeExperience day={day} target={target} version={version} />;
 }

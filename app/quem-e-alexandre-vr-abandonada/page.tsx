@@ -99,6 +99,19 @@ export default function QuemEPage() {
 
           <div className="profile-page__grid">
             <article>
+              <h2>Minha história</h2>
+              <p>
+                Nasci e cresci em Volta Redonda. Sou formado em Psicologia, aposentado por
+                baixa visão e tenho neuropatia óptica de Leber. Transformei experiências
+                pessoais em vontade de escutar a cidade e abrir espaço para perguntas públicas.
+              </p>
+              <p>
+                O <Link href="/jogos/fuga-da-burocracia">Desafio dos Processos</Link> é uma sátira
+                fictícia sobre burocracia e participação. Seus personagens e instituições não
+                representam pessoas, empresas ou processos reais.
+              </p>
+            </article>
+            <article>
               <h2>Relação com Volta Redonda</h2>
               <p>
                 A pré-campanha parte da vida concreta de Volta Redonda: bairros,
