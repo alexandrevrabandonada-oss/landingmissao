@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import CivicActions from "./CivicActions";
 import styles from "./climatizacao.module.css";
 
 const API = "/api/climatizacao";
@@ -54,6 +55,15 @@ type Snapshot = {
     public_label: string;
     updated_at: string;
   }>;
+  civic_contacts: Array<{
+    kind: "vereador" | "camara" | "prefeitura";
+    name: string;
+    email: string | null;
+    contact_url: string | null;
+    source_url: string;
+    is_fallback: boolean;
+    sort_order: number;
+  }>;
   generated_at: string;
 };
 
@@ -104,12 +114,25 @@ export default function ClimatizacaoClient() {
   const [studentStatus, setStudentStatus] = useState("");
   const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
+  const [civicSchool, setCivicSchool] = useState<School | null>(null);
+  const [civicIssue, setCivicIssue] = useState("");
+  const [civicScope, setCivicScope] = useState("");
 
   async function loadSnapshot() {
     try {
       const response = await fetch(API + "?action=snapshot", { cache: "no-store" });
       if (!response.ok) throw new Error("snapshot");
-      setSnapshot(await response.json());
+      const data: Snapshot = await response.json();
+      setSnapshot(data);
+      const schoolSlug = new URLSearchParams(window.location.search).get("escola");
+      if (schoolSlug) {
+        const deepLinkedSchool = data.schools.find((item) => item.slug === schoolSlug) ?? null;
+        if (deepLinkedSchool) {
+          setCivicSchool(deepLinkedSchool);
+          setSelectedSchool(deepLinkedSchool);
+          setSchoolQuery(deepLinkedSchool.name);
+        }
+      }
     } catch {
       setSnapshot(null);
     } finally {
@@ -148,14 +171,21 @@ export default function ClimatizacaoClient() {
     (integration) => integration.provider === "change_org" && integration.status === "active" && integration.public_url,
   );
 
+  function revealCivicActions() {
+    window.setTimeout(() => {
+      document.getElementById("mobilizar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  }
+
   async function submitStudentSupport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStudentStatus("Registrando seu apoio…");
     const form = new FormData(event.currentTarget);
+    const schoolId = form.get("school_id") ? Number(form.get("school_id")) : null;
     const payload = {
       kind: "student_support",
       age_band: form.get("age_band"),
-      school_id: form.get("school_id") ? Number(form.get("school_id")) : null,
+      school_id: schoolId,
       client_token: getStudentSupportToken(),
       guardian_ack: form.get("guardian_ack") === "on",
       website: form.get("website"),
@@ -191,8 +221,12 @@ export default function ClimatizacaoClient() {
 
     event.currentTarget.reset();
     setStudentAgeBand("");
-    setStudentStatus("Apoio estudantil registrado. Nenhum nome, e-mail ou telefone foi coletado.");
+    if (schoolId) {
+      setCivicSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
+    }
+    setStudentStatus("Apoio estudantil registrado. Nenhum nome, e-mail ou telefone foi coletado. Agora você pode enviar seu relato pelos canais oficiais.");
     await loadSnapshot();
+    revealCivicActions();
   }
 
   async function submitReport(event: FormEvent<HTMLFormElement>) {
@@ -203,11 +237,13 @@ export default function ClimatizacaoClient() {
     }
     setReportStatus("Enviando…");
     const form = new FormData(event.currentTarget);
+    const issueValue = String(form.get("issue") ?? "");
+    const scopeValue = String(form.get("scope") ?? "");
     const payload = {
       kind: "report",
       school_id: selectedSchool.id,
-      issue: form.get("issue"),
-      scope: form.get("scope"),
+      issue: issueValue,
+      scope: scopeValue,
       relation: form.get("relation"),
       shift: form.get("shift"),
       website: form.get("website"),
@@ -233,20 +269,25 @@ export default function ClimatizacaoClient() {
     }
 
     event.currentTarget.reset();
-    setReportStatus("Relato registrado. Obrigado por ajudar a documentar a situação.");
+    setCivicSchool(selectedSchool);
+    setCivicIssue(issueValue);
+    setCivicScope(scopeValue);
+    setReportStatus("Relato registrado. Abaixo você pode abrir os canais oficiais com a escola e o problema já preenchidos.");
     await loadSnapshot();
+    revealCivicActions();
   }
 
   async function submitSignature(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSignatureStatus("Enviando…");
     const form = new FormData(event.currentTarget);
+    const schoolId = form.get("school_id") ? Number(form.get("school_id")) : null;
     const payload = {
       kind: "signature",
       full_name: form.get("full_name"),
       neighborhood: form.get("neighborhood"),
       relation: form.get("relation"),
-      school_id: form.get("school_id") ? Number(form.get("school_id")) : null,
+      school_id: schoolId,
       adult_confirmed: form.get("adult_confirmed") === "on",
       consent: form.get("consent") === "on",
       website: form.get("website"),
@@ -276,8 +317,12 @@ export default function ClimatizacaoClient() {
     }
 
     event.currentTarget.reset();
-    setSignatureStatus("Assinatura registrada.");
+    if (schoolId) {
+      setCivicSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
+    }
+    setSignatureStatus("Assinatura registrada. Agora você pode abrir os canais oficiais e compartilhar o painel.");
     await loadSnapshot();
+    revealCivicActions();
   }
 
   return (
@@ -447,6 +492,18 @@ export default function ClimatizacaoClient() {
           </div>
         </div>
       </section>
+
+      <CivicActions
+        schools={snapshot?.schools ?? []}
+        contacts={snapshot?.civic_contacts ?? []}
+        school={civicSchool}
+        setSchool={setCivicSchool}
+        issue={civicIssue}
+        setIssue={setCivicIssue}
+        scope={civicScope}
+        setScope={setCivicScope}
+        totalSupports={snapshot?.summary.total_support_count ?? 0}
+      />
 
       <section className={styles.section} id="relatar">
         <div className={styles.sectionHead}>
