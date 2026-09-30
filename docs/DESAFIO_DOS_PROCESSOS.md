@@ -1,5 +1,7 @@
 # Desafio dos Processos
 
+- A página inicial oferece um atalho na apresentação e uma entrada visual em `/#desafio-dos-processos`, antes das missões, com arte v3 e botão “Jogar agora”. O Unity só é carregado ao abrir a página do jogo.
+
 - URL pública: `https://www.alexandrevrabandonada.online/jogos/fuga-da-burocracia`. A rota `/jogo` continua com a experiência anterior e oferece um link para o desafio.
 - Os builds estáticos ficam em `public/unity/fuga/v1`, `public/unity/fuga/v2` e `public/unity/fuga/v3`. `next.config.ts` envia `Content-Encoding: gzip` e MIME correto aos arquivos comprimidos. Links antigos com `v=1` e `v=2` continuam abrindo seus builds; links sem versão usam `v=3`.
 - O modo curto é ativado por `mode=challenge`. A página passa `day=AAAA-MM-DD` e `target=<pontos>` ao iframe. O link compartilhado inclui a versão; o alvo é uma marca enviada por um amigo, não um recorde autenticado.

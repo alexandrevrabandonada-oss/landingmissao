@@ -160,6 +160,10 @@ export default function HomePage() {
                   <span>Escolher minha missão</span>
                   <ArrowIcon />
                 </a>
+                <a href="#desafio-dos-processos" className={styles.secondaryButton}>
+                  <span>Jogar o Desafio dos Processos</span>
+                  <ArrowIcon />
+                </a>
               </div>
               <p className={styles.openMission}>
                 <span aria-hidden="true" />
@@ -183,6 +187,28 @@ export default function HomePage() {
                   className={styles.portrait}
                 />
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.gameGateway} id="desafio-dos-processos" aria-labelledby="game-title">
+          <div className={styles.gameGatewayInner}>
+            <a className={styles.gameArtwork} href="/jogos/fuga-da-burocracia" aria-label="Jogar o Desafio dos Processos">
+              <Image src="/unity/fuga/challenge-og-v3.png"
+                alt="Alexandre salta sobre a papelada, perseguido por advogados de cartum em uma cidade industrial fictícia"
+                width={1672} height={941} quality={75}
+                sizes="(max-width: 760px) 100vw, 600px" />
+              <span className={styles.gameArtworkLabel}>45 SEGUNDOS · DEZ ADVOGADOS</span>
+            </a>
+            <div className={styles.gameGatewayCopy}>
+              <p className={styles.sectionIndex}>A cidade também joga</p>
+              <h2 id="game-title">Desafio dos<br />Processos</h2>
+              <p>Uma cidade fez uma pergunta. Dez advogados pediram outra via.</p>
+              <p>Pule a papelada, protocole sua pontuação e chame um amigo para superar sua marca.</p>
+              <a href="/jogos/fuga-da-burocracia" className={styles.primaryButton}>
+                <span>Jogar agora</span><ArrowIcon />
+              </a>
+              <small>Grátis no navegador · Celular e computador</small>
             </div>
           </div>
         </section>
