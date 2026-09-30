@@ -102,6 +102,7 @@ export default function ClimatizacaoClient() {
   const [reportStatus, setReportStatus] = useState("");
   const [signatureStatus, setSignatureStatus] = useState("");
   const [studentStatus, setStudentStatus] = useState("");
+  const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
 
   async function loadSnapshot() {
@@ -156,6 +157,7 @@ export default function ClimatizacaoClient() {
       age_band: form.get("age_band"),
       school_id: form.get("school_id") ? Number(form.get("school_id")) : null,
       client_token: getStudentSupportToken(),
+      guardian_ack: form.get("guardian_ack") === "on",
       website: form.get("website"),
     };
 
@@ -178,11 +180,17 @@ export default function ClimatizacaoClient() {
       return;
     }
     if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      if (body?.error === "guardian_required") {
+        setStudentStatus("Para menores de 12 anos, o apoio deve ser registrado junto de pai, mãe ou responsável.");
+        return;
+      }
       setStudentStatus("Confira a faixa etária e tente novamente.");
       return;
     }
 
     event.currentTarget.reset();
+    setStudentAgeBand("");
     setStudentStatus("Apoio estudantil registrado. Nenhum nome, e-mail ou telefone foi coletado.");
     await loadSnapshot();
   }
@@ -359,7 +367,12 @@ export default function ClimatizacaoClient() {
                 </div>
                 <label>
                   Faixa etária
-                  <select name="age_band" required defaultValue="">
+                  <select
+                    name="age_band"
+                    required
+                    value={studentAgeBand}
+                    onChange={(event) => setStudentAgeBand(event.target.value)}
+                  >
                     <option value="" disabled>Escolha</option>
                     <option value="under_12">Menos de 12 anos</option>
                     <option value="12_15">12 a 15 anos</option>
@@ -375,6 +388,12 @@ export default function ClimatizacaoClient() {
                     ))}
                   </select>
                 </label>
+                {studentAgeBand === "under_12" ? (
+                  <label className={styles.check}>
+                    <input type="checkbox" name="guardian_ack" required />
+                    Estou preenchendo junto de pai, mãe ou responsável, que autoriza este apoio anônimo.
+                  </label>
+                ) : null}
                 <input name="website" className={styles.honeypot} tabIndex={-1} autoComplete="off" aria-hidden="true" />
                 <button className={styles.petitionButton} type="submit">Registrar meu apoio</button>
                 <p className={styles.status} aria-live="polite">{studentStatus}</p>
