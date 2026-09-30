@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import CivicActions from "./CivicActions";
+import ReceiptBanner from "./ReceiptBanner";
 import styles from "./climatizacao.module.css";
 
 const API = "/api/climatizacao";
@@ -19,7 +20,11 @@ type School = {
   parcial_count: number;
   rede_eletrica_count: number;
   manutencao_count: number;
-  last_report_at: string | null;
+  student_support_count: number;
+  signature_count: number;
+  support_count: number;
+  activity_count: number;
+  last_activity_at: string | null;
 };
 
 type Snapshot = {
@@ -114,6 +119,7 @@ export default function ClimatizacaoClient() {
   const [studentStatus, setStudentStatus] = useState("");
   const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
+  const [lastReceipt, setLastReceipt] = useState<{ url: string; label: string } | null>(null);
 
   async function loadSnapshot() {
     try {
@@ -130,6 +136,30 @@ export default function ClimatizacaoClient() {
 
   useEffect(() => {
     void loadSnapshot();
+  }, []);
+
+  useEffect(() => {
+    async function refreshVisibleSnapshot() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const response = await fetch(API + "?action=snapshot", { cache: "no-store" });
+        if (!response.ok) return;
+        const data: Snapshot = await response.json();
+        setSnapshot(data);
+      } catch {
+        // Keep the last successful snapshot on screen.
+      }
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshVisibleSnapshot();
+    }, 20_000);
+
+    document.addEventListener("visibilitychange", refreshVisibleSnapshot);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshVisibleSnapshot);
+    };
   }, []);
 
   useEffect(() => {
@@ -160,8 +190,8 @@ export default function ClimatizacaoClient() {
   const ranked = useMemo(
     () =>
       [...(snapshot?.schools ?? [])]
-        .filter((school) => Number(school.report_count) > 0)
-        .sort((a, b) => Number(b.report_count) - Number(a.report_count))
+        .filter((school) => Number(school.activity_count) > 0)
+        .sort((a, b) => Number(b.activity_count) - Number(a.activity_count))
         .slice(0, 20),
     [snapshot],
   );
@@ -174,6 +204,28 @@ export default function ClimatizacaoClient() {
     window.setTimeout(() => {
       document.getElementById("mobilizar")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 120);
+  }
+
+  function rememberReceipt(result: { receipt?: string; receipt_url?: string }, label: string) {
+    if (!result.receipt || !result.receipt_url) return;
+    const entry = {
+      code: result.receipt,
+      url: result.receipt_url,
+      label,
+      saved_at: new Date().toISOString(),
+    };
+    try {
+      const key = "climatizacao_receipts_v1";
+      const raw = window.localStorage.getItem(key);
+      const current = raw ? JSON.parse(raw) : [];
+      const next = [entry, ...(Array.isArray(current) ? current : [])]
+        .filter((item, index, all) => all.findIndex((candidate) => candidate.code === item.code) === index)
+        .slice(0, 20);
+      window.localStorage.setItem(key, JSON.stringify(next));
+    } catch {
+      // Receipt remains accessible in the current session even if localStorage is unavailable.
+    }
+    setLastReceipt({ url: result.receipt_url, label });
   }
 
   async function submitStudentSupport(event: FormEvent<HTMLFormElement>) {
@@ -218,6 +270,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Apoio estudantil registrado");
     event.currentTarget.reset();
     setStudentAgeBand("");
     if (schoolId) {
@@ -267,6 +321,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Relato registrado");
     event.currentTarget.reset();
     setReportStatus("Relato registrado. Abaixo você pode abrir os canais oficiais com a escola já preenchida.");
     await loadSnapshot();
@@ -312,6 +368,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Assinatura registrada");
     event.currentTarget.reset();
     if (schoolId) {
       setSelectedSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
@@ -335,10 +393,22 @@ export default function ClimatizacaoClient() {
           <a href="#relatar" className={styles.secondary}>Relatar minha escola</a>
           <a href="#painel" className={styles.secondary}>Ver o painel</a>
         </div>
+        <div className={styles.personalTools}>
+          <a href="/climatizacao/minhas-escolas">Minhas escolas</a>
+          <a href="/climatizacao/meus-recibos">Meus recibos</a>
+        </div>
         <p className={styles.privacy}>
           Estudantes menores podem participar sem informar nome, e-mail, telefone, CPF ou endereço.
         </p>
       </section>
+
+      <div className={styles.liveStrip}>
+        <span>● AO VIVO</span>
+        <p>
+          Atualização automática a cada 20 segundos enquanto esta página estiver aberta
+          {snapshot?.generated_at ? ` · última sincronização ${new Date(snapshot.generated_at).toLocaleTimeString("pt-BR")}` : ""}.
+        </p>
+      </div>
 
       <section className={styles.metrics} aria-label="Resumo">
         <article><strong>{loading ? "…" : snapshot?.summary.total_support_count ?? "—"}</strong><span>apoios no total</span></article>
@@ -347,6 +417,8 @@ export default function ClimatizacaoClient() {
         <article><strong>{loading ? "…" : snapshot?.summary.total_reports ?? "—"}</strong><span>relatos recebidos</span></article>
         <article><strong>{loading ? "…" : snapshot?.summary.total_schools ?? "—"}</strong><span>unidades na base</span></article>
       </section>
+
+      {lastReceipt ? <ReceiptBanner receiptUrl={lastReceipt.url} label={lastReceipt.label} /> : null}
 
       <section className={styles.petitionSection} id="assinar">
         <div className={styles.petitionShell}>
@@ -597,9 +669,9 @@ export default function ClimatizacaoClient() {
 
       <section className={styles.sectionAlt} id="painel">
         <div className={styles.sectionHead}>
-          <span>03 · PAINEL PÚBLICO</span>
-          <h2>O que já foi relatado</h2>
-          <p>Os números abaixo são relatos recebidos pela plataforma. Eles não equivalem, sozinhos, a uma vistoria técnica.</p>
+          <span>03 · PULSO PÚBLICO</span>
+          <h2>Onde há atividade agora</h2>
+          <p>Relatos e apoios são agregados por escola, sem publicar identidade de participantes. Relato comunitário continua separado de vistoria oficial.</p>
         </div>
 
         {ranked.length === 0 ? (
@@ -612,7 +684,10 @@ export default function ClimatizacaoClient() {
                   <strong>{school.name}</strong>
                   <span>{school.network} · {school.category}</span>
                 </div>
-                <b>{school.report_count} {Number(school.report_count) === 1 ? "relato" : "relatos"}</b>
+                <div className={styles.activityCounts}>
+                  <b>{school.activity_count} atividade(s)</b>
+                  <small>{school.report_count} relato(s) · {school.support_count} apoio(s)</small>
+                </div>
               </article>
             ))}
           </div>
