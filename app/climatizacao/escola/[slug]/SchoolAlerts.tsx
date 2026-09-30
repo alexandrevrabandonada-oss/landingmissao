@@ -148,7 +148,7 @@ export default function SchoolAlerts({
       </div>
 
       {state === "subscribed" ? (
-        <button type="button" onClick={disable} disabled={state === "busy"} className={styles.alertOn}>
+        <button type="button" onClick={disable} className={styles.alertOn}>
           ✓ Alertas ativados · desativar
         </button>
       ) : state === "unsupported" ? (
