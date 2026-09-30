@@ -113,6 +113,8 @@
 
       var script = document.createElement("script");
       script.src = loaderUrl;
+      function reportUnityLoadFailure(message) { document.documentElement.dataset.unityLoadStatus='failed'; console.error('Unity load failed:', message); unityShowBanner('Não foi possível carregar o jogo. Recarregue a página para tentar novamente.', 'error'); if(window.parent!==window) window.parent.postMessage({type:'alexandre.challenge',kind:'load-error',version:3},window.location.origin); }
+      script.onerror = () => reportUnityLoadFailure('loader download');
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%"; if(window.parent!==window) window.parent.postMessage({type:'alexandre.challenge',kind:'loading',progress:Math.round(progress*100)},window.location.origin);
@@ -123,7 +125,7 @@
                 };
 
               }).catch((message) => {
-                alert(message);
+                reportUnityLoadFailure(message);
               });
             };
 

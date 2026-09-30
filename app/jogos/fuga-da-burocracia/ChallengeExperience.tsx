@@ -8,7 +8,7 @@ import styles from "./challenge.module.css";
 
 type ChallengeMessage = {
   type: "alexandre.challenge";
-  kind: "loading" | "ready" | "start" | "retry" | "share" | "result";
+  kind: "loading" | "load-error" | "ready" | "start" | "retry" | "share" | "result";
   day?: string;
   score?: number;
   best?: number;
@@ -132,6 +132,7 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
   const [autoRun, setAutoRun] = useState(false);
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [loadState, setLoadState] = useState<"loading" | "slow" | "failed">("loading");
   const [result, setResult] = useState<Result | null>(null);
   const [card, setCard] = useState<File | null>(null);
   const [feedback, setFeedback] = useState("");
@@ -152,11 +153,18 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
   }, [target, version]);
 
   useEffect(() => {
+    if (ready || loadState !== "loading") return;
+    const timer = window.setTimeout(() => setLoadState("slow"), 45000);
+    return () => window.clearTimeout(timer);
+  }, [ready, progress, runKey, loadState]);
+
+  useEffect(() => {
     const onMessage = (event: MessageEvent<ChallengeMessage>) => {
       if (event.origin !== window.location.origin || event.source !== iframe.current?.contentWindow) return;
       const message = event.data;
       if (!message || message.type !== "alexandre.challenge" || message.version !== version && message.kind !== "loading") return;
-      if (message.kind === "loading") { setProgress(Math.max(0, Math.min(100, Number(message.progress) || 0))); return; }
+      if (message.kind === "load-error") { setLoadState("failed"); return; }
+      if (message.kind === "loading") { setLoadState("loading"); setProgress(Math.max(0, Math.min(100, Number(message.progress) || 0))); return; }
       if (message.day !== day) return;
       if (message.kind === "ready") { setReady(true); return; }
       if (message.kind === "start") { trackEventIfAvailable("challenge_started", { version, invited: target > 0 }); return; }
@@ -170,6 +178,8 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
       }
     };
     window.addEventListener("message", onMessage);
+    // A cached loader can fail before hydration installs the message listener.
+    if (iframe.current?.contentDocument?.documentElement.dataset.unityLoadStatus === "failed") setLoadState("failed");
     return () => window.removeEventListener("message", onMessage);
   }, [day, target, runKey, version]);
 
@@ -184,9 +194,14 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
 
   const replay = useCallback(() => {
     trackEventIfAvailable("challenge_replayed", { version, surface: "result" });
-    setResult(null); setCard(null); setFeedback(""); setReady(false); setProgress(0);
+    setResult(null); setCard(null); setFeedback(""); setReady(false); setProgress(0); setLoadState("loading");
     setAutoRun(true); setRunKey((current) => current + 1);
   }, [version]);
+
+  const retryLoading = useCallback(() => {
+    setReady(false); setProgress(0); setLoadState("loading");
+    setRunKey((current) => current + 1);
+  }, []);
 
   const share = useCallback(async () => {
     if (!result) return;
@@ -220,7 +235,8 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
   return (
     <section className={styles.page} aria-label="Desafio dos Processos">
       <iframe key={runKey} ref={iframe} className={styles.game} src={iframeSrc}
-        title="Jogo Alexandre: Desafio dos Processos" allow="web-share; fullscreen" />
+        title="Jogo Alexandre: Desafio dos Processos" allow="web-share; fullscreen" onError={() => setLoadState("failed")}
+        onLoad={() => { if (iframe.current?.contentDocument?.documentElement.dataset.unityLoadStatus === "failed") setLoadState("failed"); }} />
 
       {!ready && <div className={styles.loading} style={{ backgroundImage: `linear-gradient(180deg, rgba(5,9,17,.45), rgba(5,9,17,.92)), url(${poster})` }}>
         <div className={styles.loadingCard}>
@@ -231,7 +247,8 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
           <div className={styles.progress} role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
             <span style={{ width: `${progress}%` }} />
           </div>
-          <small>Carregando jogo… {progress}%</small>
+          <small role="status">{loadState === "failed" ? "Não foi possível carregar o jogo. Confira sua conexão e tente novamente." : loadState === "slow" ? "O carregamento está demorando. Você pode aguardar ou tentar novamente." : `Carregando jogo… ${progress}%`}</small>
+          {loadState !== "loading" && <div className={styles.actions}><button className={styles.primary} onClick={retryLoading}>Tentar carregar novamente</button></div>}
           <Link href="/jogo">Conhecer o outro jogo</Link>
           {version === 3 && <Link href="/quem-e-alexandre-vr-abandonada">Conheça a história de Alexandre</Link>}
         </div>
