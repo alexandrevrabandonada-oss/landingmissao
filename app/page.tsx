@@ -213,6 +213,20 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className={styles.gameGateway} id="climatizacao-escolas" aria-labelledby="climatizacao-title">
+          <div className={styles.gameGatewayInner}>
+            <div className={styles.gameGatewayCopy}>
+              <p className={styles.sectionIndex}>Painel público · Volta Redonda</p>
+              <h2 id="climatizacao-title">Climatização<br />nas escolas</h2>
+              <p>Registre a situação da sua escola sem nome, telefone ou e-mail e acompanhe os relatos e protocolos públicos.</p>
+              <a href="/climatizacao" className={styles.primaryButton}>
+                <span>Abrir o painel</span><ArrowIcon />
+              </a>
+              <small>101 unidades na base · SME + FEVRE</small>
+            </div>
+          </div>
+        </section>
+
         <MissionSelector missions={missions} />
 
         <section className={`${styles.section} ${styles.identitySection}`} id="quem-e" aria-labelledby="identity-title">
