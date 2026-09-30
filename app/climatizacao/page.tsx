@@ -18,12 +18,18 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Climatização nas escolas de Volta Redonda",
+    description:
+      "Painel público com relatos por escola e acompanhamento de protocolos.",
+  },
 };
 
 export default function ClimatizacaoPage() {
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <ClimatizacaoClient />
-    </main>
+    </div>
   );
 }
