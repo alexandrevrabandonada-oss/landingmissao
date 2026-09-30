@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
 import styles from "./climatizacao.module.css";
 
@@ -24,12 +24,7 @@ type CivicContact = {
 type Props = {
   schools: School[];
   contacts: CivicContact[];
-  school: School | null;
-  setSchool: (school: School | null) => void;
-  issue: string;
-  setIssue: (issue: string) => void;
-  scope: string;
-  setScope: (scope: string) => void;
+  initialSchool: School | null;
   totalSupports: number;
 };
 
@@ -52,16 +47,25 @@ const scopeLabels: Record<string, string> = {
 export default function CivicActions({
   schools,
   contacts,
-  school,
-  setSchool,
-  issue,
-  setIssue,
-  scope,
-  setScope,
+  initialSchool,
   totalSupports,
 }: Props) {
   const [copied, setCopied] = useState(false);
   const [opened, setOpened] = useState<Record<string, boolean>>({});
+  const [school, setSchool] = useState<School | null>(initialSchool);
+  const [issue, setIssue] = useState("");
+  const [scope, setScope] = useState("");
+
+  useEffect(() => {
+    if (initialSchool) {
+      setSchool(initialSchool);
+      return;
+    }
+    const schoolSlug = new URLSearchParams(window.location.search).get("escola");
+    if (schoolSlug) {
+      setSchool(schools.find((item) => item.slug === schoolSlug) ?? null);
+    }
+  }, [initialSchool, schools]);
 
   const schoolUrl = useMemo(() => {
     const origin = typeof window === "undefined" ? "https://www.alexandrevrabandonada.online" : window.location.origin;
