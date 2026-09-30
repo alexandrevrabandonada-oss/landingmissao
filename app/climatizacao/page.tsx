@@ -9,7 +9,12 @@ export const metadata: Metadata = {
   title: "Climatização nas escolas de Volta Redonda",
   description:
     "Painel público para registrar problemas de climatização, acompanhar a situação por escola e consultar protocolos e respostas oficiais.",
-  alternates: { canonical: pageUrl },
+  alternates: {
+    canonical: pageUrl,
+    types: {
+      "application/rss+xml": "/climatizacao/feed.xml",
+    },
+  },
   manifest: "/climatizacao-manifest.webmanifest",
   openGraph: {
     title: "Climatização nas escolas de Volta Redonda",

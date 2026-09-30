@@ -16,7 +16,17 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "invalid_school_slug" }, { status: 400 });
   }
 
-  const target = `${SITE}/climatizacao/escola/${encodeURIComponent(slug)}`;
+  const snapshotResponse = await fetch(`${SITE}/api/climatizacao?action=snapshot`, { cache: "no-store" });
+  if (!snapshotResponse.ok) {
+    return Response.json({ error: "school_list_unavailable" }, { status: 502 });
+  }
+  const snapshot = await snapshotResponse.json();
+  const school = (snapshot.schools ?? []).find((item: { slug:string; id:number }) => item.slug === slug);
+  if (!school) {
+    return Response.json({ error: "school_not_found" }, { status: 404 });
+  }
+
+  const target = `${SITE}/c/${school.id}`;
   const upstream = new URL("https://quickchart.io/qr");
   upstream.searchParams.set("text", target);
   upstream.searchParams.set("format", "svg");
