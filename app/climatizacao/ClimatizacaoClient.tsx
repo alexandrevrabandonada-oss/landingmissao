@@ -114,9 +114,6 @@ export default function ClimatizacaoClient() {
   const [studentStatus, setStudentStatus] = useState("");
   const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
-  const [civicSchool, setCivicSchool] = useState<School | null>(null);
-  const [civicIssue, setCivicIssue] = useState("");
-  const [civicScope, setCivicScope] = useState("");
 
   async function loadSnapshot() {
     try {
@@ -124,15 +121,6 @@ export default function ClimatizacaoClient() {
       if (!response.ok) throw new Error("snapshot");
       const data: Snapshot = await response.json();
       setSnapshot(data);
-      const schoolSlug = new URLSearchParams(window.location.search).get("escola");
-      if (schoolSlug) {
-        const deepLinkedSchool = data.schools.find((item) => item.slug === schoolSlug) ?? null;
-        if (deepLinkedSchool) {
-          setCivicSchool(deepLinkedSchool);
-          setSelectedSchool(deepLinkedSchool);
-          setSchoolQuery(deepLinkedSchool.name);
-        }
-      }
     } catch {
       setSnapshot(null);
     } finally {
@@ -222,9 +210,9 @@ export default function ClimatizacaoClient() {
     event.currentTarget.reset();
     setStudentAgeBand("");
     if (schoolId) {
-      setCivicSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
+      setSelectedSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
     }
-    setStudentStatus("Apoio estudantil registrado. Nenhum nome, e-mail ou telefone foi coletado. Agora você pode enviar seu relato pelos canais oficiais.");
+    setStudentStatus("Apoio estudantil registrado. Nenhum nome, e-mail ou telefone foi coletado. Agora você pode abrir os canais oficiais e compartilhar.");
     await loadSnapshot();
     revealCivicActions();
   }
@@ -269,10 +257,7 @@ export default function ClimatizacaoClient() {
     }
 
     event.currentTarget.reset();
-    setCivicSchool(selectedSchool);
-    setCivicIssue(issueValue);
-    setCivicScope(scopeValue);
-    setReportStatus("Relato registrado. Abaixo você pode abrir os canais oficiais com a escola e o problema já preenchidos.");
+    setReportStatus("Relato registrado. Abaixo você pode abrir os canais oficiais com a escola já preenchida.");
     await loadSnapshot();
     revealCivicActions();
   }
@@ -318,7 +303,7 @@ export default function ClimatizacaoClient() {
 
     event.currentTarget.reset();
     if (schoolId) {
-      setCivicSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
+      setSelectedSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
     }
     setSignatureStatus("Assinatura registrada. Agora você pode abrir os canais oficiais e compartilhar o painel.");
     await loadSnapshot();
@@ -426,7 +411,14 @@ export default function ClimatizacaoClient() {
                 </label>
                 <label>
                   Sua escola (opcional)
-                  <select name="school_id" defaultValue="">
+                  <select
+                    name="school_id"
+                    value={selectedSchool?.id ?? ""}
+                    onChange={(event) => {
+                      const id = Number(event.target.value);
+                      setSelectedSchool(snapshot?.schools.find((item) => item.id === id) ?? null);
+                    }}
+                  >
                     <option value="">Prefiro não informar</option>
                     {(snapshot?.schools ?? []).map((school) => (
                       <option value={school.id} key={school.id}>{school.name}</option>
@@ -462,7 +454,14 @@ export default function ClimatizacaoClient() {
                 </label>
                 <label>
                   Escola relacionada (opcional)
-                  <select name="school_id" defaultValue="">
+                  <select
+                    name="school_id"
+                    value={selectedSchool?.id ?? ""}
+                    onChange={(event) => {
+                      const id = Number(event.target.value);
+                      setSelectedSchool(snapshot?.schools.find((item) => item.id === id) ?? null);
+                    }}
+                  >
                     <option value="">Nenhuma específica</option>
                     {(snapshot?.schools ?? []).map((school) => (
                       <option value={school.id} key={school.id}>{school.name}</option>
@@ -496,12 +495,7 @@ export default function ClimatizacaoClient() {
       <CivicActions
         schools={snapshot?.schools ?? []}
         contacts={snapshot?.civic_contacts ?? []}
-        school={civicSchool}
-        setSchool={setCivicSchool}
-        issue={civicIssue}
-        setIssue={setCivicIssue}
-        scope={civicScope}
-        setScope={setCivicScope}
+        initialSchool={selectedSchool}
         totalSupports={snapshot?.summary.total_support_count ?? 0}
       />
 
