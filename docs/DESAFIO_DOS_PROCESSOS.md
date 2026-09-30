@@ -16,3 +16,5 @@
 - A versão 3 mantém a física e pontuação da v2, acrescenta sátira social fictícia em quatro momentos e um modo de leitura com contraste, texto maior e menos efeitos. O recorde local da v3 começa com o maior valor da v2 para a mesma data. Links explícitos `v=1` e `v=2` continuam nos builds originais; links novos e sem versão usam `v=3`.
 - A página de resultado prioriza desafiar um amigo e oferece a história pessoal de Alexandre como link secundário. O PDF de referência e dados dos processos não são publicados; a apresentação pessoal fica na página “Quem é Alexandre”. Três clipes novos estão na pasta `SocialClips` do projeto Unity.
 - Recuperação de carregamento: a v3 comunica falhas do loader/Unity à página. O botão de nova tentativa mantém versão, data e alvo; após 45 segundos sem avanço, a página oferece aguardar ou tentar de novo, sem declarar falha nem cancelar uma conexão lenta.
+
+- Controle móvel v3: deslize para cima para pular; botão de pulo removido. Movimentos curtos/laterais/para baixo são ignorados; um pulo por deslize. No modo história, direção e corrida continuam com controles separados.
