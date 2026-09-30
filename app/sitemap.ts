@@ -12,6 +12,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: canonicalUrl("/climatizacao"),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: canonicalUrl("/apoio"),
       lastModified: now,
       changeFrequency: "weekly",
