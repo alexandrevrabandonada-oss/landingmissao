@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import styles from "./climatizacao.module.css";
 
 type School = {
@@ -122,8 +123,11 @@ export default function CivicActions({
   }
 
   async function nativeShare() {
-    if (navigator.share) {
-      await navigator.share({
+    const share = (navigator as Navigator & {
+      share?: (data: { title?: string; text?: string; url?: string }) => Promise<void>;
+    }).share;
+    if (share) {
+      await share.call(navigator, {
         title: school ? `Climatização — ${school.name}` : "Climatização nas escolas de Volta Redonda",
         text: shareText,
         url: schoolUrl,
@@ -152,7 +156,7 @@ export default function CivicActions({
               Escola
               <select
                 value={school?.id ?? ""}
-                onChange={(event) => {
+                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                   const id = Number(event.target.value);
                   setSchool(schools.find((item) => item.id === id) ?? null);
                 }}
@@ -163,7 +167,7 @@ export default function CivicActions({
             </label>
             <label>
               Situação
-              <select value={issue} onChange={(event) => setIssue(event.target.value)}>
+              <select value={issue} onChange={(event: ChangeEvent<HTMLSelectElement>) => setIssue(event.target.value)}>
                 <option value="">Sem detalhar</option>
                 <option value="sem_ar">Não tem ar-condicionado</option>
                 <option value="nao_funciona">Tem, mas não funciona</option>
@@ -175,7 +179,7 @@ export default function CivicActions({
             </label>
             <label>
               Abrangência
-              <select value={scope} onChange={(event) => setScope(event.target.value)}>
+              <select value={scope} onChange={(event: ChangeEvent<HTMLSelectElement>) => setScope(event.target.value)}>
                 <option value="">Sem detalhar</option>
                 <option value="uma_sala">Uma sala</option>
                 <option value="varias_salas">Várias salas</option>
