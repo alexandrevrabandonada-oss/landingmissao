@@ -87,6 +87,8 @@ export default function OpenDataPage() {
 
       <section className={styles.links}>
         <Link href="/climatizacao/escolas">Ver as 101 páginas escolares</Link>
+        <Link href="/climatizacao/evidencias">Evidências e fontes</Link>
+        <Link href="/climatizacao/ledger">Ledger público</Link>
         <Link href="/climatizacao/minhas-escolas">Minhas escolas neste aparelho</Link>
       </section>
     </main>
