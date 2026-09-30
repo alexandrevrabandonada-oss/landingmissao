@@ -179,7 +179,7 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
     };
     window.addEventListener("message", onMessage);
     // A cached loader can fail before hydration installs the message listener.
-    if (iframe.current?.contentDocument?.documentElement.dataset.unityLoadStatus === "failed") setLoadState("failed");
+    if (iframe.current?.contentDocument?.documentElement?.dataset.unityLoadStatus === "failed") setLoadState("failed");
     return () => window.removeEventListener("message", onMessage);
   }, [day, target, runKey, version]);
 
@@ -236,7 +236,7 @@ export function ChallengeExperience({ day, target, version }: { day: string; tar
     <section className={styles.page} aria-label="Desafio dos Processos">
       <iframe key={runKey} ref={iframe} className={styles.game} src={iframeSrc}
         title="Jogo Alexandre: Desafio dos Processos" allow="web-share; fullscreen" onError={() => setLoadState("failed")}
-        onLoad={() => { if (iframe.current?.contentDocument?.documentElement.dataset.unityLoadStatus === "failed") setLoadState("failed"); }} />
+        onLoad={() => { if (iframe.current?.contentDocument?.documentElement?.dataset.unityLoadStatus === "failed") setLoadState("failed"); }} />
 
       {!ready && <div className={styles.loading} style={{ backgroundImage: `linear-gradient(180deg, rgba(5,9,17,.45), rgba(5,9,17,.92)), url(${poster})` }}>
         <div className={styles.loadingCard}>
