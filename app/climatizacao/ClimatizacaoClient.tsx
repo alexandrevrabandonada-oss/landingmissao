@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import styles from "./climatizacao.module.css";
 
@@ -405,6 +406,24 @@ export default function ClimatizacaoClient() {
             })}
           </div>
         )}
+      </section>
+
+      <section className={styles.qrSection} aria-labelledby="qr-title">
+        <div className={styles.qrCard}>
+          <Image
+            src="/climatizacao-qr.svg"
+            alt="QR code para abrir o painel de climatização"
+            width={220}
+            height={220}
+            unoptimized
+          />
+          <div>
+            <span>ACESSO DIRETO</span>
+            <h2 id="qr-title">Leve o formulário até a escola</h2>
+            <p>Este QR abre diretamente a página de climatização no site principal.</p>
+            <a href="/climatizacao-qr.svg" target="_blank" rel="noreferrer">Abrir QR em tamanho original</a>
+          </div>
+        </div>
       </section>
 
       <section className={styles.sources}>
