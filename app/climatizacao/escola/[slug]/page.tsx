@@ -110,6 +110,7 @@ export default async function SchoolClimatePage({
           <Link href={`${base}#relatar`} className={styles.secondary}>Relatar problema</Link>
           <Link href={`${base}#mobilizar`} className={styles.secondary}>Enviar aos responsáveis</Link>
         </div>
+        <p className={styles.shortLink}>Link curto: <a href={`/c/${school.id}`}>alexandrevrabandonada.online/c/{school.id}</a></p>
 
         <FollowSchoolButton
           slug={school.slug}
