@@ -37,3 +37,9 @@
 @media(max-width:760px){.metrics{grid-template-columns:1fr 1fr}.petitionSection{padding:42px 14px 72px}.modeSwitch{grid-template-columns:1fr}.supportCounter{align-items:flex-start;flex-direction:column}.supportCounter span{text-align:left}.stickySupport{left:12px;right:12px;bottom:12px;justify-content:space-between}}
 
 @media(max-width:1000px){.metrics{grid-template-columns:repeat(3,1fr)}}
+
+.factStack{display:grid;gap:8px;margin-top:22px}
+.factStack a{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start;background:#050505;color:#fff;padding:12px;text-decoration:none;border:2px solid #050505}
+.factStack b{color:#ffe600;font-size:1.15rem}
+.factStack span{line-height:1.4;font-weight:700}
+.factStack a:hover{transform:translateX(2px)}
