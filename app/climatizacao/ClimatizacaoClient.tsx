@@ -139,6 +139,30 @@ export default function ClimatizacaoClient() {
   }, []);
 
   useEffect(() => {
+    async function refreshVisibleSnapshot() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const response = await fetch(API + "?action=snapshot", { cache: "no-store" });
+        if (!response.ok) return;
+        const data: Snapshot = await response.json();
+        setSnapshot(data);
+      } catch {
+        // Keep the last successful snapshot on screen.
+      }
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshVisibleSnapshot();
+    }, 20_000);
+
+    document.addEventListener("visibilitychange", refreshVisibleSnapshot);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshVisibleSnapshot);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!snapshot || selectedSchool) return;
     const deepLinkSlug = new URLSearchParams(window.location.search).get("escola");
     if (!deepLinkSlug) return;
@@ -166,8 +190,8 @@ export default function ClimatizacaoClient() {
   const ranked = useMemo(
     () =>
       [...(snapshot?.schools ?? [])]
-        .filter((school) => Number(school.report_count) > 0)
-        .sort((a, b) => Number(b.report_count) - Number(a.report_count))
+        .filter((school) => Number(school.activity_count) > 0)
+        .sort((a, b) => Number(b.activity_count) - Number(a.activity_count))
         .slice(0, 20),
     [snapshot],
   );
@@ -377,6 +401,14 @@ export default function ClimatizacaoClient() {
           Estudantes menores podem participar sem informar nome, e-mail, telefone, CPF ou endereço.
         </p>
       </section>
+
+      <div className={styles.liveStrip}>
+        <span>● AO VIVO</span>
+        <p>
+          Atualização automática a cada 20 segundos enquanto esta página estiver aberta
+          {snapshot?.generated_at ? ` · última sincronização ${new Date(snapshot.generated_at).toLocaleTimeString("pt-BR")}` : ""}.
+        </p>
+      </div>
 
       <section className={styles.metrics} aria-label="Resumo">
         <article><strong>{loading ? "…" : snapshot?.summary.total_support_count ?? "—"}</strong><span>apoios no total</span></article>
@@ -637,9 +669,9 @@ export default function ClimatizacaoClient() {
 
       <section className={styles.sectionAlt} id="painel">
         <div className={styles.sectionHead}>
-          <span>03 · PAINEL PÚBLICO</span>
-          <h2>O que já foi relatado</h2>
-          <p>Os números abaixo são relatos recebidos pela plataforma. Eles não equivalem, sozinhos, a uma vistoria técnica.</p>
+          <span>03 · PULSO PÚBLICO</span>
+          <h2>Onde há atividade agora</h2>
+          <p>Relatos e apoios são agregados por escola, sem publicar identidade de participantes. Relato comunitário continua separado de vistoria oficial.</p>
         </div>
 
         {ranked.length === 0 ? (
@@ -652,7 +684,10 @@ export default function ClimatizacaoClient() {
                   <strong>{school.name}</strong>
                   <span>{school.network} · {school.category}</span>
                 </div>
-                <b>{school.report_count} {Number(school.report_count) === 1 ? "relato" : "relatos"}</b>
+                <div className={styles.activityCounts}>
+                  <b>{school.activity_count} atividade(s)</b>
+                  <small>{school.report_count} relato(s) · {school.support_count} apoio(s)</small>
+                </div>
               </article>
             ))}
           </div>
