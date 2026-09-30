@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import styles from "./climatizacao.module.css";
 
-const API = "https://blimjnitngthldhazvwh.supabase.co/functions/v1/climatizacao-public";
+const API = "/api/climatizacao";
 
 type School = {
   id: number;
