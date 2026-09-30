@@ -880,6 +880,7 @@ export default function ClimatizacaoClient() {
           <a href="/climatizacao/dados">Dados abertos (JSON/CSV)</a>
           <a href="/climatizacao/evidencias">Evidências e fontes</a>
           <a href="/climatizacao/ledger">Ledger público SHA-256</a>
+          <a href="/climatizacao/status">Status da plataforma</a>
         </div>
         <p className={styles.disclaimer}>
           Apoio estudantil de menores é contabilizado sem identificação pessoal e aparece separado das assinaturas nominais.
