@@ -1,4 +1,4 @@
-const VERSION = "climatizacao-v1";
+const VERSION = "climatizacao-v2";
 const PAGE_CACHE = `${VERSION}-pages`;
 const ASSET_CACHE = `${VERSION}-assets`;
 
@@ -75,4 +75,42 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname === "/api/climatizacao" && url.searchParams.get("action") === "snapshot") {
     event.respondWith(networkFirst(request, "/api/climatizacao?action=snapshot"));
   }
+});
+
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = {};
+  }
+
+  const title = data.title || "Atualização da climatização";
+  const options = {
+    body: data.body || "Há uma nova atualização pública disponível.",
+    icon: "/icon.svg",
+    badge: "/icon.svg",
+    tag: data.topic || "climatizacao-update",
+    renotify: false,
+    data: { url: data.url || "/climatizacao" },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/climatizacao", self.location.origin).href;
+
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if ("focus" in client) {
+        if ("navigate" in client) await client.navigate(target);
+        return client.focus();
+      }
+    }
+    if (self.clients.openWindow) return self.clients.openWindow(target);
+  })());
 });
