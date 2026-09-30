@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import FollowSchoolButton from "./FollowSchoolButton";
+import SchoolAlerts from "./SchoolAlerts";
 import styles from "./school.module.css";
 
 const SITE = "https://www.alexandrevrabandonada.online";
@@ -115,6 +116,12 @@ export default async function SchoolClimatePage({
           name={school.name}
           network={school.network}
           activityCount={Number(school.activity_count ?? 0)}
+        />
+
+        <SchoolAlerts
+          schoolId={school.id}
+          slug={school.slug}
+          name={school.name}
         />
       </section>
 
