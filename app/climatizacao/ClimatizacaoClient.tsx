@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import CivicActions from "./CivicActions";
+import ReceiptBanner from "./ReceiptBanner";
 import styles from "./climatizacao.module.css";
 
 const API = "/api/climatizacao";
@@ -19,7 +20,11 @@ type School = {
   parcial_count: number;
   rede_eletrica_count: number;
   manutencao_count: number;
-  last_report_at: string | null;
+  student_support_count: number;
+  signature_count: number;
+  support_count: number;
+  activity_count: number;
+  last_activity_at: string | null;
 };
 
 type Snapshot = {
@@ -114,6 +119,7 @@ export default function ClimatizacaoClient() {
   const [studentStatus, setStudentStatus] = useState("");
   const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
+  const [lastReceipt, setLastReceipt] = useState<{ url: string; label: string } | null>(null);
 
   async function loadSnapshot() {
     try {
@@ -176,6 +182,28 @@ export default function ClimatizacaoClient() {
     }, 120);
   }
 
+  function rememberReceipt(result: { receipt?: string; receipt_url?: string }, label: string) {
+    if (!result.receipt || !result.receipt_url) return;
+    const entry = {
+      code: result.receipt,
+      url: result.receipt_url,
+      label,
+      saved_at: new Date().toISOString(),
+    };
+    try {
+      const key = "climatizacao_receipts_v1";
+      const raw = window.localStorage.getItem(key);
+      const current = raw ? JSON.parse(raw) : [];
+      const next = [entry, ...(Array.isArray(current) ? current : [])]
+        .filter((item, index, all) => all.findIndex((candidate) => candidate.code === item.code) === index)
+        .slice(0, 20);
+      window.localStorage.setItem(key, JSON.stringify(next));
+    } catch {
+      // Receipt remains accessible in the current session even if localStorage is unavailable.
+    }
+    setLastReceipt({ url: result.receipt_url, label });
+  }
+
   async function submitStudentSupport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStudentStatus("Registrando seu apoio…");
@@ -218,6 +246,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Apoio estudantil registrado");
     event.currentTarget.reset();
     setStudentAgeBand("");
     if (schoolId) {
@@ -267,6 +297,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Relato registrado");
     event.currentTarget.reset();
     setReportStatus("Relato registrado. Abaixo você pode abrir os canais oficiais com a escola já preenchida.");
     await loadSnapshot();
@@ -312,6 +344,8 @@ export default function ClimatizacaoClient() {
       return;
     }
 
+    const result = await response.json().catch(() => ({}));
+    rememberReceipt(result, "Assinatura registrada");
     event.currentTarget.reset();
     if (schoolId) {
       setSelectedSchool(snapshot?.schools.find((item) => item.id === schoolId) ?? null);
@@ -347,6 +381,8 @@ export default function ClimatizacaoClient() {
         <article><strong>{loading ? "…" : snapshot?.summary.total_reports ?? "—"}</strong><span>relatos recebidos</span></article>
         <article><strong>{loading ? "…" : snapshot?.summary.total_schools ?? "—"}</strong><span>unidades na base</span></article>
       </section>
+
+      {lastReceipt ? <ReceiptBanner receiptUrl={lastReceipt.url} label={lastReceipt.label} /> : null}
 
       <section className={styles.petitionSection} id="assinar">
         <div className={styles.petitionShell}>
