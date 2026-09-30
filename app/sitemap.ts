@@ -2,9 +2,14 @@ import type { MetadataRoute } from "next";
 import { canonicalUrl } from "@/src/content/siteSeo";
 
 const now = new Date();
+const SITE = "https://www.alexandrevrabandonada.online";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+type Snapshot = {
+  schools?: Array<{ slug: string }>;
+};
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base: MetadataRoute.Sitemap = [
     {
       url: canonicalUrl("/"),
       lastModified: now,
@@ -78,4 +83,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.64,
     },
   ];
+
+  try {
+    const response = await fetch(`${SITE}/api/climatizacao?action=snapshot`, {
+      cache: "no-store",
+    });
+    if (!response.ok) return base;
+    const snapshot: Snapshot = await response.json();
+    const schoolEntries: MetadataRoute.Sitemap = (snapshot.schools ?? []).map((school) => ({
+      url: canonicalUrl(`/climatizacao/escola/${school.slug}`),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.66,
+    }));
+    return [...base, ...schoolEntries];
+  } catch {
+    return base;
+  }
 }
