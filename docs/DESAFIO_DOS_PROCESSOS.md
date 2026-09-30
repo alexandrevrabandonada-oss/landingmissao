@@ -1,5 +1,7 @@
 # Desafio dos Processos
 
+- A v3 inclui seis falas brasileiras sintetizadas com Microsoft Daniel, tocadas no lançamento efetivo do processo. Canal exclusivo impede sobreposição; frases alternam sem repetir a anterior, com tom por advogado e legenda na faixa superior. O menu oferece Falas ON/OFF com preferência local. Os clipes são mono a 22 kHz e ficam incluídos no build; não há síntese nem requisição de voz durante a partida.
+
 - A página inicial oferece um atalho na apresentação e uma entrada visual em `/#desafio-dos-processos`, antes das missões, com arte v3 e botão “Jogar agora”. O Unity só é carregado ao abrir a página do jogo.
 
 - URL pública: `https://www.alexandrevrabandonada.online/jogos/fuga-da-burocracia`. A rota `/jogo` continua com a experiência anterior e oferece um link para o desafio.
