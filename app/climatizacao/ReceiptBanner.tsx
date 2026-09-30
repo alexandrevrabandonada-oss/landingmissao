@@ -17,7 +17,10 @@ export default function ReceiptBanner({
         <strong>{label}</strong>
         <p>Guarde este link se quiser comprovar depois que sua participação entrou no sistema.</p>
       </div>
-      <Link href={receiptUrl}>Ver meu recibo →</Link>
+      <div className={styles.receiptLinks}>
+        <Link href={receiptUrl}>Ver meu recibo →</Link>
+        <Link href="/climatizacao/meus-recibos">Minha carteira local</Link>
+      </div>
     </aside>
   );
 }
