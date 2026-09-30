@@ -37,11 +37,24 @@ type Snapshot = {
     status: string;
     submitted_at: string | null;
     due_at: string | null;
+    extension_due_at: string | null;
     public_note: string | null;
     response_url: string | null;
+    response_summary: string | null;
+    last_checked_at: string | null;
   }>;
   generated_at: string;
 };
+
+
+function publicProtocolStatus(item: Snapshot["protocols"][number]) {
+  if (item.status === "answered" || item.status === "closed") return { label: "respondido", overdue: false };
+  if (!item.due_at) return { label: item.status, overdue: false };
+  const diff = Math.ceil((new Date(item.due_at).getTime() - Date.now()) / 86_400_000);
+  if (diff < 0) return { label: `atrasado há ${Math.abs(diff)} dia(s)`, overdue: true };
+  if (diff === 0) return { label: "prazo estimado vence hoje", overdue: false };
+  return { label: `em prazo · ${diff} dia(s) restantes`, overdue: false };
+}
 
 const issueOptions = [
   ["sem_ar", "Não tem ar-condicionado"],
@@ -375,16 +388,21 @@ export default function ClimatizacaoClient() {
           <div className={styles.empty}>Nenhum protocolo publicado ainda.</div>
         ) : (
           <div className={styles.protocols}>
-            {snapshot?.protocols.map((item) => (
-              <article key={item.id}>
-                <strong>{item.title}</strong>
-                <span>{item.recipient} · {item.channel.toUpperCase()}</span>
-                {item.protocol_number && <span>Protocolo: {item.protocol_number}</span>}
-                {item.due_at && <span>Prazo: {new Date(item.due_at).toLocaleDateString("pt-BR")}</span>}
-                <b>{item.status}</b>
-                {item.response_url && <a href={item.response_url} target="_blank" rel="noreferrer">Ver resposta oficial</a>}
-              </article>
-            ))}
+            {snapshot?.protocols.map((item) => {
+              const publicStatus = publicProtocolStatus(item);
+              return (
+                <article key={item.id}>
+                  <strong>{item.title}</strong>
+                  <span>{item.recipient} · {item.channel.toUpperCase()}</span>
+                  {item.protocol_number && <span>Protocolo: {item.protocol_number}</span>}
+                  {item.submitted_at && <span>Enviado em: {new Date(item.submitted_at).toLocaleDateString("pt-BR")}</span>}
+                  {item.due_at && <span>Prazo estimado: {new Date(item.due_at).toLocaleDateString("pt-BR")}</span>}
+                  <b>{publicStatus.label}</b>
+                  {item.response_summary && <p>{item.response_summary}</p>}
+                  {item.response_url && <a href={item.response_url} target="_blank" rel="noreferrer">Ver resposta oficial</a>}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
