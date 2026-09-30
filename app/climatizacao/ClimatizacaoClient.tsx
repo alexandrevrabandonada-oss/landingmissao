@@ -355,7 +355,7 @@ export default function ClimatizacaoClient() {
               <form className={styles.supportForm} onSubmit={submitStudentSupport}>
                 <div className={styles.studentPrivacy}>
                   <strong>Seu apoio é anônimo.</strong>
-                  <p>Não pedimos seu nome, e-mail, telefone, foto, CPF ou endereço.</p>
+                  <p>Não pedimos seu nome, e-mail, telefone, foto, CPF ou endereço. Usamos apenas um identificador técnico antiabuso; o IP não é armazenado em texto.</p>
                 </div>
                 <label>
                   Faixa etária
