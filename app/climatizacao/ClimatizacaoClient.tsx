@@ -132,6 +132,17 @@ export default function ClimatizacaoClient() {
     void loadSnapshot();
   }, []);
 
+  useEffect(() => {
+    if (!snapshot || selectedSchool) return;
+    const deepLinkSlug = new URLSearchParams(window.location.search).get("escola");
+    if (!deepLinkSlug) return;
+    const school = snapshot.schools.find((item) => item.slug === deepLinkSlug) ?? null;
+    if (school) {
+      setSelectedSchool(school);
+      setSchoolQuery(school.name);
+    }
+  }, [snapshot, selectedSchool]);
+
   const filteredSchools = useMemo(() => {
     const schools = snapshot?.schools ?? [];
     const q = schoolQuery.trim().toLocaleLowerCase("pt-BR");
@@ -649,8 +660,10 @@ export default function ClimatizacaoClient() {
           <div>
             <span>ACESSO DIRETO</span>
             <h2 id="qr-title">Leve o formulário até a escola</h2>
-            <p>Este QR abre diretamente a página de climatização no site principal.</p>
-            <a href="/climatizacao-qr.svg" target="_blank" rel="noreferrer">Abrir QR em tamanho original</a>
+            <p>Este QR abre o painel geral. Para materiais de uma escola específica, use o diretório com 101 páginas e QRs próprios.</p>
+            <a href="/climatizacao-qr.svg" target="_blank" rel="noreferrer">Abrir QR geral</a>
+            <a href="/climatizacao/escolas">Ver as 101 escolas e QRs</a>
+            <a href="/api/climatizacao/qr-lote">Baixar os 101 QRs em ZIP</a>
           </div>
         </div>
       </section>

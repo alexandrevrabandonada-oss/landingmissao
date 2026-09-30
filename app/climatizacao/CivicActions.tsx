@@ -69,9 +69,10 @@ export default function CivicActions({
 
   const schoolUrl = useMemo(() => {
     const origin = typeof window === "undefined" ? "https://www.alexandrevrabandonada.online" : window.location.origin;
-    const url = new URL("/climatizacao", origin);
-    if (school?.slug) url.searchParams.set("escola", school.slug);
-    url.hash = "assinar";
+    const url = school?.slug
+      ? new URL(`/climatizacao/escola/${school.slug}`, origin)
+      : new URL("/climatizacao", origin);
+    if (!school?.slug) url.hash = "assinar";
     return url.toString();
   }, [school]);
 
