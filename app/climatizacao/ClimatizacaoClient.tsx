@@ -171,6 +171,11 @@ export default function ClimatizacaoClient() {
 
   useEffect(() => {
     void loadSnapshot();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/climatizacao-sw.js", { scope: "/" }).catch(() => {
+        // Offline enhancement is optional; the online flow remains available.
+      });
+    }
   }, []);
 
   useEffect(() => {
