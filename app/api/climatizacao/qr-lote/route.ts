@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 type Snapshot = {
-  schools?: Array<{ slug: string; name: string }>;
+  schools?: Array<{ id: number; slug: string; name: string }>;
 };
 
 export async function GET(_request: NextRequest) {
@@ -26,7 +26,7 @@ export async function GET(_request: NextRequest) {
     }
 
     const qrCodes = schools.map((school) => ({
-      text: `${SITE}/climatizacao/escola/${school.slug}`,
+      text: `${SITE}/c/${school.id}`,
       filename: `climatizacao-${school.slug}`,
       format: "svg",
       size: 900,
