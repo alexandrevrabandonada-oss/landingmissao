@@ -85,3 +85,6 @@
 .receiptBanner{max-width:1180px;margin:0 auto 28px;padding:18px 20px;border:3px solid #ffe600;background:#111;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:7px 7px 0 rgba(255,230,0,.18)}
 .receiptBanner>div{display:grid;gap:4px}.receiptBanner span{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:#ffe600}.receiptBanner strong{font-size:1.18rem}.receiptBanner p{margin:0;color:#aaa497;font-size:.88rem}.receiptBanner a{border:2px solid #ffe600;background:#ffe600;color:#050505;padding:10px 12px;text-decoration:none;font-weight:900;white-space:nowrap}
 @media(max-width:700px){.receiptBanner{margin-left:14px;margin-right:14px;align-items:flex-start;flex-direction:column}.receiptBanner a{width:100%;box-sizing:border-box;text-align:center}}
+
+.personalTools{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}.personalTools a{color:#ffe600;font-size:.88rem;font-weight:900;text-decoration:underline;text-underline-offset:4px}.receiptLinks{display:flex;gap:8px;flex-wrap:wrap}.receiptLinks a{border:2px solid #ffe600;background:#ffe600;color:#050505;padding:10px 12px;text-decoration:none;font-weight:900;white-space:nowrap}.receiptLinks a+ a{background:transparent;color:#ffe600}
+@media(max-width:700px){.receiptLinks{display:grid;width:100%}.receiptLinks a{width:100%;box-sizing:border-box;text-align:center}}
