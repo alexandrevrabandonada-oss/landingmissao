@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FollowSchoolButton from "./FollowSchoolButton";
 import styles from "./school.module.css";
 
 const SITE = "https://www.alexandrevrabandonada.online";
@@ -12,7 +13,11 @@ type School = {
   category: string;
   network: "SME" | "FEVRE";
   report_count: number;
-  last_report_at: string | null;
+  student_support_count: number;
+  signature_count: number;
+  support_count: number;
+  activity_count: number;
+  last_activity_at: string | null;
 };
 
 type Snapshot = {
@@ -61,11 +66,11 @@ export async function generateMetadata({
   const url = `${SITE}/climatizacao/escola/${school.slug}`;
   return {
     title: `Climatização — ${school.name}`,
-    description: `Página pública da climatização de ${school.name}: apoiar, relatar problemas e acessar os canais oficiais.`,
+    description: `Página pública da climatização de ${school.name}: apoiar, relatar problemas, acompanhar atividade e acessar os canais oficiais.`,
     alternates: { canonical: url },
     openGraph: {
       title: `Climatização — ${school.name}`,
-      description: "Apoios, relatos e encaminhamento aos canais oficiais de Volta Redonda.",
+      description: "Apoios, relatos, atividade pública e encaminhamento aos canais oficiais de Volta Redonda.",
       url,
       type: "website",
       locale: "pt_BR",
@@ -86,14 +91,17 @@ export default async function SchoolClimatePage({
   const qr = `/api/climatizacao/qr?escola=${encodeURIComponent(school.slug)}`;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <section className={styles.hero}>
-        <Link href="/climatizacao" className={styles.back}>← Painel geral</Link>
+        <div className={styles.topLinks}>
+          <Link href="/climatizacao" className={styles.back}>← Painel geral</Link>
+          <Link href="/climatizacao/minhas-escolas" className={styles.mySchools}>Minhas escolas</Link>
+        </div>
         <span className={styles.kicker}>{school.network} · {school.category}</span>
         <h1>{school.name}</h1>
         <p>
-          Entrada direta da campanha de climatização. Esta página já carrega a escola correta
-          para apoiar, registrar a situação e abrir os canais oficiais.
+          Entrada direta da campanha de climatização. Esta página carrega a escola correta para
+          apoiar, registrar a situação, acompanhar o pulso público e abrir os canais oficiais.
         </p>
 
         <div className={styles.actions}>
@@ -101,21 +109,47 @@ export default async function SchoolClimatePage({
           <Link href={`${base}#relatar`} className={styles.secondary}>Relatar problema</Link>
           <Link href={`${base}#mobilizar`} className={styles.secondary}>Enviar aos responsáveis</Link>
         </div>
+
+        <FollowSchoolButton
+          slug={school.slug}
+          name={school.name}
+          network={school.network}
+          activityCount={Number(school.activity_count ?? 0)}
+        />
       </section>
 
-      <section className={styles.stats}>
-        <article>
-          <strong>{school.report_count ?? 0}</strong>
-          <span>relatos desta escola</span>
-        </article>
-        <article>
-          <strong>{snapshot?.summary.total_support_count ?? 0}</strong>
-          <span>apoios na campanha</span>
-        </article>
-        <article>
-          <strong>101</strong>
-          <span>unidades acompanhadas</span>
-        </article>
+      <section className={styles.pulse} aria-label="Pulso público da escola">
+        <div className={styles.pulseHead}>
+          <span>PULSO PÚBLICO</span>
+          <h2>O que já entrou no sistema</h2>
+          <p>Contagem agregada, sem revelar identidade de participantes.</p>
+        </div>
+        <div className={styles.stats}>
+          <article>
+            <strong>{school.report_count ?? 0}</strong>
+            <span>relatos desta escola</span>
+          </article>
+          <article>
+            <strong>{school.support_count ?? 0}</strong>
+            <span>apoios ligados à escola</span>
+          </article>
+          <article>
+            <strong>{school.activity_count ?? 0}</strong>
+            <span>atividades agregadas</span>
+          </article>
+          <article>
+            <strong className={styles.timeValue}>
+              {school.last_activity_at
+                ? new Date(school.last_activity_at).toLocaleDateString("pt-BR")
+                : "—"}
+            </strong>
+            <span>última atividade pública</span>
+          </article>
+        </div>
+        <p className={styles.pulseNote}>
+          Apoios sem escola informada aparecem apenas no total geral da campanha. Um relato continua sendo
+          identificado como relato comunitário, não como vistoria técnica.
+        </p>
       </section>
 
       <section className={styles.qr}>
@@ -123,8 +157,8 @@ export default async function SchoolClimatePage({
           <span>QR DESTA ESCOLA</span>
           <h2>Um cartaz. Um endereço. A escola certa.</h2>
           <p>
-            O QR abre diretamente o fluxo de climatização com {school.name} já identificada.
-            Use em mural, panfleto, assembleia, reunião ou grupo da comunidade escolar.
+            O QR abre diretamente a página de {school.name}. Use em mural, panfleto, assembleia,
+            reunião ou grupo da comunidade escolar.
           </p>
           <div className={styles.qrActions}>
             <a href={qr} target="_blank" rel="noreferrer">Abrir QR em SVG</a>
@@ -135,13 +169,17 @@ export default async function SchoolClimatePage({
       </section>
 
       <section className={styles.criteria}>
-        <h2>Como os dados aparecem</h2>
+        <h2>Transparência por desenho</h2>
         <p>
           Relatos da comunidade, apoios estudantis, assinaturas nominais e respostas oficiais
-          são apresentados em categorias separadas. Um relato não é tratado como vistoria técnica.
+          são apresentados em categorias separadas. A sua lista de escolas seguidas fica no seu navegador,
+          e não é enviada ao servidor.
         </p>
-        <Link href={`${base}#painel`}>Ver o painel público completo →</Link>
+        <div className={styles.criteriaLinks}>
+          <Link href={`${base}#painel`}>Ver o painel público completo →</Link>
+          <Link href="/climatizacao/minhas-escolas">Abrir minhas escolas →</Link>
+        </div>
       </section>
-    </main>
+    </div>
   );
 }
