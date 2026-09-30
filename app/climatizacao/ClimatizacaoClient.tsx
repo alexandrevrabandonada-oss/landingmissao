@@ -315,6 +315,17 @@ export default function ClimatizacaoClient() {
               <span>manutenção e infraestrutura elétrica</span>
               <span>medidas para dias de calor intenso e falhas de climatização</span>
             </div>
+            <div className={styles.factStack}>
+              <a href="https://sapl.voltaredonda.rj.leg.br/norma/9196" target="_blank" rel="noreferrer">
+                <b>2023</b><span>Lei 6.303/2023 trata da instalação de ar-condicionado em todas as escolas e creches públicas.</span>
+              </a>
+              <a href="https://www.voltaredonda.rj.gov.br/comunicacao/noticias/13-sme/9410-prefeitura-de-volta-redonda-inicia-adequa%C3%A7%C3%A3o-de-escolas-da-rede-municipal-para-receberem-aparelhos-de-ar-condicionado/" target="_blank" rel="noreferrer">
+                <b>2025</b><span>A Prefeitura informou 25 escolas com refrigeração funcionando, dez em adequação elétrica e projetos para outras 64.</span>
+              </a>
+              <a href="https://www.voltaredonda.rj.gov.br/comunicacao/noticias/13-sme/11368-alunos-da-rede-p%C3%BAblica-municipal-de-volta-redonda-come%C3%A7am-a-receber-os-uniformes/" target="_blank" rel="noreferrer">
+                <b>2026</b><span>A rede municipal é descrita pela Prefeitura com 101 unidades e mais de 34 mil estudantes.</span>
+              </a>
+            </div>
           </div>
 
           <div className={styles.supportCard}>
