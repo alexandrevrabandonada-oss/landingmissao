@@ -877,6 +877,7 @@ export default function ClimatizacaoClient() {
         <div>
           <a href="https://www2.voltaredonda.rj.gov.br/sme/mod/unidades/index.php" target="_blank" rel="noreferrer">Unidades de ensino — Prefeitura</a>
           <a href="https://www.fevre.com.br/" target="_blank" rel="noreferrer">FEVRE — unidades escolares</a>
+          <a href="/climatizacao/dados">Dados abertos (JSON/CSV)</a>
         </div>
         <p className={styles.disclaimer}>
           Apoio estudantil de menores é contabilizado sem identificação pessoal e aparece separado das assinaturas nominais.
