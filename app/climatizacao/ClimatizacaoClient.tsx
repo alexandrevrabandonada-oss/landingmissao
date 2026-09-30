@@ -369,6 +369,10 @@ export default function ClimatizacaoClient() {
           <a href="#relatar" className={styles.secondary}>Relatar minha escola</a>
           <a href="#painel" className={styles.secondary}>Ver o painel</a>
         </div>
+        <div className={styles.personalTools}>
+          <a href="/climatizacao/minhas-escolas">Minhas escolas</a>
+          <a href="/climatizacao/meus-recibos">Meus recibos</a>
+        </div>
         <p className={styles.privacy}>
           Estudantes menores podem participar sem informar nome, e-mail, telefone, CPF ou endereço.
         </p>
