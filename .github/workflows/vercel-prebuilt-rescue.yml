@@ -1,0 +1,62 @@
+name: Vercel Prebuilt Rescue
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/vercel-prebuilt-rescue.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_LBVwyK8FQMO7tA3hzVXXeumF
+      VERCEL_PROJECT_ID: prj_GnU0MhdnxfdhTF324vz0jijw8pOX
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check deploy credential
+        id: credentials
+        shell: bash
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Vercel deployment credential is available."
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::VERCEL_TOKEN is not configured; prebuilt rescue deploy skipped."
+          fi
+
+      - name: Setup Node
+        if: steps.credentials.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install app dependencies
+        if: steps.credentials.outputs.available == 'true'
+        run: npm ci
+
+      - name: Install pinned Vercel CLI
+        if: steps.credentials.outputs.available == 'true'
+        run: npm install --no-save vercel@59.19.1
+
+      - name: Pull production environment
+        if: steps.credentials.outputs.available == 'true'
+        run: npx vercel@59.19.1 pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build production artifact
+        if: steps.credentials.outputs.available == 'true'
+        run: npx vercel@59.19.1 build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy prebuilt artifact
+        if: steps.credentials.outputs.available == 'true'
+        run: npx vercel@59.19.1 deploy --prebuilt --prod --token="$VERCEL_TOKEN"
