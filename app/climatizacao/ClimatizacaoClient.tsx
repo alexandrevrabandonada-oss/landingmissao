@@ -132,6 +132,17 @@ export default function ClimatizacaoClient() {
     void loadSnapshot();
   }, []);
 
+  useEffect(() => {
+    if (!snapshot || selectedSchool) return;
+    const deepLinkSlug = new URLSearchParams(window.location.search).get("escola");
+    if (!deepLinkSlug) return;
+    const school = snapshot.schools.find((item) => item.slug === deepLinkSlug) ?? null;
+    if (school) {
+      setSelectedSchool(school);
+      setSchoolQuery(school.name);
+    }
+  }, [snapshot, selectedSchool]);
+
   const filteredSchools = useMemo(() => {
     const schools = snapshot?.schools ?? [];
     const q = schoolQuery.trim().toLocaleLowerCase("pt-BR");
