@@ -91,3 +91,6 @@
 
 .liveStrip{max-width:1180px;margin:0 auto 16px;padding:0 20px;display:flex;align-items:center;gap:10px;color:#aaa497;font-size:.82rem}.liveStrip span{color:#ffe600;font-weight:900;letter-spacing:.08em;white-space:nowrap}.liveStrip p{margin:0}.activityCounts{display:grid;gap:4px;text-align:right}.activityCounts b{color:#ffe600}.activityCounts small{color:#aaa497}
 @media(max-width:700px){.liveStrip{align-items:flex-start;flex-direction:column}.activityCounts{text-align:left}}
+
+.offlineRetry{margin-left:auto;border:1px solid #ffe600;background:#ffe600;color:#050505;padding:7px 9px;font:inherit;font-size:.76rem;font-weight:900;cursor:pointer;white-space:nowrap}
+@media(max-width:700px){.offlineRetry{margin-left:0;white-space:normal;width:100%}}

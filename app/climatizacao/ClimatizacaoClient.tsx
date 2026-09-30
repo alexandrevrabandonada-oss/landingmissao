@@ -7,6 +7,30 @@ import ReceiptBanner from "./ReceiptBanner";
 import styles from "./climatizacao.module.css";
 
 const API = "/api/climatizacao";
+const OFFLINE_QUEUE_KEY = "climatizacao_offline_queue_v1";
+const SNAPSHOT_CACHE_KEY = "climatizacao_snapshot_cache_v1";
+
+type OfflineQueueItem = {
+  id: string;
+  kind: "student_support" | "report";
+  payload: Record<string, unknown>;
+  label: string;
+  created_at: string;
+};
+
+function readOfflineQueue(): OfflineQueueItem[] {
+  try {
+    const raw = window.localStorage.getItem(OFFLINE_QUEUE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeOfflineQueue(items: OfflineQueueItem[]) {
+  window.localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(items.slice(0, 50)));
+}
 
 type School = {
   id: number;
@@ -120,6 +144,7 @@ export default function ClimatizacaoClient() {
   const [studentAgeBand, setStudentAgeBand] = useState("");
   const [supportMode, setSupportMode] = useState<"student" | "adult">("student");
   const [lastReceipt, setLastReceipt] = useState<{ url: string; label: string } | null>(null);
+  const [pendingOfflineCount, setPendingOfflineCount] = useState(0);
 
   async function loadSnapshot() {
     try {
@@ -127,8 +152,18 @@ export default function ClimatizacaoClient() {
       if (!response.ok) throw new Error("snapshot");
       const data: Snapshot = await response.json();
       setSnapshot(data);
+      try {
+        window.localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(data));
+      } catch {
+        // Cache is optional.
+      }
     } catch {
-      setSnapshot(null);
+      try {
+        const cached = window.localStorage.getItem(SNAPSHOT_CACHE_KEY);
+        setSnapshot(cached ? JSON.parse(cached) : null);
+      } catch {
+        setSnapshot(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -136,6 +171,11 @@ export default function ClimatizacaoClient() {
 
   useEffect(() => {
     void loadSnapshot();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/climatizacao-sw.js", { scope: "/" }).catch(() => {
+        // Offline enhancement is optional; the online flow remains available.
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -206,6 +246,21 @@ export default function ClimatizacaoClient() {
     }, 120);
   }
 
+  function enqueueOffline(kind: OfflineQueueItem["kind"], payload: Record<string, unknown>, label: string) {
+    const item: OfflineQueueItem = {
+      id: typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      kind,
+      payload,
+      label,
+      created_at: new Date().toISOString(),
+    };
+    const next = [...readOfflineQueue(), item].slice(-50);
+    writeOfflineQueue(next);
+    setPendingOfflineCount(next.length);
+  }
+
   function rememberReceipt(result: { receipt?: string; receipt_url?: string }, label: string) {
     if (!result.receipt || !result.receipt_url) return;
     const entry = {
@@ -228,6 +283,66 @@ export default function ClimatizacaoClient() {
     setLastReceipt({ url: result.receipt_url, label });
   }
 
+  async function processOfflineQueue() {
+    if (!navigator.onLine) return;
+    const queue = readOfflineQueue();
+    if (!queue.length) {
+      setPendingOfflineCount(0);
+      return;
+    }
+
+    const remaining: OfflineQueueItem[] = [];
+    let delivered = 0;
+
+    for (const item of queue) {
+      try {
+        const response = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(item.payload),
+        });
+
+        if (response.ok) {
+          const result = await response.json().catch(() => ({}));
+          rememberReceipt(result, item.label);
+          delivered += 1;
+          continue;
+        }
+
+        if (response.status === 409) {
+          delivered += 1;
+          continue;
+        }
+
+        if (response.status === 400) {
+          continue;
+        }
+
+        remaining.push(item);
+      } catch {
+        remaining.push(item);
+      }
+    }
+
+    writeOfflineQueue(remaining);
+    setPendingOfflineCount(remaining.length);
+    if (delivered > 0) {
+      await loadSnapshot();
+    }
+  }
+
+  useEffect(() => {
+    setPendingOfflineCount(readOfflineQueue().length);
+    const retry = () => {
+      void processOfflineQueue();
+    };
+    window.addEventListener("online", retry);
+    if (navigator.onLine) void processOfflineQueue();
+    return () => window.removeEventListener("online", retry);
+    // Queue processing intentionally binds once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function submitStudentSupport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStudentStatus("Registrando seu apoio…");
@@ -249,7 +364,10 @@ export default function ClimatizacaoClient() {
     }).catch(() => null);
 
     if (!response) {
-      setStudentStatus("Não foi possível registrar agora. Tente novamente.");
+      enqueueOffline("student_support", payload, "Apoio estudantil registrado");
+      event.currentTarget.reset();
+      setStudentAgeBand("");
+      setStudentStatus("Sem conexão: seu apoio foi guardado neste aparelho e será enviado quando a internet voltar.");
       return;
     }
     if (response.status === 409) {
@@ -309,7 +427,9 @@ export default function ClimatizacaoClient() {
     }).catch(() => null);
 
     if (!response) {
-      setReportStatus("Não foi possível enviar agora. Tente novamente.");
+      enqueueOffline("report", payload, "Relato registrado");
+      event.currentTarget.reset();
+      setReportStatus("Sem conexão: o relato foi guardado neste aparelho e será enviado quando a internet voltar.");
       return;
     }
     if (response.status === 429) {
@@ -408,6 +528,11 @@ export default function ClimatizacaoClient() {
           Atualização automática a cada 20 segundos enquanto esta página estiver aberta
           {snapshot?.generated_at ? ` · última sincronização ${new Date(snapshot.generated_at).toLocaleTimeString("pt-BR")}` : ""}.
         </p>
+        {pendingOfflineCount > 0 ? (
+          <button type="button" className={styles.offlineRetry} onClick={() => void processOfflineQueue()}>
+            {pendingOfflineCount} pendência(s) offline · tentar enviar
+          </button>
+        ) : null}
       </div>
 
       <section className={styles.metrics} aria-label="Resumo">
