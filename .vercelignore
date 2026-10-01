@@ -1,0 +1,9 @@
+.git
+.next
+node_modules
+reports
+docs
+scripts
+.codex-remote-attachments
+.env*
+*.log

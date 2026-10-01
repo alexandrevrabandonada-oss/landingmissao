@@ -13,7 +13,7 @@ export function ExternalJourneyReturn() {
   const announcedIntentRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (pathname.startsWith("/explorar") || pathname.startsWith("/jogo")) return;
+    if (pathname.startsWith("/explorar") || pathname.startsWith("/jogo") || pathname.startsWith("/jogar")) return;
     const checkReturn = () => {
       const stored = readExternalJourney();
       if (!stored || Date.now() - Date.parse(stored.openedAt) < 2500) return;
