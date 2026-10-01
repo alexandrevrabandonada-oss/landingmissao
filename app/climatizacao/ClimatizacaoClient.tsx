@@ -878,6 +878,7 @@ export default function ClimatizacaoClient() {
           <a href="https://www2.voltaredonda.rj.gov.br/sme/mod/unidades/index.php" target="_blank" rel="noreferrer">Unidades de ensino — Prefeitura</a>
           <a href="https://www.fevre.com.br/" target="_blank" rel="noreferrer">FEVRE — unidades escolares</a>
           <a href="/climatizacao/dados">Dados abertos (JSON/CSV)</a>
+          <a href="/climatizacao/resolucao">Painel de resolução</a>
           <a href="/climatizacao/evidencias">Evidências e fontes</a>
           <a href="/climatizacao/ledger">Ledger público SHA-256</a>
           <a href="/climatizacao/status">Status da plataforma</a>
