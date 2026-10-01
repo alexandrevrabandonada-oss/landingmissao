@@ -517,6 +517,7 @@ export default function ClimatizacaoClient() {
         <div className={styles.personalTools}>
           <a href="/climatizacao/minhas-escolas">Minhas escolas</a>
           <a href="/climatizacao/meus-recibos">Meus recibos</a>
+          <a href="/climatizacao/privacidade">Privacidade</a>
           <InstallAppButton />
         </div>
         <p className={styles.privacy}>
