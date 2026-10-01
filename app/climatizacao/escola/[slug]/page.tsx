@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import FollowSchoolButton from "./FollowSchoolButton";
 import SchoolAlerts from "./SchoolAlerts";
+import CasesPanel, { type ClimateCase } from "./CasesPanel";
+import EvidenceSuggestionForm from "./EvidenceSuggestionForm";
 import styles from "./school.module.css";
 
 const SITE = "https://www.alexandrevrabandonada.online";
@@ -47,6 +49,20 @@ async function getSchool(slug: string) {
   return { snapshot, school };
 }
 
+async function getCases(slug: string): Promise<ClimateCase[]> {
+  try {
+    const response = await fetch(
+      `${SITE}/api/climatizacao?action=cases&school=${encodeURIComponent(slug)}`,
+      { cache: "no-store" },
+    );
+    if (!response.ok) return [];
+    const payload = await response.json();
+    return payload.cases ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -85,7 +101,10 @@ export default async function SchoolClimatePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { snapshot, school } = await getSchool(slug);
+  const [{ snapshot, school }, cases] = await Promise.all([
+    getSchool(slug),
+    getCases(slug),
+  ]);
   if (!school) notFound();
 
   const base = `/climatizacao?escola=${encodeURIComponent(school.slug)}`;
@@ -160,6 +179,10 @@ export default async function SchoolClimatePage({
           identificado como relato comunitário, não como vistoria técnica.
         </p>
       </section>
+
+      <CasesPanel cases={cases} />
+
+      <EvidenceSuggestionForm schoolId={school.id} schoolName={school.name} />
 
       <section className={styles.qr}>
         <div>
