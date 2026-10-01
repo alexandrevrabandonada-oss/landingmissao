@@ -35,6 +35,9 @@ const names:Record<string,string>={
   service_worker:"Service Worker",
   rss_feed:"Feed RSS",
   push_public_key:"Web Push",
+  resolution_cases:"Casos de resolução",
+  aggregate_metrics:"Telemetria agregada",
+  resolution_page:"Painel de resolução",
 };
 
 export default async function StatusPage(){
