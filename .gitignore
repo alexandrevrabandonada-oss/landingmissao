@@ -8,3 +8,4 @@ out/
 reports/vercel-project-audit.json
 .playwright-cli/
 output/playwright/*-profile/
+output/
