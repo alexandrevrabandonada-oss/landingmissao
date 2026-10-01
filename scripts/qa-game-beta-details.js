@@ -16,7 +16,8 @@ async(page)=>{
  await page.getByText('Informações técnicas copiadas.',{exact:true}).waitFor();
  const diagnostic=await page.evaluate(()=>navigator.clipboard.readText());
  const parsed=JSON.parse(diagnostic);
- if(parsed.buildId!=='2026.10.01-public-d'||parsed.webgl!==true||parsed.saveSchema!==4||Object.keys(parsed).length!==8)throw Error('Invalid technical copy');
+ const identity=await frame.locator('#identity').textContent();
+ if(!identity.includes(parsed.buildId)||parsed.webgl!==true||parsed.saveSchema!==4||Object.keys(parsed).length!==8)throw Error('Invalid technical copy');
  if(errors.length)throw Error(JSON.stringify(errors));
  return {test:'BETA_VERSION_FEEDBACK_AND_FOCUSED_ESCAPE',pass:true,canvasFocusedEscapeExited:true,diagnosticCopied:true,diagnostic,errors};
 }
