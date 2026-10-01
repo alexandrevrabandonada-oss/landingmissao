@@ -64,7 +64,7 @@ const WORLD_STEPS: ReadonlyArray<{ id: StoredWorldPointId; label: string }> = [
   { id: "missao", label: "Ação" },
 ];
 
-const HIDDEN_ROUTE_PREFIXES = ["/explorar", "/jogo", "/apoio"];
+const HIDDEN_ROUTE_PREFIXES = ["/explorar", "/jogo", "/jogar", "/apoio"];
 const JOURNEY_MISSIONS = buildMissionOptions("caderno-jornada");
 
 export function CivicJourneyDock() {

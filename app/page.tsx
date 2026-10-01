@@ -1,3 +1,4 @@
+import { GameBetaCard } from "@/src/components/game-beta/GameBetaCard";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { launchEvent as e } from "@/content/launchEvent";
@@ -227,6 +228,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        <GameBetaCard />
         <MissionSelector missions={missions} />
 
         <section className={`${styles.section} ${styles.identitySection}`} id="quem-e" aria-labelledby="identity-title">

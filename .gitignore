@@ -4,3 +4,8 @@ node_modules/
 .env*.local
 *.tsbuildinfo
 out/
+.vercel
+reports/vercel-project-audit.json
+.playwright-cli/
+output/playwright/*-profile/
+output/
