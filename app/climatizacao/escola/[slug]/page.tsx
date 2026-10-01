@@ -5,6 +5,7 @@ import FollowSchoolButton from "./FollowSchoolButton";
 import SchoolAlerts from "./SchoolAlerts";
 import CasesPanel, { type ClimateCase } from "./CasesPanel";
 import EvidenceSuggestionForm from "./EvidenceSuggestionForm";
+import SchoolActivityTrend from "./SchoolActivityTrend";
 import styles from "./school.module.css";
 
 const SITE = "https://www.alexandrevrabandonada.online";
@@ -29,6 +30,18 @@ type Snapshot = {
     total_support_count: number;
     total_reports: number;
   };
+};
+
+type MetricsPayload = {
+  days: number;
+  totals: Record<string, number>;
+  series: Array<{
+    day: string;
+    metric: string;
+    channel: string;
+    count: number;
+    updated_at: string;
+  }>;
 };
 
 async function getSnapshot(): Promise<Snapshot | null> {
@@ -60,6 +73,24 @@ async function getCases(slug: string): Promise<ClimateCase[]> {
     return payload.cases ?? [];
   } catch {
     return [];
+  }
+}
+
+async function getMetrics(slug: string): Promise<MetricsPayload> {
+  try {
+    const response = await fetch(
+      `${SITE}/api/climatizacao?action=metrics&school=${encodeURIComponent(slug)}&days=30`,
+      { cache: "no-store" },
+    );
+    if (!response.ok) return { days: 30, totals: {}, series: [] };
+    const payload = await response.json();
+    return {
+      days: payload.days ?? 30,
+      totals: payload.totals ?? {},
+      series: payload.series ?? [],
+    };
+  } catch {
+    return { days: 30, totals: {}, series: [] };
   }
 }
 
@@ -101,9 +132,10 @@ export default async function SchoolClimatePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [{ snapshot, school }, cases] = await Promise.all([
+  const [{ snapshot, school }, cases, metrics] = await Promise.all([
     getSchool(slug),
     getCases(slug),
+    getMetrics(slug),
   ]);
   if (!school) notFound();
 
@@ -179,6 +211,8 @@ export default async function SchoolClimatePage({
           identificado como relato comunitário, não como vistoria técnica.
         </p>
       </section>
+
+      <SchoolActivityTrend totals={metrics.totals} series={metrics.series} days={metrics.days} />
 
       <CasesPanel cases={cases} />
 
