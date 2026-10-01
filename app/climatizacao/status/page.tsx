@@ -12,6 +12,7 @@ export const metadata:Metadata={
 
 type Health={
   ok:boolean;
+  status:"operational"|"degraded"|"down";
   generated_at:string;
   school_count:number;
   ledger_head:{id:number;entry_hash:string;created_at:string}|null;
@@ -46,14 +47,14 @@ export default async function StatusPage(){
     <section className={styles.hero}>
       <Link href="/climatizacao" className={styles.back}>← Painel de climatização</Link>
       <span>STATUS PÚBLICO</span>
-      <h1>{data?.ok?"Operação normal":"Atenção operacional"}</h1>
+      <h1>{data?.status==="operational"?"Operação normal":data?.status==="degraded"?"Operação degradada":"Atenção operacional"}</h1>
       <p>Verificação pública dos componentes essenciais da plataforma. Nenhum segredo ou dado pessoal é exibido aqui.</p>
     </section>
 
     <section className={styles.overview}>
       <article><strong>{data?.school_count??"—"}</strong><span>escolas na base</span></article>
       <article><strong>{data?.ledger_head?"#"+data.ledger_head.id:"—"}</strong><span>head do ledger</span></article>
-      <article><strong>{data?.ok?"OK":"!"}</strong><span>estado geral</span></article>
+      <article><strong>{data?.status==="operational"?"OK":data?.status==="degraded"?"~":"!"}</strong><span>{data?.status==="degraded"?"degradação não crítica":"estado geral"}</span></article>
     </section>
 
     <section className={styles.checks}>

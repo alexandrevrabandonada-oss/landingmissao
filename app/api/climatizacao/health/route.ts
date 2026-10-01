@@ -65,16 +65,21 @@ export async function GET(request:NextRequest){
     resolution_page:resolution,
   };
 
-  const ok=Object.values(checks).every((item)=>item.ok) && schoolCount===101;
+  const criticalKeys = ["public_api","ledger","open_data","pwa_manifest","service_worker"] as const;
+  const criticalOk = criticalKeys.every((key) => checks[key]?.ok) && schoolCount === 101;
+  const allOk = Object.values(checks).every((item) => item.ok);
+  const platformStatus = criticalOk ? (allOk ? "operational" : "degraded") : "down";
 
   return Response.json({
-    ok,
+    ok: criticalOk,
+    status: platformStatus,
     generated_at:new Date().toISOString(),
     school_count:schoolCount,
     ledger_head:ledgerHead,
+    critical_checks: criticalKeys,
     checks,
   },{
-    status:ok?200:503,
+    status:criticalOk?200:503,
     headers:{
       "Cache-Control":"no-store",
       "Access-Control-Allow-Origin":"*",
