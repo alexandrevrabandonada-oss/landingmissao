@@ -109,6 +109,7 @@ export default async function SchoolClimatePage({
           <Link href={`${base}#assinar`} className={styles.primary}>Apoiar esta escola</Link>
           <Link href={`${base}#relatar`} className={styles.secondary}>Relatar problema</Link>
           <Link href={`${base}#mobilizar`} className={styles.secondary}>Enviar aos responsáveis</Link>
+          <Link href={`/climatizacao/escola/${school.slug}/cartaz`} className={styles.secondary}>Cartaz A4</Link>
         </div>
         <p className={styles.shortLink}>Link curto: <a href={`/c/${school.id}`}>alexandrevrabandonada.online/c/{school.id}</a></p>
 

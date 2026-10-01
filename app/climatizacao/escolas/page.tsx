@@ -66,6 +66,7 @@ export default async function ClimateSchoolDirectory() {
             <div className={styles.actions}>
               <Link href={`/climatizacao/escola/${school.slug}`}>Abrir página</Link>
               <a href={`/api/climatizacao/qr?escola=${school.slug}`} target="_blank" rel="noreferrer">Abrir QR</a>
+              <Link href={`/climatizacao/escola/${school.slug}/cartaz`}>Cartaz A4</Link>
             </div>
           </article>
         ))}
