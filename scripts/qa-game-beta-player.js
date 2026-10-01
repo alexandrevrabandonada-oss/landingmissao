@@ -1,4 +1,5 @@
 async(page)=>{
+ const host=new URL(await page.getByRole('link',{name:'Abrir em nova janela ↗',exact:true}).getAttribute('href')).origin;
  const errors=[],warnings=[],requests=[];
  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
  await page.reload();await page.waitForTimeout(1000);
@@ -6,7 +7,7 @@ async(page)=>{
  await page.getByRole('button',{name:'INICIAR JOGO',exact:true}).click();
  await page.screenshot({path:'output/playwright/beta-loading.png'});
  await page.waitForFunction(()=>document.querySelector('iframe')&&document.querySelector('[role="status"] progress')?.parentElement?.hidden,null,{timeout:60000});
- const frame=page.frames().find(f=>f.url().startsWith('https://vr-cidade-em-disputa-web.vercel.app'));
+ const frame=page.frames().find(f=>f.url().startsWith(host));
  if(!frame||!await frame.evaluate(()=>!!window.vrRuntimeReady))throw Error('Unity not ready');
  await frame.waitForFunction(()=>!!document.querySelector('#vr-accessible-status')?.textContent.trim(),null,{timeout:60000});
  await page.screenshot({path:'output/playwright/beta-game-desktop.png'});

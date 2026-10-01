@@ -1,6 +1,7 @@
 async(page)=>{
+ const host=new URL(await page.getByRole('link',{name:'Abrir em nova janela ↗',exact:true}).getAttribute('href')).origin;
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- const frame=page.frames().find(f=>f.url().startsWith('https://vr-cidade-em-disputa-web.vercel.app'));
+ const frame=page.frames().find(f=>f.url().startsWith(host));
  if(!frame||!await frame.evaluate(()=>!!window.vrRuntimeReady))throw Error('Real scene not ready');
  await page.getByRole('button',{name:'ABRIR EM TELA CHEIA',exact:true}).click();
  await page.waitForFunction(()=>!!document.fullscreenElement);
