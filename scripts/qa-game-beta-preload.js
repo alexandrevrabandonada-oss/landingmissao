@@ -4,8 +4,8 @@ async (page)=>{
  await page.reload();await page.waitForTimeout(1800);
  const prior=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>r.name).filter(u=>/\.wasm|\.data(?:\.|$)|framework\.js/.test(u)));
  if(prior.length||unexpected().length)throw Error('Unity downloaded on home');
- await page.screenshot({path:'output/playwright/beta-home-desktop.png',fullPage:true});
- const card=page.getByRole('region',{name:'VR: CIDADE EM DISPUTA'});await card.screenshot({path:'output/playwright/beta-card.png'});
+ const card=page.getByRole('region',{name:'VR: CIDADE EM DISPUTA'});await card.scrollIntoViewIfNeeded();await card.locator('img').evaluate(img=>img.decode());
+ await page.screenshot({path:'output/playwright/beta-home-desktop.png',fullPage:true});await card.screenshot({path:'output/playwright/beta-card.png'});
  await page.getByRole('link',{name:'JOGAR AGORA',exact:true}).click();await page.waitForTimeout(2000);
  if(await page.locator('iframe').count()||unexpected().length)throw Error('Player downloaded before start');
  await page.screenshot({path:'output/playwright/beta-preload-desktop.png',fullPage:true});

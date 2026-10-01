@@ -8,6 +8,7 @@ async(page)=>{
  await page.waitForFunction(()=>document.querySelector('iframe')&&document.querySelector('[role="status"] progress')?.parentElement?.hidden,null,{timeout:60000});
  const frame=page.frames().find(f=>f.url().startsWith('https://vr-cidade-em-disputa-web.vercel.app'));
  if(!frame||!await frame.evaluate(()=>!!window.vrRuntimeReady))throw Error('Unity not ready');
+ await frame.waitForFunction(()=>!!document.querySelector('#vr-accessible-status')?.textContent.trim(),null,{timeout:60000});
  await page.screenshot({path:'output/playwright/beta-game-desktop.png'});
  const boot=await frame.evaluate(()=>window.vrBootMs);
  const results=[];for(const [width,height] of [[1280,720],[1366,768],[1920,1080],[390,844],[412,915],[360,800]]){await page.setViewportSize({width,height});await page.waitForTimeout(300);await page.locator('iframe').scrollIntoViewIfNeeded();const size=await frame.evaluate(()=>({width:innerWidth,height:innerHeight,canvasWidth:document.querySelector('canvas').clientWidth,canvasHeight:document.querySelector('canvas').clientHeight}));await page.screenshot({path:`output/playwright/beta-game-${width}x${height}.png`});results.push({width,height,size});}
