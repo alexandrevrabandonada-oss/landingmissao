@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import CivicActions from "./CivicActions";
 import ReceiptBanner from "./ReceiptBanner";
+import InstallAppButton from "./InstallAppButton";
 import styles from "./climatizacao.module.css";
 
 const API = "/api/climatizacao";
@@ -516,6 +517,7 @@ export default function ClimatizacaoClient() {
         <div className={styles.personalTools}>
           <a href="/climatizacao/minhas-escolas">Minhas escolas</a>
           <a href="/climatizacao/meus-recibos">Meus recibos</a>
+          <InstallAppButton />
         </div>
         <p className={styles.privacy}>
           Estudantes menores podem participar sem informar nome, e-mail, telefone, CPF ou endereço.
