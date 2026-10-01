@@ -35,7 +35,7 @@ async function timedText(url:string):Promise<Check>{
 
 export async function GET(request:NextRequest){
   const origin=request.nextUrl.origin;
-  const [snapshot,ledger,evidence,data,manifest,worker,rss,push]=await Promise.all([
+  const [snapshot,ledger,evidence,data,manifest,worker,rss,push,cases,metrics,resolution]=await Promise.all([
     timedJson(origin+"/api/climatizacao?action=snapshot"),
     timedJson(origin+"/api/climatizacao?action=ledger&limit=1&direction=desc"),
     timedJson(origin+"/api/climatizacao?action=evidence&limit=1"),
@@ -44,6 +44,9 @@ export async function GET(request:NextRequest){
     timedText(origin+"/climatizacao-sw.js"),
     timedText(origin+"/climatizacao/feed.xml"),
     timedJson(origin+"/api/climatizacao?action=push_key"),
+    timedJson(origin+"/api/climatizacao?action=case_overview"),
+    timedJson(origin+"/api/climatizacao?action=metrics&school=colegio-prof-themis-de-almeida-vieira&days=30"),
+    timedText(origin+"/climatizacao/resolucao"),
   ]);
 
   const schoolCount=Number(snapshot.data?.summary?.total_schools||0);
@@ -57,6 +60,9 @@ export async function GET(request:NextRequest){
     service_worker:worker,
     rss_feed:rss,
     push_public_key:{...push.check,detail:push.data?.public_key?"chave pública configurada":"chave ausente"},
+    resolution_cases:{...cases.check,detail:typeof cases.data?.summary?.total==="number"?cases.data.summary.total+" caso(s) público(s)":"resumo ausente"},
+    aggregate_metrics:{...metrics.check,detail:metrics.data?.privacy?"série agregada disponível":"série ausente"},
+    resolution_page:resolution,
   };
 
   const ok=Object.values(checks).every((item)=>item.ok) && schoolCount===101;
