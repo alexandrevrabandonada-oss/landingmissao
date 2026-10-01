@@ -48,7 +48,8 @@ export default function OpenDataPage() {
         </p>
         <div className={styles.downloads}>
           <a href="/api/climatizacao/dados?format=json">Abrir JSON</a>
-          <a href="/api/climatizacao/dados?format=csv">Baixar CSV</a>
+          <a href="/api/climatizacao/dados?format=csv">Baixar escolas CSV</a>
+          <a href="/api/climatizacao/dados?format=csv&dataset=cases">Baixar casos CSV</a>
         </div>
       </section>
 
@@ -72,6 +73,7 @@ export default function OpenDataPage() {
         </p>
         <p>
           Os dados podem mudar à medida que novos registros entram ou respostas oficiais são incorporadas.
+          O JSON também inclui <code>case_summary</code> e <code>cases</code>, com o ciclo público de resolução.
           O campo <code>generated_at</code> indica a hora de geração do snapshot JSON.
         </p>
       </section>
