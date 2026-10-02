@@ -39,6 +39,7 @@ const names:Record<string,string>={
   resolution_cases:"Casos de resolução",
   aggregate_metrics:"Telemetria agregada",
   resolution_page:"Painel de resolução",
+  external_anchor:"Âncora externa do ledger",
 };
 
 export default async function StatusPage(){
@@ -68,7 +69,7 @@ export default async function StatusPage(){
     <section className={styles.foot}>
       <p>Última verificação: {data?.generated_at?new Date(data.generated_at).toLocaleString("pt-BR"):"indisponível"}.</p>
       {data?.ledger_head?<code>{data.ledger_head.entry_hash}</code>:null}
-      <div><a href="/api/climatizacao/health">Abrir health JSON</a><Link href="/climatizacao/ledger">Verificar ledger</Link></div>
+      <div><a href="/api/climatizacao/health">Abrir health JSON</a><Link href="/climatizacao/ledger">Verificar ledger</Link><Link href="/climatizacao/ancora">Comparar âncora externa</Link></div>
     </section>
   </main>;
 }
