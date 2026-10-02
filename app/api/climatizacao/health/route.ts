@@ -35,7 +35,7 @@ async function timedText(url:string):Promise<Check>{
 
 export async function GET(request:NextRequest){
   const origin=request.nextUrl.origin;
-  const [snapshot,ledger,evidence,data,manifest,worker,rss,push,cases,metrics,resolution,anchor]=await Promise.all([
+  const [snapshot,ledger,evidence,data,manifest,worker,rss,push,cases,metrics,resolution,anchor,openapi]=await Promise.all([
     timedJson(origin+"/api/climatizacao?action=snapshot"),
     timedJson(origin+"/api/climatizacao?action=ledger&limit=1&direction=desc"),
     timedJson(origin+"/api/climatizacao?action=evidence&limit=1"),
@@ -48,6 +48,7 @@ export async function GET(request:NextRequest){
     timedJson(origin+"/api/climatizacao?action=metrics&school=colegio-prof-themis-de-almeida-vieira&days=30"),
     timedText(origin+"/climatizacao/resolucao"),
     timedJson(origin+"/api/climatizacao/anchor"),
+    timedJson(origin+"/api/climatizacao/openapi.json"),
   ]);
 
   const schoolCount=Number(snapshot.data?.summary?.total_schools||0);
@@ -65,6 +66,7 @@ export async function GET(request:NextRequest){
     aggregate_metrics:{...metrics.check,detail:metrics.data?.privacy?"série agregada disponível":"série ausente"},
     resolution_page:resolution,
     external_anchor:{...anchor.check,detail:anchor.data?.comparison?anchor.data.comparison+(typeof anchor.data?.lag_events==="number"?" · "+anchor.data.lag_events+" evento(s) de diferença":""):"comparação indisponível"},
+    openapi_spec:{...openapi.check,detail:openapi.data?.openapi?"OpenAPI "+openapi.data.openapi:"spec indisponível"},
   };
 
   const criticalKeys = ["public_api","ledger","open_data","pwa_manifest","service_worker"] as const;
