@@ -1,0 +1,103 @@
+name: Ledger External Anchor
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: climatizacao-ledger-anchor
+  cancel-in-progress: false
+
+jobs:
+  anchor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch public ledger head
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            "https://www.alexandrevrabandonada.online/api/climatizacao?action=ledger&limit=1&direction=desc" \
+            > /tmp/climatizacao-ledger.json
+
+          node <<'NODE' >> "$GITHUB_ENV"
+          const fs = require("fs");
+          const payload = JSON.parse(fs.readFileSync("/tmp/climatizacao-ledger.json", "utf8"));
+          const head = payload?.ledger?.head;
+          if (!head?.id || !head?.entry_hash || !head?.created_at) {
+            throw new Error("Ledger head is missing or invalid.");
+          }
+          console.log("LEDGER_HEAD_ID=" + head.id);
+          console.log("LEDGER_HEAD_HASH=" + head.entry_hash);
+          console.log("LEDGER_HEAD_CREATED_AT=" + head.created_at);
+          NODE
+
+      - name: Prepare anchor branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "climatizacao-ledger-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin ledger-anchor >/dev/null 2>&1; then
+            git fetch origin ledger-anchor
+            git switch --force-create ledger-anchor origin/ledger-anchor
+          else
+            git switch --force-create ledger-anchor origin/main
+          fi
+
+      - name: Write anchor only when head changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ledger-anchors
+
+          if [ -f ledger-anchors/latest.json ]; then
+            CURRENT_HASH="$(node -e 'const f=require("./ledger-anchors/latest.json"); process.stdout.write(String(f.ledger_head?.entry_hash||""))')"
+            if [ "$CURRENT_HASH" = "$LEDGER_HEAD_HASH" ]; then
+              echo "Ledger head unchanged (#$LEDGER_HEAD_ID). Nothing to anchor."
+              exit 0
+            fi
+          fi
+
+          export ANCHORED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          export ANCHOR_FILE="ledger-anchors/head-$LEDGER_HEAD_ID.json"
+
+          node <<'NODE'
+          const fs = require("fs");
+          const anchor = {
+            schema_version: "1.0",
+            anchored_at: process.env.ANCHORED_AT,
+            source: "https://www.alexandrevrabandonada.online/api/climatizacao?action=ledger&limit=1&direction=desc",
+            verification_page: "https://www.alexandrevrabandonada.online/climatizacao/ledger",
+            algorithm: "sha256",
+            ledger_head: {
+              id: Number(process.env.LEDGER_HEAD_ID),
+              entry_hash: process.env.LEDGER_HEAD_HASH,
+              created_at: process.env.LEDGER_HEAD_CREATED_AT
+            },
+            anchor_repository: "alexandrevrabandonada-oss/landingmissao",
+            anchor_branch: "ledger-anchor"
+          };
+          const json = JSON.stringify(anchor, null, 2) + "\n";
+          fs.writeFileSync(process.env.ANCHOR_FILE, json);
+          fs.writeFileSync("ledger-anchors/latest.json", json);
+          NODE
+
+          git add ledger-anchors/
+          if git diff --cached --quiet; then
+            echo "No anchor changes."
+            exit 0
+          fi
+
+          git commit -m "chore: anchor climatizacao ledger head #$LEDGER_HEAD_ID"
+          git push origin ledger-anchor
