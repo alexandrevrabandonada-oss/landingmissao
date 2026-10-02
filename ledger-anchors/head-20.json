@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "anchored_at": "2026-10-02T00:59:45.231Z",
+  "source": "https://www.alexandrevrabandonada.online/api/climatizacao?action=ledger&limit=1&direction=desc",
+  "verification_page": "https://www.alexandrevrabandonada.online/climatizacao/ledger",
+  "algorithm": "sha256",
+  "ledger_head": {
+    "id": 20,
+    "entry_hash": "0b51124038c12ea719392939258ce733bde33274508fc0ef34b6537fe38b389f",
+    "created_at": "2026-10-01T15:45:52.11465+00:00"
+  },
+  "anchor_repository": "alexandrevrabandonada-oss/landingmissao",
+  "anchor_branch": "ledger-anchor"
+}
