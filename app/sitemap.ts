@@ -30,6 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.72,
     },
     {
+      url: canonicalUrl("/climatizacao/api"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.62,
+    },
+    {
       url: canonicalUrl("/climatizacao/resolucao"),
       lastModified: now,
       changeFrequency: "daily",

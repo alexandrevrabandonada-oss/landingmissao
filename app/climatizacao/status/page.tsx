@@ -40,6 +40,7 @@ const names:Record<string,string>={
   aggregate_metrics:"Telemetria agregada",
   resolution_page:"Painel de resolução",
   external_anchor:"Âncora externa do ledger",
+  openapi_spec:"OpenAPI pública",
 };
 
 export default async function StatusPage(){

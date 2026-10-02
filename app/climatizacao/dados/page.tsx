@@ -47,6 +47,7 @@ export default function OpenDataPage() {
           e por máquinas, sem publicar dados pessoais de participantes.
         </p>
         <div className={styles.downloads}>
+          <a href="/api/climatizacao/openapi.json">OpenAPI 3.1</a>
           <a href="/api/climatizacao/dados?format=json">Abrir JSON</a>
           <a href="/api/climatizacao/dados?format=csv">Baixar escolas CSV</a>
           <a href="/api/climatizacao/dados?format=csv&dataset=cases">Baixar casos CSV</a>
@@ -88,6 +89,7 @@ export default function OpenDataPage() {
       </section>
 
       <section className={styles.links}>
+        <Link href="/climatizacao/api">Documentação da API</Link>
         <Link href="/climatizacao/escolas">Ver as 101 páginas escolares</Link>
         <Link href="/climatizacao/evidencias">Evidências e fontes</Link>
         <Link href="/climatizacao/ledger">Ledger público</Link>
