@@ -11,6 +11,7 @@ const KEYS = {
   snapshot: "climatizacao_snapshot_cache_v1",
   studentToken: "climatizacao_student_support_token",
   pushTopics: "climatizacao_push_schools_v1",
+  pushPreferences: "climatizacao_push_preferences_v1",
 } as const;
 
 type LocalState = {
@@ -20,6 +21,7 @@ type LocalState = {
   hasSnapshot: boolean;
   hasStudentToken: boolean;
   pushTopics: string[];
+  pushPreferences: Record<string, unknown>;
 };
 
 function arrayValue(raw:string|null):unknown[]{
@@ -27,6 +29,15 @@ function arrayValue(raw:string|null):unknown[]{
     const parsed=raw?JSON.parse(raw):[];
     return Array.isArray(parsed)?parsed:[];
   }catch{return[];}
+}
+
+function objectValue(raw:string|null):Record<string,unknown>{
+  try{
+    const parsed=raw?JSON.parse(raw):{};
+    return parsed && typeof parsed==="object" && !Array.isArray(parsed)
+      ? parsed as Record<string,unknown>
+      : {};
+  }catch{return{};}
 }
 
 function readState():LocalState{
@@ -37,6 +48,7 @@ function readState():LocalState{
     hasSnapshot:Boolean(localStorage.getItem(KEYS.snapshot)),
     hasStudentToken:Boolean(localStorage.getItem(KEYS.studentToken)),
     pushTopics:arrayValue(localStorage.getItem(KEYS.pushTopics)).filter((item):item is string=>typeof item==="string"),
+    pushPreferences:objectValue(localStorage.getItem(KEYS.pushPreferences)),
   };
 }
 
@@ -52,6 +64,7 @@ export default function PrivacyCenterClient(){
   const totalLocal=useMemo(()=>{
     if(!state) return 0;
     return state.followed.length+state.receipts.length+state.offline.length+state.pushTopics.length+
+      Object.keys(state.pushPreferences).length+
       Number(state.hasSnapshot)+Number(state.hasStudentToken);
   },[state]);
 
@@ -65,6 +78,7 @@ export default function PrivacyCenterClient(){
         receipt_wallet:state.receipts,
         pending_offline_actions:state.offline,
         push_school_slugs:state.pushTopics,
+        push_preferences_by_school:state.pushPreferences,
         has_cached_snapshot:state.hasSnapshot,
         has_student_support_token:state.hasStudentToken,
       },
@@ -155,7 +169,8 @@ export default function PrivacyCenterClient(){
         <div><b>Fila offline</b><span>{state?.offline.length??0} item(ns)</span><code>{KEYS.offline}</code></div>
         <div><b>Último snapshot público</b><span>{state?.hasSnapshot?"presente":"ausente"}</span><code>{KEYS.snapshot}</code></div>
         <div><b>Token técnico anti-duplicação</b><span>{state?.hasStudentToken?"presente":"ausente"}</span><code>{KEYS.studentToken}</code></div>
-        <div><b>Preferências locais de push</b><span>{state?.pushTopics.length??0} escola(s)</span><code>{KEYS.pushTopics}</code></div>
+        <div><b>Escolas com push ativo</b><span>{state?.pushTopics.length??0} escola(s)</span><code>{KEYS.pushTopics}</code></div>
+        <div><b>Categorias de alerta por escola</b><span>{state?Object.keys(state.pushPreferences).length:0} escola(s)</span><code>{KEYS.pushPreferences}</code></div>
       </div>
       <p className={styles.note}>
         O token técnico não contém nome, e-mail ou telefone. A lista acima não inclui os registros
