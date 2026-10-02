@@ -48,6 +48,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.68,
     },
     {
+      url: canonicalUrl("/climatizacao/ancora"),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.66,
+    },
+    {
       url: canonicalUrl("/apoio"),
       lastModified: now,
       changeFrequency: "weekly",
